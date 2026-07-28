@@ -967,6 +967,176 @@
     0.0,
     0.2
    ]
+  },
+  {
+   "answers": {
+    "stream": [
+     "Accountancy & Commerce (Perniagaan, Ekonomi etc)"
+    ],
+    "enjoyed": [
+     "Accountancy & Commerce Subjects"
+    ],
+    "difficult": [
+     "Accountancy & Commerce Subjects"
+    ],
+    "tasks": [
+     "Helping and communicating with people",
+     "Experimenting and researching"
+    ],
+    "traits": [
+     "Adventurous",
+     "Outgoing",
+     "Persuasive"
+    ],
+    "personality": "Ambivert",
+    "results": "1 - 2 As (A-, A, A+)",
+    "preu": "Diploma",
+    "school": "Public School (SMK / SMJKC)",
+    "speaking": ""
+   },
+   "vector": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.6
+   ]
+  },
+  {
+   "answers": {
+    "stream": [
+     "Accountancy & Commerce (Perniagaan, Ekonomi etc)"
+    ],
+    "enjoyed": [
+     "Accountancy & Commerce Subjects"
+    ],
+    "difficult": [
+     "Accountancy & Commerce Subjects"
+    ],
+    "tasks": [
+     "Helping and communicating with people",
+     "Experimenting and researching"
+    ],
+    "traits": [
+     "Adventurous",
+     "Outgoing",
+     "Persuasive"
+    ],
+    "personality": "Ambivert",
+    "results": "1 - 2 As (A-, A, A+)",
+    "preu": "Diploma",
+    "school": "Public School (SMK / SMJKC)",
+    "speaking": [
+     3
+    ]
+   },
+   "vector": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.6
+   ]
   }
  ]
 }

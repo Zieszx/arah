@@ -196,6 +196,20 @@ def main():
     boundary["speaking"] = 1
     cases.append({"answers": boundary})                            # numeric lower boundary (-> 0.2)
 
+    # `float("")` raises ValueError in Python (defaults to the midpoint) but
+    # naive `Number("")` is 0 in JavaScript, not NaN — a live bug because a
+    # controlled numeric <input> initialises to "" in React. Pin it.
+    blank_speaking = dict(fully_populated)
+    blank_speaking["speaking"] = ""
+    cases.append({"answers": blank_speaking})                      # blank numeric string (-> midpoint 0.6)
+
+    # `float([3])` raises TypeError in Python (defaults to the midpoint) while
+    # naive `Number([3])` coerces to 3 in JavaScript. Pin this asymmetry too,
+    # even though it happens to land on the same value for this group's range.
+    list_speaking = dict(fully_populated)
+    list_speaking["speaking"] = [3]
+    cases.append({"answers": list_speaking})                       # single-element list (-> midpoint 0.6)
+
     for c in cases:
         c["vector"] = encode.encode_answers(c["answers"], spec)
 
