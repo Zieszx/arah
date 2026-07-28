@@ -153,6 +153,7 @@ Browser
 
 ```
 arah/                                  ← repo root (github.com/Zieszx/arah)
+├── vercel.json                        ★ Vercel Services config (see below)
 ├── app/
 │   ├── layout.jsx                     fonts, providers, Lenis, cursor layer
 │   ├── page.jsx                       landing
@@ -167,23 +168,62 @@ arah/                                  ← repo root (github.com/Zieszx/arah)
 │       ├── quiz/route.js              POST answers → predict → persist
 │       ├── fields/route.js            aggregates for /explore
 │       └── contribute/route.js        POST alumni outcome
-├── api/                               ← Vercel Python runtime
-│   ├── ml/predict.py
-│   └── requirements.txt
+├── services/ml/                       ← the "ml" Vercel Service
+│   ├── index.py                       ASGI app: GET health, POST predict
+│   ├── encode.py                      shared encoder, stdlib only
+│   ├── requirements.txt               scikit-learn, numpy, joblib
+│   ├── .python-version                3.13
+│   ├── model.joblib                   2.7 MB, committed
+│   └── feature_spec.json              ★ single source of truth
 ├── ml/
 │   ├── train.py                       pandas → sklearn → joblib
-│   ├── encode.py                      shared encoder
-│   ├── feature_spec.json              ★ single source of truth
-│   ├── model.joblib                   2.7 MB, committed
+│   ├── parity_fixtures.json           JS/Python encoding contract
 │   └── data/survey.csv
 ├── components/{ui,magic,motion,quiz,results,layout}/
 ├── lib/
 │   ├── supabase/{client,server,middleware}.js
 │   ├── i18n/en.js
 │   ├── motion/config.js
-│   └── features.js                    reads feature_spec.json
+│   └── features.js                    reads services/ml/feature_spec.json
 └── docs/superpowers/specs/
 ```
+
+### Why Vercel Services, not `/api/*.py`
+
+The original design placed Python files in `/api` beside Next.js, on the older Vercel
+pattern where that routed automatically. **It does not on current Vercel.** A deploy
+proved it: dependencies installed and bytecode compiled, but Next.js owned every route
+and `/api/ml/predict` returned a Next.js 500. The docs are explicit — *"To deploy a
+Python API alongside a frontend such as a Next.js app within the same project, use
+Services."*
+
+```json
+{
+  "services": {
+    "web": { "root": "./", "framework": "nextjs" },
+    "ml":  { "root": "services/ml/", "entrypoint": "index:app" }
+  },
+  "rewrites": [
+    { "source": "/api/ml/(.*)", "destination": { "service": "ml" } },
+    { "source": "/(.*)",        "destination": { "service": "web" } }
+  ]
+}
+```
+
+Three constraints this imposes, all learned from failed deploys:
+
+1. **`entrypoint` is required** for a Python service, and must name a **callable ASGI
+   app** (`index:app`). The `BaseHTTPRequestHandler` + `handler` class convention belongs
+   to the legacy `/api/*.py` mode and is rejected here.
+2. **Each service builds from its own `root`.** `model.joblib`, `feature_spec.json`,
+   `requirements.txt` and `.python-version` must all live inside `services/ml/` — a
+   version pin at the repo root is silently ignored (the build falls back to 3.12).
+3. With `services` present, top-level build keys (`functions`, `buildCommand`, …) are
+   invalid; they move into the service. `memory` is ignored entirely under Active CPU
+   billing.
+
+The ASGI app is written against the raw ASGI protocol with **no framework dependency** —
+the bundle is already 244 MB with scikit-learn and scipy.
 
 ### The encoding contract
 
