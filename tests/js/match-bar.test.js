@@ -42,8 +42,12 @@ describe('MatchBar reduced-motion behaviour', () => {
       );
     });
 
-    // Immediately on mount - before useMotionCapability's own effect even
-    // settles - the fill must already be at final width, never 0%.
+    // `act()` flushes useMotionCapability's capability-detection effect
+    // before this call returns, so by the time we can inspect the DOM the
+    // effect has already run. Under reduced motion that doesn't matter:
+    // `enabled` resolves to false either way, the fill's `key` never
+    // changes, and it renders at final width - never 0% - on this first
+    // render and every one after it.
     expect(getFill(container).style.width).toBe('73%');
 
     // Let the capability-detection effect run and settle.

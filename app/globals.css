@@ -60,11 +60,35 @@
   --border: var(--hairline);
   --input: rgba(239, 237, 250, 0.14);
   --ring: var(--color-violet-lt);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /*
+   * Unused today, but the `@theme inline` block below already wires
+   * `--color-chart-1..5` straight through to these — leaving shadcn's
+   * grayscale defaults here would be a footgun for whoever in Plan 4
+   * plugs Recharts into the results page: gray charts read as
+   * "deliberate," not "unfinished."
+   *
+   * chart-1/chart-2 are a deliberate cool/warm doublet (cyan/amber),
+   * mirroring the Okabe-Ito blue/orange pairing — the most
+   * colour-blind-robust two-hue split available. The most common chart
+   * in this product will be a two-series comparison, and a violet/cyan
+   * pair would be hard for a deuteranope to separate. chart-3..5 fall
+   * back to the violet family for anything with more series.
+   *
+   * Amber is `#FFB627`, the one documented warning colour in
+   * docs/design/visual-design-system.md §3 — do not introduce a second
+   * amber into a system this small (ConfidenceBadge already uses
+   * `--color-amber` for its own, unrelated, purpose).
+   *
+   * Note for Plan 4: `--color-violet` (#7C3AED) on `--color-ink`
+   * (#08070F) is ~3.52:1 — it clears WCAG 1.4.11's 3:1 threshold for
+   * graphical objects, but only just. Fine for bars/fills; do not use
+   * it for thin sparkline strokes.
+   */
+  --chart-1: var(--color-cyan);
+  --chart-2: #FFB627;
+  --chart-3: var(--color-violet-lt);
+  --chart-4: var(--color-violet-pl);
+  --chart-5: var(--color-violet);
   --radius: 0.625rem;
   --sidebar: var(--color-surface);
   --sidebar-foreground: var(--color-text);
