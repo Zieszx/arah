@@ -8,6 +8,7 @@ that mirror by `ml/parity_fixtures.json`.
 NumPy is not imported here on purpose — plain lists keep this importable from
 anywhere with no dependency cost.
 """
+import math
 
 SPEC_VERSION = "2026-07-28"
 
@@ -130,20 +131,83 @@ def encode_answers(answers, spec):
     An unrecognised value contributes all-zeros for its group rather than
     raising, so a student selecting an option the model never saw still gets a
     prediction from their remaining answers.
+
+    Numeric groups accept only an actual, finite, non-bool int/float — no
+    string coercion. Anything else (including out-of-range strings like
+    "Infinity" or "0x10") falls back to the midpoint, and any accepted value
+    is clamped to [min, max] so a hostile or malformed number can't blow up
+    the feature vector. Categorical groups only ever hash `str` values into
+    the selected set, so a dict/list/number passed as an answer is inert
+    instead of raising `TypeError: unhashable type`.
     """
     vec = []
     for g in spec["groups"]:
         if g["type"] == "num":
             raw = answers.get(g["key"])
-            try:
+            if (
+                isinstance(raw, (int, float))
+                and not isinstance(raw, bool)
+                and math.isfinite(raw)
+            ):
                 val = float(raw)
-            except (TypeError, ValueError):
+            else:
                 val = (g["min"] + g["max"]) / 2.0
+            val = min(max(val, g["min"]), g["max"])
             vec.append(round(val / g["max"], 10))
             continue
 
         raw = answers.get(g["key"])
         selected = raw if isinstance(raw, list) else ([raw] if raw else [])
-        selected = set(x for x in selected if x)
+        selected = set(x for x in selected if isinstance(x, str) and x)
         vec.extend(1.0 if opt in selected else 0.0 for opt in g["options"])
     return vec
+
+
+def validate_answers(answers, spec):
+    """Validate an answers dict against `spec`, mirroring the rules
+    lib/features.js's `validateAnswers` applies: every non-optional group
+    must be answered, `max_select` must be respected, single-select groups
+    must carry exactly one value, unknown options are rejected, and numeric
+    answers must be an actual numeric type within [min, max].
+
+    Returns (ok, errors) where errors maps group key -> human-readable
+    message. Callers exposing this over HTTP should surface only the group
+    keys (`errors.keys()`), never the messages, to avoid leaking internals.
+    """
+    errors = {}
+    for g in spec["groups"]:
+        raw = answers.get(g["key"])
+
+        if g["type"] == "num":
+            valid = (
+                isinstance(raw, (int, float))
+                and not isinstance(raw, bool)
+                and math.isfinite(raw)
+                and g["min"] <= raw <= g["max"]
+            )
+            if not valid:
+                errors[g["key"]] = f"Choose a value between {g['min']} and {g['max']}."
+            continue
+
+        if isinstance(raw, list):
+            selected = [x for x in raw if x]
+        elif raw:
+            selected = [raw]
+        else:
+            selected = []
+
+        if not selected:
+            if not g.get("optional"):
+                errors[g["key"]] = "Please answer this question."
+            continue
+        if g.get("max_select") and len(selected) > g["max_select"]:
+            errors[g["key"]] = f"Choose at most {g['max_select']}."
+            continue
+        if g["type"] == "single" and len(selected) > 1:
+            errors[g["key"]] = "Choose one option."
+            continue
+        unknown = [v for v in selected if v not in g["options"]]
+        if unknown:
+            errors[g["key"]] = f"Unrecognised option: {unknown[0]!r}"
+
+    return len(errors) == 0, errors

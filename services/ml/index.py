@@ -129,7 +129,15 @@ async def app(scope, receive, send):
                     if not isinstance(answers, dict):
                         status, payload = 400, {"error": 'body must be {"answers": {...}}'}
                     else:
-                        status, payload = 200, predict(answers)
+                        spec = load()["spec"]
+                        ok, errors = encode.validate_answers(answers, spec)
+                        if not ok:
+                            status, payload = 400, {
+                                "error": "invalid_answers",
+                                "fields": sorted(errors.keys()),
+                            }
+                        else:
+                            status, payload = 200, predict(answers)
     except Exception:  # noqa: BLE001
         # Log the full detail where only we can see it; return nothing useful
         # to the caller. This is a public endpoint.

@@ -26,7 +26,13 @@ def test_spec_has_ten_groups_and_ten_classes():
     assert spec["n_features"] == 55
 
 
-def test_recorded_accuracy_meets_floor():
+def test_training_ran_and_met_floor():
+    """Tripwire, not independent verification: this reads `cv_top3`, a value
+    `train.py` itself computed and stored in the bundle at training time. It
+    only catches the artefact being regenerated with a regressed score (or
+    the bundling step dropping the field) — it does not itself re-run cross-
+    validation or otherwise verify the number is correct.
+    """
     import joblib
     bundle = joblib.load(MODEL)
     assert bundle["cv_top3"] >= 66.0, (

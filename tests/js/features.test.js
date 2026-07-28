@@ -30,6 +30,44 @@ describe('JS/Python encoding parity', () => {
   );
 });
 
+describe('hostile numeric input handling (mirrors services/ml/encode.py)', () => {
+  // speaking is the last group in the spec (a single 'num' slot), so its
+  // encoded value is always the vector's final element.
+  const lastOf = (answers) => {
+    const vec = encodeAnswers(answers);
+    return vec[vec.length - 1];
+  };
+  const speakingGroup = () => getSpec().groups.find((g) => g.key === 'speaking');
+
+  it('clamps out-of-range finite numbers instead of extrapolating', () => {
+    const g = speakingGroup();
+    expect(lastOf({ speaking: 1_000_000_000 })).toBe(g.max / g.max);
+    expect(lastOf({ speaking: -99 })).toBe(g.min / g.max);
+  });
+
+  it('never coerces strings, however numeric-looking', () => {
+    for (const hostile of ['Infinity', '0x10', '0b101', '1_0', '٤', '３', 'inf', 'nan']) {
+      expect(lastOf({ speaking: hostile })).toBe(0.6);
+    }
+  });
+
+  it('does not treat booleans as numeric', () => {
+    expect(lastOf({ speaking: true })).toBe(0.6);
+  });
+
+  it('skips non-string values in categorical sets instead of matching or crashing', () => {
+    const personalityGroup = getSpec().groups.find((g) => g.key === 'personality');
+    const start = getSpec().groups
+      .slice(0, getSpec().groups.indexOf(personalityGroup))
+      .reduce((n, g) => n + (g.type === 'num' ? 1 : g.options.length), 0);
+    const slice = (answers) =>
+      encodeAnswers(answers).slice(start, start + personalityGroup.options.length);
+
+    expect(slice({ personality: { x: 1 } })).toEqual(personalityGroup.options.map(() => 0));
+    expect(slice({ personality: [['x']] })).toEqual(personalityGroup.options.map(() => 0));
+  });
+});
+
 describe('validateAnswers', () => {
   it('rejects more selections than max_select allows', () => {
     const stream = getSpec().groups.find((g) => g.key === 'stream');
@@ -55,5 +93,12 @@ describe('validateAnswers', () => {
       else answers[g.key] = g.options[0];
     }
     expect(validateAnswers(answers).ok).toBe(true);
+  });
+
+  it('rejects an out-of-range or non-numeric speaking value', () => {
+    expect(validateAnswers({ speaking: 1_000_000_000 }).errors.speaking).toBeDefined();
+    expect(validateAnswers({ speaking: -99 }).errors.speaking).toBeDefined();
+    expect(validateAnswers({ speaking: 'Infinity' }).errors.speaking).toBeDefined();
+    expect(validateAnswers({ speaking: '3' }).errors.speaking).toBeDefined();
   });
 });

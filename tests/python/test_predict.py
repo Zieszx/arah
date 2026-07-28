@@ -1,3 +1,4 @@
+import json
 import os
 import pytest
 
@@ -138,6 +139,53 @@ def _run_asgi_raw(method, raw_body=b""):
     return status, _json.loads(sent[1]["body"])
 
 
+def _run_asgi_answers(answers):
+    import asyncio, json as _json
+    import index
+
+    payload = _json.dumps({"answers": answers}).encode()
+    messages = [{"type": "http.request", "body": payload, "more_body": False}]
+
+    async def receive():
+        return messages.pop(0)
+
+    sent = []
+
+    async def send(msg):
+        sent.append(msg)
+
+    asyncio.run(index.app({"type": "http", "method": "POST"}, receive, send))
+    status = sent[0]["status"]
+    return status, _json.loads(sent[1]["body"])
+
+
+@pytest.mark.parametrize("hostile", [
+    {"speaking": 1000000000},
+    {"speaking": -99},
+    {"personality": {"x": 1}},
+    {"speaking": "Infinity"},
+    {"speaking": "0x10"},
+    {"speaking": "1_0"},
+])
+def test_hostile_answers_never_500_and_never_predict_silently(hostile):
+    """These inputs used to either flip the top prediction silently (out of
+    range numbers) or 500 (unhashable dict, infinite float). validate_answers
+    now rejects all of them with a clean 400 naming only the offending field
+    keys before predict() ever runs.
+    """
+    import index
+
+    spec = index.load()["spec"]
+    answers = _full_answers(spec)
+    answers.update(hostile)
+    status, body = _run_asgi_answers(answers)
+    assert status == 400
+    assert body["error"] == "invalid_answers"
+    assert isinstance(body["fields"], list) and body["fields"]
+    # Only field keys are ever surfaced -- no messages, no internals.
+    assert set(body.keys()) == {"error", "fields"}
+
+
 def test_asgi_app_malformed_json_returns_clean_400():
     status, body = _run_asgi_raw("POST", b"{not json")
     assert status == 400
@@ -151,7 +199,12 @@ def test_asgi_app_internal_error_returns_generic_500(monkeypatch):
         raise RuntimeError("services\\ml\\some\\internal\\path.py exploded")
 
     monkeypatch.setattr(index, "predict", _boom)
-    status, body = _run_asgi_raw("POST", b'{"answers": {}}')
+    spec = index.load()["spec"]
+    # Must be a validate_answers-passing payload: validation now runs before
+    # predict(), so a payload that fails validation would 400 before ever
+    # reaching (and testing) the generic-500 path this test targets.
+    payload = json.dumps({"answers": _full_answers(spec)}).encode()
+    status, body = _run_asgi_raw("POST", payload)
     assert status == 500
     assert body == {"error": "prediction_failed"}
     rendered = repr(body)
