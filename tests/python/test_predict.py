@@ -118,3 +118,43 @@ def test_asgi_app_handles_get_and_post():
 
     status, body = run("POST", {"answers": "not a dict"})
     assert status == 400
+
+
+def _run_asgi_raw(method, raw_body=b""):
+    import asyncio, json as _json
+    import index
+
+    sent = []
+    messages = [{"type": "http.request", "body": raw_body, "more_body": False}]
+
+    async def receive():
+        return messages.pop(0)
+
+    async def send(msg):
+        sent.append(msg)
+
+    asyncio.run(index.app({"type": "http", "method": method}, receive, send))
+    status = sent[0]["status"]
+    return status, _json.loads(sent[1]["body"])
+
+
+def test_asgi_app_malformed_json_returns_clean_400():
+    status, body = _run_asgi_raw("POST", b"{not json")
+    assert status == 400
+    assert "detail" not in body
+
+
+def test_asgi_app_internal_error_returns_generic_500(monkeypatch):
+    import index
+
+    def _boom(_answers):
+        raise RuntimeError("services\\ml\\some\\internal\\path.py exploded")
+
+    monkeypatch.setattr(index, "predict", _boom)
+    status, body = _run_asgi_raw("POST", b'{"answers": {}}')
+    assert status == 500
+    assert body == {"error": "prediction_failed"}
+    rendered = repr(body)
+    assert "RuntimeError" not in rendered
+    assert "services" not in rendered
+    assert ".py" not in rendered

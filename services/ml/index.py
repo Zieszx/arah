@@ -6,6 +6,8 @@ roughly once rather than per request.
 """
 import json
 import os
+import sys
+import traceback
 
 import joblib
 import numpy as np
@@ -86,11 +88,16 @@ def predict(answers):
 # This is plain ASGI with no framework dependency, keeping the bundle small.
 
 
+_MAX_BODY_BYTES = 1024 * 1024  # 1 MB; a quiz submission is well under 10 KB.
+
+
 async def _read_body(receive):
     body = b""
     while True:
         message = await receive()
         body += message.get("body", b"") or b""
+        if len(body) > _MAX_BODY_BYTES:
+            return None
         if not message.get("more_body"):
             break
     return body
@@ -108,14 +115,26 @@ async def app(scope, receive, send):
             status = 200
         elif method == "POST":
             body = await _read_body(receive)
-            data = json.loads(body or b"{}")
-            answers = data.get("answers")
-            if not isinstance(answers, dict):
-                status, payload = 400, {"error": 'body must be {"answers": {...}}'}
+            if body is None:
+                status, payload = 400, {"error": "body too large"}
             else:
-                status, payload = 200, predict(answers)
-    except Exception as exc:  # noqa: BLE001
-        status, payload = 500, {"error": type(exc).__name__, "detail": str(exc)}
+                try:
+                    data = json.loads(body or b"{}")
+                except ValueError:
+                    data = None
+                if not isinstance(data, dict):
+                    status, payload = 400, {"error": "body must be valid JSON"}
+                else:
+                    answers = data.get("answers")
+                    if not isinstance(answers, dict):
+                        status, payload = 400, {"error": 'body must be {"answers": {...}}'}
+                    else:
+                        status, payload = 200, predict(answers)
+    except Exception:  # noqa: BLE001
+        # Log the full detail where only we can see it; return nothing useful
+        # to the caller. This is a public endpoint.
+        print(traceback.format_exc(), file=sys.stderr)
+        status, payload = 500, {"error": "prediction_failed"}
 
     out = json.dumps(payload).encode("utf-8")
     await send({
