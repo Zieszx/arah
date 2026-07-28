@@ -3,10 +3,7 @@ import ParticleField from "@/components/motion/ParticleField.jsx";
 import CursorSpotlight from "@/components/motion/CursorSpotlight.jsx";
 import SmoothScroll from "@/components/motion/SmoothScroll.jsx";
 import "./globals.css";
-import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata = {
   title: "ARAH — Post-SPM Pathway Finder",
@@ -17,7 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", displayFont.variable, bodyFont.variable, "font-sans", geist.variable)}
+      className={cn("h-full", "antialiased", displayFont.variable, bodyFont.variable, "font-sans")}
     >
       <body className="min-h-full flex flex-col">
         {/* Motion backdrop layers: ParticleField at z-0, CursorSpotlight at

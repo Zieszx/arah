@@ -13,10 +13,18 @@
   --color-violet-pl: #C4B5FD;
   --color-cyan: #22D3EE;
   --color-text: #EFEDFA;
-  --color-amber: #FBBF24;
+  --color-amber: #FFB627;
 
   --font-display: var(--font-display), Georgia, serif;
   --font-body: var(--font-body), system-ui, sans-serif;
+  /*
+   * No third face (design system rule #6): the old `create-next-app`
+   * Geist import that used to define this variable has been removed.
+   * `--font-sans` now just aliases the Inter body font so the `font-sans`
+   * utility (and `--font-heading`, below) never silently fall back to an
+   * undefined variable.
+   */
+  --font-sans: var(--font-body), system-ui, sans-serif;
 }
 
 /*
@@ -74,18 +82,39 @@
    * pair would be hard for a deuteranope to separate. chart-3..5 fall
    * back to the violet family for anything with more series.
    *
-   * Amber is `#FFB627`, the one documented warning colour in
-   * docs/design/visual-design-system.md §3 — do not introduce a second
-   * amber into a system this small (ConfidenceBadge already uses
-   * `--color-amber` for its own, unrelated, purpose).
+   * Amber is `#FFB627`, the single documented warning colour in
+   * docs/design/visual-design-system.md §3. `--chart-2` reuses
+   * `--color-amber` directly rather than repeating the literal — there is
+   * now exactly one amber in the system, also used by ConfidenceBadge.
    *
    * Note for Plan 4: `--color-violet` (#7C3AED) on `--color-ink`
    * (#08070F) is ~3.52:1 — it clears WCAG 1.4.11's 3:1 threshold for
    * graphical objects, but only just. Fine for bars/fills; do not use
    * it for thin sparkline strokes.
+   *
+   * QA note (2026-07-29): `getComputedStyle(document.documentElement)
+   * .getPropertyValue('--color-chart-1')` (the `@theme inline`-generated
+   * alias below, in the `--color-*` namespace) can read back as an empty
+   * string depending on the build, even though the swatches always
+   * render the right colour everywhere. Verified directly: `next dev`,
+   * a local `next build && next start`, and the live Vercel deployment
+   * all compile `.bg-chart-1` identically to
+   * `background-color: var(--chart-1)` — i.e. Tailwind always inlines
+   * the concrete `--chart-1..5` value straight into the utility and
+   * never routes through `--color-chart-1..5` at render time. The
+   * standalone `--color-chart-1..5: var(--chart-1..5)` declarations
+   * that would make the alias itself readable at `:root` are therefore
+   * inert — nothing in the compiled CSS ever references them — so some
+   * build/minify passes keep them and some drop them as dead code
+   * (mine dropped them locally in both dev and a local production
+   * build; the live deployment kept them). This is a property of an
+   * unread alias, not a `:root` definition-order bug — `--chart-1..5`
+   * themselves are always readable and always correct, in every build.
+   * If a future component ever needs to read `--color-chart-N` in JS,
+   * read `--chart-N` instead; it is the one guaranteed to be present.
    */
   --chart-1: var(--color-cyan);
-  --chart-2: #FFB627;
+  --chart-2: var(--color-amber);
   --chart-3: var(--color-violet-lt);
   --chart-4: var(--color-violet-pl);
   --chart-5: var(--color-violet);

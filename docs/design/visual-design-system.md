@@ -84,7 +84,7 @@ Typeface — three editorial serifs tested in-situ:
 - Kickers / micro-labels: `--violet-lt`, uppercase, `letter-spacing: 0.3em`, wrapped in `[ ]`.
 - Never place `--violet` as text on `--ink` — it fails contrast. Use `--violet-lt` or lighter.
   (This exact mistake was caught in the pitch deck; do not repeat it.)
-- Semantic: success `--cyan`, warning `#FFB23F`, danger `#FF6B6B`. Used only for
+- Semantic: success `--cyan`, warning `#FFB627`, danger `#FF6B6B`. Used only for
   confidence badges and form errors, never decoratively.
 
 Contrast: `--text` on `--ink` and `--violet-lt` on `--surface` both clear WCAG AA.
