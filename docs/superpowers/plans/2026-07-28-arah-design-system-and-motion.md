@@ -14,7 +14,8 @@
 - **This Next.js is newer than your training data.** Before writing App Router code, read the relevant guide in `node_modules/next/dist/docs/01-app/`. Heed deprecations. Do not assume APIs from memory.
 - **Tailwind is v4, not v3.** There is no `tailwind.config.js`. Tokens are declared with `@theme` inside `app/globals.css`, and the entry is `@import "tailwindcss"`. Do not create a v3-style config file.
 - **No grids, no box patterns, anywhere in any background.** Explicitly rejected during the brainstorm.
-- **Never `--violet` (`#7C3AED`) as text on `--ink` (`#08070F`)** — it fails contrast. Use `--violet-lt` (`#A78BFA`) or lighter.
+- **Contrast, measured:** `--violet` (`#7C3AED`) on `--ink` (`#08070F`) is **3.52:1** — it passes WCAG AA for *large* text (≥3:1) only. **Never use it for body-sized text.** `--violet-lt` (`#A78BFA`) is 7.4:1 and is the text-safe violet. Reserve `--violet` for large headings, borders, fills and graphics.
+- **The CSS reduced-motion block is not sufficient on its own.** It neutralises CSS `animation-duration` / `transition-duration` only. GSAP tweens and Motion animations set styles directly via JS/WAAPI and bypass those properties entirely. **Every JS-driven layer — particle field, sand cursor, spotlight, Lenis, GSAP, Motion — must independently gate on `useMotionCapability()`.** Both mechanisms are required; neither alone is enough. Do not assume the CSS rule has already handled it.
 - **Motion values are user-tuned and exact.** Do not adjust them for taste. They are: sand `speed 0.03`, `settle 0.97`, `trailDecay 0.003`, `grainsPerMove 10`; spotlight `100px`; field `drift 0.20`, `density area/7000`, `linkDistance 62`.
 - **Every animated layer needs three states**: full, `prefers-reduced-motion`, and touch (pointer: coarse).
 - Never commit secrets. `git ls-files | grep -Ei '\.env|\.vercel'` must return nothing.
