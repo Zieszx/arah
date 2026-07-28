@@ -1,3 +1,6 @@
+# Local-only: training + test toolchain. Never installed by Vercel — the
+# deployed function's dependencies live in the root requirements.txt. Do not
+# merge the two files (pandas here is intentionally absent from that one).
 pandas==3.0.5
 numpy==2.5.1
 scikit-learn==1.9.0

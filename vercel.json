@@ -1,6 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/ml/*.py": { "runtime": "@vercel/python@5.0.0", "memory": 1024, "maxDuration": 30 }
+    "api/ml/*.py": {
+      "memory": 1024,
+      "maxDuration": 30,
+      "excludeFiles": "{tests/**,docs/**,ml/data/**,ml/train.py,.superpowers/**,node_modules/**,.next/**,public/**}"
+    }
   }
 }
