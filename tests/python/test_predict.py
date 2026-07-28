@@ -27,7 +27,9 @@ def test_probabilities_sum_to_one_and_are_sorted():
     out = predict.predict(_full_answers(spec))
     probs = [r["probability"] for r in out["ranked"]]
     assert len(out["ranked"]) == 10
-    assert abs(sum(probs) - 1.0) < 1e-6
+    # _rank() rounds each probability to 6dp, so the sum of N classes can drift by
+    # up to N * 5e-7. With 10 classes that is 5e-6; 1e-5 is the correct bound.
+    assert abs(sum(probs) - 1.0) < 1e-5
     assert probs == sorted(probs, reverse=True)
     assert out["marginalised"] is False
 
@@ -54,7 +56,9 @@ def test_missing_preu_marginalises():
     answers.pop("preu")
     out = predict.predict(answers)
     assert out["marginalised"] is True
-    assert abs(sum(r["probability"] for r in out["ranked"]) - 1.0) < 1e-6
+    # _rank() rounds each probability to 6dp, so the sum of N classes can drift by
+    # up to N * 5e-7. With 10 classes that is 5e-6; 1e-5 is the correct bound.
+    assert abs(sum(r["probability"] for r in out["ranked"]) - 1.0) < 1e-5
 
 
 def test_unseen_value_does_not_raise():
@@ -62,3 +66,24 @@ def test_unseen_value_does_not_raise():
     spec = predict.load()["spec"]
     out = predict.predict(_full_answers(spec, results="Fail"))
     assert len(out["ranked"]) == 10
+
+
+def test_unrounded_probabilities_sum_to_exactly_one():
+    """The rounding in _rank() is presentational. The underlying distribution
+    must be exactly normalised, in both the direct and marginalised paths."""
+    import numpy as np
+    import predict
+    spec = predict.load()["spec"]
+
+    for drop_preu in (False, True):
+        answers = _full_answers(spec)
+        if drop_preu:
+            answers.pop("preu")
+        out = predict.predict(answers)
+        total = sum(r["probability"] for r in out["ranked"])
+        assert out["marginalised"] is drop_preu
+        assert abs(total - 1.0) < 1e-5
+        # every probability is a valid, ordered probability
+        probs = [r["probability"] for r in out["ranked"]]
+        assert all(0.0 <= p <= 1.0 for p in probs)
+        assert probs == sorted(probs, reverse=True)
