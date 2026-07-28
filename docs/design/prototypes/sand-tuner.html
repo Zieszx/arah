@@ -75,39 +75,39 @@
 
 <div class="presets">
   <button class="pbtn2" data-preset="calm">Calm</button>
-  <button class="pbtn2" data-preset="balanced">Balanced (my pick)</button>
+  <button class="pbtn2" data-preset="balanced">Chosen (shipped)</button>
   <button class="pbtn2" data-preset="lively">Lively</button>
 </div>
 
 <div class="ctrls">
   <div class="ctrl">
     <label>Sand speed <b id="v-speed"></b></label>
-    <input type="range" id="s-speed" min="2" max="30" value="8">
+    <input type="range" id="s-speed" min="2" max="30" value="3">
     <div class="hintline">How fast grains fly off the cursor.</div>
   </div>
   <div class="ctrl">
     <label>Settle speed <b id="v-drag"></b></label>
-    <input type="range" id="s-drag" min="70" max="97" value="88">
+    <input type="range" id="s-drag" min="70" max="97" value="97">
     <div class="hintline">Lower = grains stop sooner. Higher = they keep gliding.</div>
   </div>
   <div class="ctrl">
     <label>Trail length <b id="v-life"></b></label>
-    <input type="range" id="s-life" min="3" max="30" value="11">
+    <input type="range" id="s-life" min="3" max="30" value="3">
     <div class="hintline">How long each grain stays before fading out.</div>
   </div>
   <div class="ctrl">
     <label>Spotlight size <b id="v-spot"></b></label>
-    <input type="range" id="s-spot" min="60" max="320" value="140">
+    <input type="range" id="s-spot" min="60" max="320" value="100">
     <div class="hintline">The glow that follows the cursor. You said 260px was too big.</div>
   </div>
   <div class="ctrl">
     <label>Grain amount <b id="v-amt"></b></label>
-    <input type="range" id="s-amt" min="1" max="10" value="4">
+    <input type="range" id="s-amt" min="1" max="10" value="10">
     <div class="hintline">Grains emitted per movement.</div>
   </div>
   <div class="ctrl">
     <label>Background drift <b id="v-bg"></b></label>
-    <input type="range" id="s-bg" min="2" max="40" value="9">
+    <input type="range" id="s-bg" min="2" max="40" value="20">
     <div class="hintline">Speed of the particle field behind everything.</div>
   </div>
 </div>
@@ -126,7 +126,7 @@
   var bg = [], grains = [];
   var mx = -999, my = -999, pmx = -999, pmy = -999, inside = false;
 
-  var cfg = { speed: 8, drag: 88, life: 11, spot: 140, amt: 4, bg: 9 };
+  var cfg = { speed: 3, drag: 97, life: 3, spot: 100, amt: 10, bg: 20 };
   var ids = ['speed', 'drag', 'life', 'spot', 'amt', 'bg'];
 
   function readSliders() {
@@ -152,7 +152,7 @@
 
   var PRESETS = {
     calm:     { speed: 4,  drag: 80, life: 8,  spot: 110, amt: 3, bg: 5 },
-    balanced: { speed: 8,  drag: 88, life: 11, spot: 140, amt: 4, bg: 9 },
+    balanced: { speed: 3,  drag: 97, life: 3,  spot: 100, amt: 10, bg: 20 },
     lively:   { speed: 16, drag: 92, life: 16, spot: 180, amt: 6, bg: 18 }
   };
   document.querySelectorAll('.pbtn2').forEach(function (b) {
