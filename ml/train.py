@@ -25,6 +25,25 @@ OUT_SPEC = os.path.join(ROOT, "ml", "feature_spec.json")
 OUT_MODEL = os.path.join(ROOT, "ml", "model.joblib")
 OUT_FIXTURES = os.path.join(ROOT, "ml", "parity_fixtures.json")
 
+# Column index -> substring expected (case-insensitively) in that column's
+# header. Every column `encode.GROUPS` reads by index is checked here so a
+# CSV re-exported with reordered columns fails loudly instead of silently
+# training on misaligned data (X and y would still be internally consistent,
+# so the CV score alone can't catch this).
+EXPECTED_HEADER_SUBSTRINGS = {
+    4: "type of secondary school",
+    5: "which stream",
+    6: "spm results",
+    7: "enjoy most",
+    8: "most difficult",
+    9: "your personality",
+    10: "type of tasks",
+    11: "your characteristics",
+    12: "public speaking",
+    13: "pre-university",
+    14: "major",
+}
+
 
 def load_rows():
     with open(CSV_PATH, encoding="utf-8-sig", newline="") as f:
@@ -34,8 +53,12 @@ def load_rows():
 
     # Guard against silent column drift.
     assert "gender" in header[1].lower(), f"unexpected header: {header[1]!r}"
-    assert "major" in header[encode.FIELD_COL].lower(), \
-        f"unexpected outcome column: {header[encode.FIELD_COL]!r}"
+    for idx, substring in EXPECTED_HEADER_SUBSTRINGS.items():
+        actual = header[idx] if idx < len(header) else ""
+        assert substring in actual.strip().lower(), (
+            f"column drift at index {idx}: expected header to contain "
+            f"{substring!r}, got {actual!r}"
+        )
 
     rows = []
     for r in raw:
@@ -91,6 +114,29 @@ def cv_top3(X, y, folds=CV_FOLDS, repeats=CV_REPEATS):
     return mean, var ** 0.5, scores
 
 
+def _with_valid_categoricals(answers, spec):
+    """Copy of `answers` where every categorical group has at least one
+    option drawn from spec['groups'] options (numeric groups untouched).
+
+    Never invents values: if the source answer already names a valid option
+    it's kept, otherwise the group's first spec option is used.
+    """
+    out = dict(answers)
+    for g in spec["groups"]:
+        if g["type"] == "num":
+            continue
+        opts = g["options"]
+        if not opts:
+            continue
+        current = out.get(g["key"])
+        if g["type"] == "multi":
+            valid = [v for v in (current or []) if v in opts]
+            out[g["key"]] = valid or [opts[0]]
+        elif current not in opts:
+            out[g["key"]] = opts[0]
+    return out
+
+
 def main():
     rows = load_rows()
     print(f"loaded {len(rows)} rows")
@@ -126,6 +172,30 @@ def main():
              for r in rows[:6]]
     cases.append({"answers": {}})                                  # all-empty
     cases.append({"answers": {"results": "Fail", "speaking": 5}})   # unseen value
+
+    # The eight cases above leave `speaking` almost entirely null and never
+    # exercise a fully-populated row, an omitted optional field, or an
+    # unseen value inside a multi-select. Add four cases that do, built
+    # explicitly (never hand-computed vectors) so the JS mirror is held to
+    # the same numeric-scaling and omission behaviour.
+    fully_populated = _with_valid_categoricals(
+        {k: v for k, v in rows[0].items() if k != "field"}, spec
+    )
+    fully_populated["speaking"] = 3
+    cases.append({"answers": dict(fully_populated)})              # mid-range numeric, all groups populated
+
+    preu_omitted = dict(fully_populated)
+    del preu_omitted["preu"]
+    cases.append({"answers": preu_omitted})                        # optional field omitted entirely
+
+    unseen_multi = dict(fully_populated)
+    unseen_multi["stream"] = ["Not A Real Stream"]
+    cases.append({"answers": unseen_multi})                        # unseen value in a multi-select
+
+    boundary = dict(fully_populated)
+    boundary["speaking"] = 1
+    cases.append({"answers": boundary})                            # numeric lower boundary (-> 0.2)
+
     for c in cases:
         c["vector"] = encode.encode_answers(c["answers"], spec)
 
