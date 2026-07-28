@@ -81,33 +81,49 @@ def predict(answers):
     }
 
 
-# --- Vercel handler -------------------------------------------------------
-from http.server import BaseHTTPRequestHandler  # noqa: E402
+# --- ASGI entrypoint -------------------------------------------------------
+# Vercel Services expects a callable app, not a BaseHTTPRequestHandler class.
+# This is plain ASGI with no framework dependency, keeping the bundle small.
 
 
-class handler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        try:
-            length = int(self.headers.get("content-length") or 0)
-            body = json.loads(self.rfile.read(length) or b"{}")
-            answers = body.get("answers")
+async def _read_body(receive):
+    body = b""
+    while True:
+        message = await receive()
+        body += message.get("body", b"") or b""
+        if not message.get("more_body"):
+            break
+    return body
+
+
+async def app(scope, receive, send):
+    if scope["type"] != "http":
+        return
+
+    status, payload = 405, {"error": "method not allowed"}
+    try:
+        method = scope.get("method", "GET").upper()
+        if method == "GET":
+            payload = {"status": "ok", "model_version": load()["spec"]["version"]}
+            status = 200
+        elif method == "POST":
+            body = await _read_body(receive)
+            data = json.loads(body or b"{}")
+            answers = data.get("answers")
             if not isinstance(answers, dict):
-                return self._send(400, {"error": "body must be {\"answers\": {...}}"})
-            return self._send(200, predict(answers))
-        except Exception as exc:  # noqa: BLE001
-            return self._send(500, {"error": type(exc).__name__, "detail": str(exc)})
+                status, payload = 400, {"error": 'body must be {"answers": {...}}'}
+            else:
+                status, payload = 200, predict(answers)
+    except Exception as exc:  # noqa: BLE001
+        status, payload = 500, {"error": type(exc).__name__, "detail": str(exc)}
 
-    def do_GET(self):
-        try:
-            load()
-            self._send(200, {"status": "ok", "model_version": load()["spec"]["version"]})
-        except Exception as exc:  # noqa: BLE001
-            self._send(500, {"status": "error", "detail": str(exc)})
-
-    def _send(self, code, payload):
-        data = json.dumps(payload).encode("utf-8")
-        self.send_response(code)
-        self.send_header("content-type", "application/json")
-        self.send_header("content-length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
+    out = json.dumps(payload).encode("utf-8")
+    await send({
+        "type": "http.response.start",
+        "status": status,
+        "headers": [
+            (b"content-type", b"application/json"),
+            (b"content-length", str(len(out)).encode()),
+        ],
+    })
+    await send({"type": "http.response.body", "body": out})

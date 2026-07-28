@@ -87,3 +87,34 @@ def test_unrounded_probabilities_sum_to_exactly_one():
         probs = [r["probability"] for r in out["ranked"]]
         assert all(0.0 <= p <= 1.0 for p in probs)
         assert probs == sorted(probs, reverse=True)
+
+
+def test_asgi_app_handles_get_and_post():
+    import asyncio, json as _json
+    import index
+
+    spec = index.load()["spec"]
+
+    def run(method, body=None):
+        sent = []
+        payload = _json.dumps(body).encode() if body is not None else b""
+        messages = [{"type": "http.request", "body": payload, "more_body": False}]
+
+        async def receive():
+            return messages.pop(0)
+
+        async def send(msg):
+            sent.append(msg)
+
+        asyncio.run(index.app({"type": "http", "method": method}, receive, send))
+        status = sent[0]["status"]
+        return status, _json.loads(sent[1]["body"])
+
+    status, body = run("GET")
+    assert status == 200 and body["status"] == "ok"
+
+    status, body = run("POST", {"answers": _full_answers(spec)})
+    assert status == 200 and len(body["ranked"]) == 10
+
+    status, body = run("POST", {"answers": "not a dict"})
+    assert status == 400
