@@ -1,4 +1,7 @@
 import { displayFont, bodyFont } from "@/lib/fonts";
+import ParticleField from "@/components/motion/ParticleField.jsx";
+import CursorSpotlight from "@/components/motion/CursorSpotlight.jsx";
+import SmoothScroll from "@/components/motion/SmoothScroll.jsx";
 import "./globals.css";
 
 export const metadata = {
@@ -12,7 +15,19 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${displayFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* Motion backdrop layers: ParticleField at z-0, CursorSpotlight at
+            z-1. Both are siblings behind the content, never inside it, so
+            they never participate in document flow or layout. */}
+        <ParticleField />
+        <CursorSpotlight />
+        {/* Content gets its own stacking context above both layers. */}
+        <SmoothScroll>
+          <div className="relative z-[2] flex min-h-full flex-1 flex-col">
+            {children}
+          </div>
+        </SmoothScroll>
+      </body>
     </html>
   );
 }
