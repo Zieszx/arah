@@ -2,13 +2,13 @@
  * Create the demo account from .env.seed.local.
  * Uses email_confirm so no confirmation email is needed.
  *
+ * Env vars come from Node's native --env-file (see the npm script, which
+ * passes both .env.development.local and .env.seed.local) — do not re-add
+ * dotenv.
+ *
  * Run: npm run seed:user
  */
-import 'dotenv/config';
-import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
-
-config({ path: '.env.seed.local' });
 
 const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

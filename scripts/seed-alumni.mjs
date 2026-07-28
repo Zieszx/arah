@@ -2,9 +2,11 @@
  * Load the 207 survey rows into alumni_profiles.
  * Idempotent: clears source='survey_2025' first, so re-running is safe.
  *
+ * Env vars come from Node's native --env-file (see the npm script) — do not
+ * re-add dotenv.
+ *
  * Run: npm run seed:alumni
  */
-import 'dotenv/config';
 import { readFileSync } from 'node:fs';
 import { parse } from 'csv-parse/sync';
 import { createClient } from '@supabase/supabase-js';
