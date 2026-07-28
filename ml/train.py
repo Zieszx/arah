@@ -203,11 +203,13 @@ def main():
     blank_speaking["speaking"] = ""
     cases.append({"answers": blank_speaking})                      # blank numeric string (-> midpoint 0.6)
 
-    # `float([3])` raises TypeError in Python (defaults to the midpoint) while
-    # naive `Number([3])` coerces to 3 in JavaScript. Pin this asymmetry too,
-    # even though it happens to land on the same value for this group's range.
+    # `float([5])` raises TypeError in Python (defaults to the midpoint 0.6)
+    # while naive `Number([5])` coerces to 5 in JavaScript (-> 1.0). Unlike
+    # speaking: [3] (which coincidentally lands on the midpoint either way,
+    # since 3 IS the midpoint of [1, 5]), this value makes the two encoders
+    # genuinely disagree unless JS explicitly rejects arrays for num groups.
     list_speaking = dict(fully_populated)
-    list_speaking["speaking"] = [3]
+    list_speaking["speaking"] = [5]
     cases.append({"answers": list_speaking})                       # single-element list (-> midpoint 0.6)
 
     for c in cases:
