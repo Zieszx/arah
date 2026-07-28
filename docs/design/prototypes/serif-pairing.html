@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARAH prototype — Serif pairing</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;padding:40px 48px 80px;background:#0B0A12;color:#EFEDFA;
+       font-family:Inter,-apple-system,"Segoe UI",system-ui,sans-serif;line-height:1.55}
+  @media (max-width:700px){body{padding:24px 18px 60px}}
+  .wrap{max-width:1320px;margin:0 auto}
+  h2{font-size:26px;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
+  h3{font-size:16px;margin:0 0 4px;font-weight:600}
+  .subtitle{font-size:14px;opacity:.66;margin:0 0 22px;max-width:900px}
+  .label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.5}
+  .banner{margin-bottom:26px;padding:12px 16px;border-radius:10px;
+          background:rgba(124,58,237,.12);border:1px solid rgba(167,139,250,.28);
+          font-size:12.5px}
+  .banner a{color:#A78BFA}
+</style></head><body><div class="wrap">
+<div class="banner">ARAH design prototype · <strong>Serif pairing</strong> · saved from the brainstorming session, 2026-07-28. See <code>docs/design/visual-design-system.md</code>.</div>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Fraunces:opsz,wght@9..144,300;9..144,500&family=Inter:wght@400;500;600&display=swap');
+
+  .fgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:8px; }
+  @media (max-width:1250px){ .fgrid{ grid-template-columns:1fr; } }
+
+  .fp {
+    position:relative; border-radius:16px; overflow:hidden; cursor:none;
+    aspect-ratio:4/3.5; background:#08070F; color:#EFEDFA;
+    border:2px solid transparent; transition:border-color .25s, box-shadow .25s;
+    box-shadow:0 12px 34px rgba(0,0,0,.45);
+  }
+  .fp.is-sel { border-color:#A78BFA; }
+  .fp canvas { position:absolute; inset:0; width:100%; height:100%; z-index:1; }
+  .fp .spot { position:absolute; inset:0; z-index:2; pointer-events:none;
+    background:radial-gradient(100px circle at 50% 50%, rgba(124,58,237,.28), rgba(34,211,238,.07) 44%, transparent 68%); }
+  .ffg { position:relative; z-index:3; height:100%; padding:20px 22px; display:flex; flex-direction:column; pointer-events:none; }
+  .fnav { display:flex; justify-content:space-between; align-items:center; }
+  .flogo { font-size:17px; letter-spacing:.2em; }
+  .fnavl { font-size:8.5px; letter-spacing:.14em; opacity:.45; font-family:Inter,sans-serif; }
+  .fmid { flex:1; display:flex; flex-direction:column; justify-content:center; }
+  .fkick { font-size:8px; letter-spacing:.3em; text-transform:uppercase; color:#A78BFA; margin-bottom:11px; font-family:Inter,sans-serif; }
+  .fh1 { font-size:29px; line-height:1.08; margin:0 0 10px; font-weight:400; }
+  .fsub { font-size:9.5px; line-height:1.55; opacity:.6; max-width:90%; margin-bottom:15px; font-family:Inter,sans-serif; }
+  .fbtn { align-self:flex-start; font-size:8.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+          padding:8px 18px; border-radius:999px; background:linear-gradient(90deg,#7C3AED,#22D3EE); color:#fff; font-family:Inter,sans-serif; }
+
+  .meta { padding:14px 4px 0; }
+  .meta h3 { margin:0 0 3px; font-size:15px; }
+  .meta p { margin:0; font-size:12.5px; opacity:.72; line-height:1.45; }
+  .spec { display:block; margin-top:7px; font-size:11px; font-family:ui-monospace,Menlo,monospace; opacity:.5; }
+
+  .locked { margin-top:6px; margin-bottom:22px; padding:13px 18px; border-radius:12px;
+            background:rgba(34,211,238,.08); border:1px solid rgba(34,211,238,.26);
+            font-family:ui-monospace,Menlo,monospace; font-size:12px; line-height:1.7; }
+</style>
+
+<h2>Which serif for the headlines?</h2>
+
+<div class="locked">
+  LOCKED &nbsp;·&nbsp; speed 0.03 &nbsp; settle 0.97 &nbsp; trail 0.003 &nbsp; spotlight 100px &nbsp; grains 10 &nbsp; bgDrift 0.20 &nbsp;·&nbsp; particle density raised ~55%
+</div>
+
+<p class="subtitle">Your tuned motion is baked into all three panels — slower sand, longer glide, 100px spotlight, denser particle field. The only variable now is the display face. Body text is Inter throughout. <strong>Move your cursor over each panel.</strong></p>
+
+<div class="fgrid">
+
+  <div>
+    <div class="fp" data-choice="instrument" onclick="toggleSelect(this)">
+      <canvas></canvas><div class="spot"></div>
+      <div class="ffg" style="font-family:'Instrument Serif',Georgia,serif">
+        <div class="fnav"><span class="flogo">ARAH</span><span class="fnavl">QUIZ · EXPLORE · LOGIN</span></div>
+        <div class="fmid">
+          <div class="fkick">[ 207 students before you ]</div>
+          <div class="fh1">Find the course<br>that actually fits.</div>
+          <div class="fsub">Answer 8 questions. We match you against real SPM leavers already in university.</div>
+          <span class="fbtn">Start the quiz →</span>
+        </div>
+      </div>
+    </div>
+    <div class="meta">
+      <h3>1 · Instrument Serif</h3>
+      <p>Contemporary editorial — high contrast, slightly condensed, a little imperfect. The closest free match to your Valeran reference and the most current-feeling of the three.</p>
+      <span class="spec">Instrument Serif + Inter</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="fp" data-choice="bodoni" onclick="toggleSelect(this)">
+      <canvas></canvas><div class="spot"></div>
+      <div class="ffg" style="font-family:'Bodoni Moda',Georgia,serif">
+        <div class="fnav"><span class="flogo">ARAH</span><span class="fnavl">QUIZ · EXPLORE · LOGIN</span></div>
+        <div class="fmid">
+          <div class="fkick">[ 207 students before you ]</div>
+          <div class="fh1">Find the course<br>that actually fits.</div>
+          <div class="fsub">Answer 8 questions. We match you against real SPM leavers already in university.</div>
+          <span class="fbtn">Start the quiz →</span>
+        </div>
+      </div>
+    </div>
+    <div class="meta">
+      <h3>2 · Bodoni Moda</h3>
+      <p>Fashion-magazine Didone — the sharpest thick/thin contrast here. Most luxurious, but the hairlines get fragile at small sizes and on low-density phone screens.</p>
+      <span class="spec">Bodoni Moda + Inter</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="fp" data-choice="fraunces" onclick="toggleSelect(this)">
+      <canvas></canvas><div class="spot"></div>
+      <div class="ffg" style="font-family:Fraunces,Georgia,serif">
+        <div class="fnav"><span class="flogo">ARAH</span><span class="fnavl">QUIZ · EXPLORE · LOGIN</span></div>
+        <div class="fmid">
+          <div class="fkick">[ 207 students before you ]</div>
+          <div class="fh1">Find the course<br>that actually fits.</div>
+          <div class="fsub">Answer 8 questions. We match you against real SPM leavers already in university.</div>
+          <span class="fbtn">Start the quiz →</span>
+        </div>
+      </div>
+    </div>
+    <div class="meta">
+      <h3>3 · Fraunces</h3>
+      <p>Softer and warmer with a bit of personality in the terminals. Friendliest of the three for a 17-year-old audience, and the most robust at small sizes.</p>
+      <span class="spec">Fraunces + Inter</span>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px">
+  Pick one and I'll write the spec and the implementation plan. If none feel right, say so and I'll show three more.
+</p>
+
+<script>
+(function () {
+  var CFG = { speed:0.03, drag:0.97, dec:0.003, spot:100, amt:10, bg:0.20 };
+
+  document.querySelectorAll('.fp').forEach(function (panel) {
+    var cv = panel.querySelector('canvas'), ctx = cv.getContext('2d');
+    var spot = panel.querySelector('.spot');
+    var bg = [], grains = [];
+    var mx = -999, my = -999, pmx = -999, pmy = -999, inside = false;
+
+    function size() {
+      var r = cv.getBoundingClientRect();
+      cv.width = Math.max(1, r.width); cv.height = Math.max(1, r.height);
+      var n = Math.round((cv.width * cv.height) / 7000);   // denser field
+      bg = [];
+      for (var i = 0; i < n; i++) bg.push({
+        x: Math.random() * cv.width, y: Math.random() * cv.height,
+        dx: (Math.random() - .5), dy: (Math.random() - .5),
+        r: Math.random() * 1.3 + .6
+      });
+    }
+
+    panel.addEventListener('mousemove', function (e) {
+      var r = panel.getBoundingClientRect();
+      pmx = mx; pmy = my; mx = e.clientX - r.left; my = e.clientY - r.top; inside = true;
+      spot.style.background = 'radial-gradient(' + CFG.spot + 'px circle at ' +
+        (mx / r.width * 100).toFixed(1) + '% ' + (my / r.height * 100).toFixed(1) +
+        '%, rgba(124,58,237,.42), rgba(34,211,238,.11) 44%, transparent 68%)';
+      var dx = mx - pmx, dy = my - pmy, sp = Math.hypot(dx, dy);
+      if (pmx < -900) return;
+      var k = Math.min(CFG.amt, Math.max(1, Math.round(sp / 6)));
+      for (var j = 0; j < k; j++) {
+        var a = Math.atan2(dy, dx) + (Math.random() - .5) * 1.4;
+        var v = Math.min(6, sp * CFG.speed) * (.35 + Math.random() * .9);
+        var t = Math.random();
+        grains.push({
+          x: mx + (Math.random() - .5) * 4, y: my + (Math.random() - .5) * 4,
+          vx: Math.cos(a) * v, vy: Math.sin(a) * v, fr: CFG.drag,
+          life: 1, dec: CFG.dec, r: Math.random() * 1.6 + .7,
+          col: t < .55 ? [196,181,253] : (t < .85 ? [232,220,255] : [34,211,238])
+        });
+      }
+    });
+    panel.addEventListener('mouseleave', function () {
+      inside = false; mx = -999; my = -999; pmx = -999; pmy = -999;
+      spot.style.background = 'radial-gradient(' + CFG.spot + 'px circle at 50% 50%, rgba(124,58,237,.24), rgba(34,211,238,.06) 44%, transparent 68%)';
+    });
+
+    function frame() {
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      var bs = CFG.bg * 2.4;
+      for (var i = 0; i < bg.length; i++) {
+        var p = bg[i];
+        var ddx = p.x - mx, ddy = p.y - my, d = Math.hypot(ddx, ddy);
+        if (inside && d < 80 && d > 0) { p.x += (ddx / d) * 1.0; p.y += (ddy / d) * 1.0; }
+        p.x += p.dx * bs; p.y += p.dy * bs;
+        if (p.x < 0) p.x = cv.width; if (p.x > cv.width) p.x = 0;
+        if (p.y < 0) p.y = cv.height; if (p.y > cv.height) p.y = 0;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
+        ctx.fillStyle = 'rgba(167,139,250,.5)'; ctx.fill();
+        for (var j = i + 1; j < bg.length; j++) {
+          var q = bg[j], l = Math.hypot(p.x - q.x, p.y - q.y);
+          if (l < 62) {
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = 'rgba(124,58,237,' + (.22 * (1 - l / 62)).toFixed(3) + ')';
+            ctx.lineWidth = 1; ctx.stroke();
+          }
+        }
+      }
+      for (var g = grains.length - 1; g >= 0; g--) {
+        var s = grains[g];
+        s.vx *= s.fr; s.vy *= s.fr; s.vy += .008;
+        s.x += s.vx; s.y += s.vy; s.life -= s.dec;
+        if (s.life <= 0) { grains.splice(g, 1); continue; }
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r * s.life, 0, 6.283);
+        ctx.fillStyle = 'rgba(' + s.col[0] + ',' + s.col[1] + ',' + s.col[2] + ',' + s.life.toFixed(2) + ')';
+        ctx.fill();
+      }
+      if (grains.length > 1400) grains.splice(0, grains.length - 1400);
+      requestAnimationFrame(frame);
+    }
+    size(); frame();
+    window.addEventListener('resize', size);
+  });
+})();
+</script>
+
+</div>
+<script>
+  // shim: in the brainstorm frame this recorded a selection; here it only highlights
+  function toggleSelect(el){
+    var box = el.parentElement;
+    var multi = box && box.hasAttribute('data-multiselect');
+    if(!multi){
+      document.querySelectorAll('.is-sel').forEach(function(n){ if(n!==el) n.classList.remove('is-sel'); });
+    }
+    el.classList.toggle('is-sel');
+  }
+</script>
+</body></html>
