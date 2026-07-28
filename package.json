@@ -8,15 +8,20 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "seed:alumni": "node --env-file=.env.development.local scripts/seed-alumni.mjs",
+    "seed:user": "node --env-file=.env.development.local scripts/seed-user.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.9",
     "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "csv-parse": "^7.0.1",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "pg": "^8.22.0",
