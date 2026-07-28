@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ink: #08070F;
+  --color-surface: #12101D;
+  --color-surface-2: #1B1730;
+  --color-violet: #7C3AED;
+  --color-violet-lt: #A78BFA;
+  --color-violet-pl: #C4B5FD;
+  --color-cyan: #22D3EE;
+  --color-text: #EFEDFA;
+
+  --font-display: var(--font-display), Georgia, serif;
+  --font-body: var(--font-body), system-ui, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --muted: rgba(239, 237, 250, 0.62);
+  --hairline: rgba(239, 237, 250, 0.10);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  background: var(--color-ink);
+  color: var(--color-text);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+}
+
+/* Anyone who asks for less motion gets none of the canvas layers. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
