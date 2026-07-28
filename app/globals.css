@@ -36,7 +36,10 @@ h1, h2, h3, .font-display {
   line-height: 1.1;
 }
 
-/* Anyone who asks for less motion gets none of the canvas layers. */
+/* Neutralises CSS-driven animation only. GSAP, Motion and the canvas layers
+   are JS-driven and bypass these properties entirely — they gate themselves
+   on useMotionCapability() (lib/motion/useReducedMotion.js). Both mechanisms
+   are required; neither is sufficient alone. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
