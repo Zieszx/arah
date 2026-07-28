@@ -16,7 +16,7 @@ Python 3.12 on Vercel, scikit-learn, NumPy, pandas, joblib, Vitest, pytest.
 
 ## Global Constraints
 
-- **JSX, never TSX.** No TypeScript files anywhere in `app/`, `components/`, or `lib/`.
+- **JSX, never TSX.** No TypeScript *source* files anywhere — no `.ts`/`.tsx`, no `tsconfig.json`, no `typescript` entry in `package.json`. Transitive tooling dependencies are exempt: `eslint-config-next` bundles `typescript-eslint`, which locks `typescript` as a dev peer in `package-lock.json`. That is unavoidable without dropping Next's ESLint config and does not violate this constraint.
 - **Repo root is `E:\Barang Barang\.PersonalWork\Freelance\Nuha\arah\arah`** — the directory containing `.vercel/` and `.git/`.
 - **Never commit secrets.** `.gitignore` already covers `.vercel`, `.env*`, `.superpowers`. Verify with `git check-ignore` before any commit that touches config.
 - **No PrimeFlex.** Tailwind is the only utility-CSS system.
