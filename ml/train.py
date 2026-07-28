@@ -1,7 +1,8 @@
 """Train the ARAH ensemble and emit every artefact the app needs.
 
 Run:  python ml/train.py
-Emits: ml/feature_spec.json, ml/model.joblib, ml/parity_fixtures.json
+Emits: services/ml/feature_spec.json, services/ml/model.joblib,
+       ml/parity_fixtures.json
 """
 import csv
 import json
@@ -17,12 +18,12 @@ from sklearn.naive_bayes import BernoulliNB
 from sklearn.neighbors import KNeighborsClassifier
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, "api", "ml"))
+sys.path.insert(0, os.path.join(ROOT, "services", "ml"))
 import encode  # noqa: E402
 
 CSV_PATH = os.path.join(ROOT, "ml", "data", "survey.csv")
-OUT_SPEC = os.path.join(ROOT, "ml", "feature_spec.json")
-OUT_MODEL = os.path.join(ROOT, "ml", "model.joblib")
+OUT_SPEC = os.path.join(ROOT, "services", "ml", "feature_spec.json")
+OUT_MODEL = os.path.join(ROOT, "services", "ml", "model.joblib")
 OUT_FIXTURES = os.path.join(ROOT, "ml", "parity_fixtures.json")
 
 # Column index -> substring expected (case-insensitively) in that column's

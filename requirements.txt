@@ -1,7 +1,0 @@
-# Ships with the deployed api/ml/*.py serverless functions. Keep this minimal —
-# it must NOT include pandas or any other training-only dependency.
-# For the local test/train toolchain, see requirements-dev.txt (never installed
-# by Vercel; do not merge the two files).
-scikit-learn==1.9.0
-numpy==2.5.1
-joblib==1.5.3

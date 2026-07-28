@@ -3,7 +3,7 @@ import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 pytestmark = pytest.mark.skipif(
-    not os.path.exists(os.path.join(ROOT, "ml", "model.joblib")),
+    not os.path.exists(os.path.join(ROOT, "services", "ml", "model.joblib")),
     reason="run `python ml/train.py` first",
 )
 
@@ -22,9 +22,9 @@ def _full_answers(spec, **over):
 
 
 def test_probabilities_sum_to_one_and_are_sorted():
-    import predict
-    spec = predict.load()["spec"]
-    out = predict.predict(_full_answers(spec))
+    import index
+    spec = index.load()["spec"]
+    out = index.predict(_full_answers(spec))
     probs = [r["probability"] for r in out["ranked"]]
     assert len(out["ranked"]) == 10
     # _rank() rounds each probability to 6dp, so the sum of N classes can drift by
@@ -35,8 +35,8 @@ def test_probabilities_sum_to_one_and_are_sorted():
 
 
 def test_technical_computing_student_ranks_computer_science_first():
-    import predict
-    spec = predict.load()["spec"]
+    import index
+    spec = index.load()["spec"]
     answers = _full_answers(
         spec,
         stream=[o for o in spec["groups"][0]["options"] if "Technical" in o],
@@ -45,16 +45,16 @@ def test_technical_computing_student_ranks_computer_science_first():
         tasks=[o for o in spec["groups"][3]["options"] if "Analysing" in o],
         traits=[o for o in spec["groups"][4]["options"] if o in ("Analytical", "Observant")],
     )
-    top = predict.predict(answers)["ranked"][0]["field"]
+    top = index.predict(answers)["ranked"][0]["field"]
     assert "Computer Science" in top
 
 
 def test_missing_preu_marginalises():
-    import predict
-    spec = predict.load()["spec"]
+    import index
+    spec = index.load()["spec"]
     answers = _full_answers(spec)
     answers.pop("preu")
-    out = predict.predict(answers)
+    out = index.predict(answers)
     assert out["marginalised"] is True
     # _rank() rounds each probability to 6dp, so the sum of N classes can drift by
     # up to N * 5e-7. With 10 classes that is 5e-6; 1e-5 is the correct bound.
@@ -62,9 +62,9 @@ def test_missing_preu_marginalises():
 
 
 def test_unseen_value_does_not_raise():
-    import predict
-    spec = predict.load()["spec"]
-    out = predict.predict(_full_answers(spec, results="Fail"))
+    import index
+    spec = index.load()["spec"]
+    out = index.predict(_full_answers(spec, results="Fail"))
     assert len(out["ranked"]) == 10
 
 
@@ -72,14 +72,14 @@ def test_unrounded_probabilities_sum_to_exactly_one():
     """The rounding in _rank() is presentational. The underlying distribution
     must be exactly normalised, in both the direct and marginalised paths."""
     import numpy as np
-    import predict
-    spec = predict.load()["spec"]
+    import index
+    spec = index.load()["spec"]
 
     for drop_preu in (False, True):
         answers = _full_answers(spec)
         if drop_preu:
             answers.pop("preu")
-        out = predict.predict(answers)
+        out = index.predict(answers)
         total = sum(r["probability"] for r in out["ranked"])
         assert out["marginalised"] is drop_preu
         assert abs(total - 1.0) < 1e-5

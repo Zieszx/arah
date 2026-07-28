@@ -14,8 +14,8 @@ import encode
 
 _BUNDLE = None
 _MODEL_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    "ml", "model.joblib",
+    os.path.dirname(os.path.abspath(__file__)),
+    "model.joblib",
 )
 
 

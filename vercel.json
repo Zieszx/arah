@@ -1,10 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "api/ml/*.py": {
-      "memory": 1024,
-      "maxDuration": 30,
-      "excludeFiles": "{tests/**,docs/**,ml/data/**,ml/train.py,.superpowers/**,node_modules/**,.next/**,public/**}"
-    }
-  }
+  "services": {
+    "web": { "root": "./", "framework": "nextjs" },
+    "ml": { "root": "services/ml/" }
+  },
+  "rewrites": [
+    { "source": "/api/ml/(.*)", "destination": { "service": "ml" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
 }

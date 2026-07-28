@@ -3,8 +3,8 @@ import os
 import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-MODEL = os.path.join(ROOT, "ml", "model.joblib")
-SPEC = os.path.join(ROOT, "ml", "feature_spec.json")
+MODEL = os.path.join(ROOT, "services", "ml", "model.joblib")
+SPEC = os.path.join(ROOT, "services", "ml", "feature_spec.json")
 FIXTURES = os.path.join(ROOT, "ml", "parity_fixtures.json")
 
 pytestmark = pytest.mark.skipif(
