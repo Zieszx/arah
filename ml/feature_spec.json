@@ -1,0 +1,167 @@
+{
+ "version": "2026-07-28",
+ "groups": [
+  {
+   "key": "stream",
+   "type": "multi",
+   "label": "Which stream did you take during SPM?",
+   "max_select": 2,
+   "options": [
+    "Accountancy & Commerce (Perniagaan, Ekonomi etc)",
+    "Arts",
+    "Islamic Studies",
+    "Science (Biology, Chemistry etc)",
+    "Sports Science",
+    "Technical & Vocational (Sains Komputer, Rekacipta, Lukisan Kejuruteraan etc)"
+   ]
+  },
+  {
+   "key": "enjoyed",
+   "type": "multi",
+   "label": "Which subjects did you enjoy most?",
+   "max_select": 3,
+   "options": [
+    "Accountancy & Commerce Subjects",
+    "Art, Humanities & Social Science Subjects (Art, History, P.Islam/Moral)",
+    "Language Subjects (B. Melayu, B. Inggeris, B. Arab)",
+    "Mathematical Subjects",
+    "Science Subjects (Science, Biology, Physics)",
+    "Technical & Engineering Subjects",
+    "Technology & Computing Subjects"
+   ]
+  },
+  {
+   "key": "difficult",
+   "type": "multi",
+   "label": "Which subjects did you find most difficult?",
+   "max_select": 3,
+   "options": [
+    "Accountancy & Commerce Subjects",
+    "Art, Humanities & Social Science Subjects (Art, History, P.Islam/Moral)",
+    "Language Subjects (B. Melayu, B. Inggeris, B. Arab)",
+    "Mathematical Subjects",
+    "Science Subjects (Science, Biology, Physics)",
+    "Technical & Engineering Subjects",
+    "Technology & Computing Subjects"
+   ]
+  },
+  {
+   "key": "tasks",
+   "type": "multi",
+   "label": "Which type of tasks do you enjoy most?",
+   "max_select": 2,
+   "options": [
+    "Analysing and interpreting data",
+    "Creating or designing things",
+    "Experimenting and researching",
+    "Helping and communicating with people",
+    "Organizing, planning, or managing",
+    "Solving logical or mathematical problems",
+    "Writing or storytelling"
+   ]
+  },
+  {
+   "key": "traits",
+   "type": "multi",
+   "label": "How would you describe your characteristics?",
+   "max_select": 3,
+   "options": [
+    "Adventurous",
+    "Analytical",
+    "Compassionate",
+    "Creative",
+    "Innovative",
+    "Observant",
+    "Outgoing",
+    "Persuasive",
+    "Reserved",
+    "Resiliant",
+    "Strategic"
+   ]
+  },
+  {
+   "key": "personality",
+   "type": "single",
+   "label": "How would you describe your personality?",
+   "options": [
+    "Ambivert",
+    "Extrovert",
+    "Introvert"
+   ]
+  },
+  {
+   "key": "results",
+   "type": "single",
+   "label": "What was your SPM results?",
+   "options": [
+    "1 - 2 As (A-, A, A+)",
+    "3 - 5 As (A-, A, A+)",
+    "6 - 8 As (A-, A, A+)",
+    "9+ As (A-, A, A+)"
+   ]
+  },
+  {
+   "key": "preu",
+   "type": "single",
+   "label": "Which pre-U route are you leaning towards?",
+   "optional": true,
+   "options": [
+    "A-Levels",
+    "Diploma",
+    "Foundation",
+    "Matriculation",
+    "STPM"
+   ]
+  },
+  {
+   "key": "school",
+   "type": "single",
+   "label": "What type of secondary school did you attend?",
+   "options": [
+    "Boarding School (SBP / MRSM etc)",
+    "Private School",
+    "Public School (SMK / SMJKC)",
+    "Religous School (Sekolah Agama)"
+   ]
+  },
+  {
+   "key": "speaking",
+   "type": "num",
+   "label": "How comfortable are you with public speaking?",
+   "min": 1,
+   "max": 5
+  }
+ ],
+ "classes": [
+  "Architecture & Built Environment",
+  "Business & Management (Accounting, Finance, Marketing etc)",
+  "Computer Science, Software & Data (Cybersecurity, Data Analytics etc)",
+  "Creative Art (Fashion Design, Interior Design etc)",
+  "Engineering (Mechanical, Civil, Electrical etc)",
+  "Health & Medical Sciences (Medicine, Pharmacy, Dentristry etc)",
+  "Humanities & Social Sciences (Philosophy, Language etc)",
+  "Law & Legal Studies",
+  "Media & Communication",
+  "Science & Mathematics (Biology, Chemistry, Mathematics etc)"
+ ],
+ "class_counts": {
+  "Business & Management (Accounting, Finance, Marketing etc)": 44,
+  "Computer Science, Software & Data (Cybersecurity, Data Analytics etc)": 35,
+  "Humanities & Social Sciences (Philosophy, Language etc)": 7,
+  "Engineering (Mechanical, Civil, Electrical etc)": 23,
+  "Law & Legal Studies": 16,
+  "Media & Communication": 18,
+  "Science & Mathematics (Biology, Chemistry, Mathematics etc)": 16,
+  "Creative Art (Fashion Design, Interior Design etc)": 9,
+  "Health & Medical Sciences (Medicine, Pharmacy, Dentristry etc)": 19,
+  "Architecture & Built Environment": 20
+ },
+ "preu_priors": {
+  "Diploma": 73,
+  "Foundation": 52,
+  "A-Levels": 42,
+  "Matriculation": 31,
+  "STPM": 9
+ },
+ "n_features": 55
+}
