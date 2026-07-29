@@ -180,8 +180,14 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
       <div
         className={cn(
           'border-b transition-colors duration-300',
+          // 92% + a stronger blur, not 75%. On the dark theme a light scrim
+          // over dark content hid it easily; on paper the header and the
+          // cards beneath are both near-white, so it is the *dark text* that
+          // shows through. At 75% the card copy was legibly ghosting behind
+          // the nav — caught on /explore in production. Anything below ~90%
+          // reads as a rendering fault rather than frosted glass.
           scrolled || open
-            ? 'border-hairline bg-surface/75 backdrop-blur-md'
+            ? 'border-hairline bg-paper/92 backdrop-blur-lg'
             : 'border-transparent bg-transparent'
         )}
       >
