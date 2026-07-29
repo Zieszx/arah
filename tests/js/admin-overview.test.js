@@ -25,6 +25,7 @@ function makeQuery(table) {
   const query = {
     select: () => query,
     eq: () => query,
+    is: () => query,
     then(resolve, reject) {
       const result = responses[table];
       if (!result) {
