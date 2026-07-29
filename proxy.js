@@ -25,9 +25,25 @@ function isProtectedPath(pathname) {
 }
 
 export async function proxy(request) {
-  const { response, user } = await updateSession(request);
-
   const { pathname, search } = request.nextUrl;
+
+  // Forward the resolved pathname as a request header so a Server
+  // Component downstream (app/layout.jsx) can read it via next/headers
+  // `headers()` -- Server Components otherwise have no way to know the
+  // current route (see node_modules/next/dist/docs/01-app/02-guides/authentication.md,
+  // "Layouts and auth checks": layouts don't re-render on client-side
+  // navigation, so this has to be supplied per-request by Proxy, which
+  // DOES run on every navigation). Used to decide whether the public
+  // SiteHeader/SiteFooter render, since app/(admin) supplies its own
+  // chrome (components/admin/AdminShell.jsx) and showing both would
+  // duplicate the nav and the sign-out control. Mutating request.headers
+  // before updateSession() runs means the modified headers propagate
+  // through every NextResponse.next({ request }) it builds internally
+  // (same mechanism updateSession already relies on for refreshed
+  // cookies to reach this render).
+  request.headers.set("x-pathname", pathname);
+
+  const { response, user } = await updateSession(request);
 
   if (isProtectedPath(pathname) && !user) {
     const loginUrl = new URL("/login", request.url);
