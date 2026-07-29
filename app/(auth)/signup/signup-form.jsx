@@ -28,13 +28,15 @@ export default function SignupForm({ next, className }) {
 
   return (
     <form
+      id="signup-form"
+      name="signup"
       action={formAction}
       noValidate
       className={className ?? 'flex w-full max-w-[420px] flex-col gap-6'}
     >
       {next ? <input type="hidden" name="next" value={next} /> : null}
       <TextField
-        id="email"
+        id="signup-email"
         name="email"
         type="email"
         label={f.email}
@@ -44,7 +46,7 @@ export default function SignupForm({ next, className }) {
         error={errors.email}
       />
       <TextField
-        id="password"
+        id="signup-password"
         name="password"
         type="password"
         label={f.password}
@@ -55,7 +57,7 @@ export default function SignupForm({ next, className }) {
         error={errors.password}
       />
       <TextField
-        id="confirm"
+        id="signup-confirm"
         name="confirm"
         type="password"
         label={f.confirmPassword}

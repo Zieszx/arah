@@ -19,13 +19,15 @@ export default function LoginForm({ next, className }) {
 
   return (
     <form
+      id="login-form"
+      name="login"
       action={formAction}
       noValidate
       className={className ?? 'flex w-full max-w-[420px] flex-col gap-6'}
     >
       {next ? <input type="hidden" name="next" value={next} /> : null}
       <TextField
-        id="email"
+        id="login-email"
         name="email"
         type="email"
         label={f.email}
@@ -35,7 +37,7 @@ export default function LoginForm({ next, className }) {
         error={errors.email}
       />
       <TextField
-        id="password"
+        id="login-password"
         name="password"
         type="password"
         label={f.password}
