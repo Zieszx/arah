@@ -205,6 +205,33 @@ h1, h2, h3, .font-display {
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * The one decorative motif on /explore (docs/design/visual-design-system.md
+ * §6, "Image mask | Concave/scalloped corners, borrowed from Valeran"):
+ * four small circular bites cut out of each corner of the field-card
+ * swatch, via `mask-composite: intersect` across four corner radial-
+ * gradients (each gradient is "opaque everywhere except a bite at one
+ * corner"; intersecting all four removes all four bites at once).
+ *
+ * Deliberately NOT the earlier idea of tiling this pattern across a whole
+ * surface -- that reads as exactly the grid/box background explicitly
+ * rejected by the client (design system rule #1). This is scoped to one
+ * small swatch per card, an edge treatment, never a page background.
+ *
+ * Pure decoration (`aria-hidden` at the call site) -- if a browser doesn't
+ * support `mask-composite`, the element still renders as a plain rounded
+ * rectangle. Nothing depends on the mask actually applying.
+ */
+.explore-scallop {
+  --scallop-bite: 14px;
+  mask-image:
+    radial-gradient(circle at top left, transparent 0 var(--scallop-bite), black calc(var(--scallop-bite) + 1px) 100%),
+    radial-gradient(circle at top right, transparent 0 var(--scallop-bite), black calc(var(--scallop-bite) + 1px) 100%),
+    radial-gradient(circle at bottom left, transparent 0 var(--scallop-bite), black calc(var(--scallop-bite) + 1px) 100%),
+    radial-gradient(circle at bottom right, transparent 0 var(--scallop-bite), black calc(var(--scallop-bite) + 1px) 100%);
+  mask-composite: intersect;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
