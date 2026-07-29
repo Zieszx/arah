@@ -2,6 +2,19 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Lenis's own required stylesheet. Not optional.
+ *
+ * Its first rule is `html.lenis, html.lenis body { height: auto }`, which
+ * undoes the `h-full` we set on <html> for the sticky-footer layout. Without
+ * it, <html> stays pinned at 100% of the viewport, Lenis measures the content
+ * as one screen tall, and clamps its virtual scroll to roughly that — the page
+ * scrolls a little, then dead-stops with content still below. Reported from
+ * production on /explore.
+ *
+ * Imported here rather than in SmoothScroll.jsx so the rules exist even on the
+ * first paint, before the client component mounts. */
+@import "lenis/dist/lenis.css";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
