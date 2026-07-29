@@ -219,6 +219,36 @@ identifying; a quote plus a field with n=7 is. Never join them for this panel.
 Below 768px the panel stacks **above** the form showing a single quote, so the human
 proof is seen before the work is asked for.
 
+### Sliding between signup and login
+
+The two forms live in one shared shell. Switching between them **slides horizontally**
+rather than navigating to a new page — signup slides out to the left as login slides in
+from the right, and the reverse going back. The advice panel stays put; only the form
+column moves.
+
+```
+signup active                    login active
+┌──────────┬────────┐            ┌──────────┬────────┐
+│ [signup] │ advice │  ──────▶   │ [login]  │ advice │
+│  login → │        │            │ ← signup │        │
+└──────────┴────────┘            └──────────┴────────┘
+      form column slides; panel is fixed
+```
+
+Requirements:
+- **Both `/signup` and `/login` remain real, addressable routes.** Deep links, the
+  `?next=` param and browser back must all work. The slide is a transition between
+  routes, not a replacement for them — a client-side-only toggle would break
+  `/login?next=/quiz`, which the auth guard depends on.
+- Duration ~380ms with the same `cubic-bezier(0.16, 1, 0.3, 1)` easing as the stagger.
+  Slide only — no fade-through-white, no scale, no bounce.
+- Focus moves to the newly revealed form's first field once the slide settles, and the
+  change is announced politely to screen readers. A sighted user sees the movement; a
+  screen-reader user must be told.
+- Under `prefers-reduced-motion` the swap is **instant** — no horizontal movement at all.
+- Height differences between the two forms are handled by animating the container
+  height, so the page never jumps.
+
 ---
 
 ## 6. Components
