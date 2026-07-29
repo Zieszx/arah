@@ -88,17 +88,24 @@ describe('annotateRanked', () => {
   ];
   const stats = [
     {
+      // Unsuppressed row: field_stats hardening (0009) exposes a BAND
+      // here, never an exact sample_size — see the migration.
       field_of_study: 'Business & Management (Accounting, Finance, Marketing etc)',
-      sample_size: 44,
-      avg_satisfaction: 4.11,
+      sample_size: null,
+      sample_size_band: '20-49',
+      avg_satisfaction: 4.1,
       pct_dissatisfied: 4.5,
       common_preu: 'Diploma',
       suppressed: false,
     },
     {
-      // Suppressed row: aggregates arrive as NULL below the k-threshold.
+      // Suppressed row: aggregates arrive as NULL below the k-threshold,
+      // but the exact count is still safe and still exposed (0009's
+      // header comment: below-threshold rows never had a derived
+      // aggregate to difference against in the first place).
       field_of_study: 'Creative Art (Fashion Design, Interior Design etc)',
       sample_size: 9,
+      sample_size_band: null,
       avg_satisfaction: null,
       pct_dissatisfied: null,
       common_preu: null,
@@ -107,17 +114,21 @@ describe('annotateRanked', () => {
     // Media & Communication deliberately missing entirely.
   ];
 
-  it('annotates each field with alumni_count and its tier', () => {
+  it('annotates each field with alumni_band/alumni_count and its tier', () => {
     const out = annotateRanked(ranked, stats);
     expect(out[0]).toMatchObject({
-      alumni_count: 44,
+      alumni_band: '20-49',
       confidence: 'high',
       suppressed: false,
-      avg_satisfaction: 4.11,
+      avg_satisfaction: 4.1,
       pct_dissatisfied: 4.5,
       common_preu: 'Diploma',
     });
+    // An unsuppressed entry never carries an exact count — see the
+    // migration's temporal-differencing rationale.
+    expect('alumni_count' in out[0]).toBe(false);
     expect(out[1]).toMatchObject({ alumni_count: 9, confidence: 'low', suppressed: true });
+    expect('alumni_band' in out[1]).toBe(false);
     expect(out[2]).toMatchObject({ alumni_count: 0, confidence: 'low', suppressed: true });
   });
 
@@ -139,13 +150,25 @@ describe('annotateRanked', () => {
     expect(out.map((e) => e.probability)).toEqual([0.5, 0.3, 0.2]);
   });
 
-  it('handles a banded/stringly sample_size without coercion accidents', () => {
+  it('reads a real sample_size_band correctly and never coerces alumni_count from it', () => {
     const out = annotateRanked(
       [{ field: 'X', probability: 1 }],
-      [{ field_of_study: 'X', sample_size: '19', suppressed: false }],
+      [{ field_of_study: 'X', sample_size_band: '10-19', suppressed: false }],
     );
-    expect(out[0].alumni_count).toBe(19);
+    expect(out[0].alumni_band).toBe('10-19');
     expect(out[0].confidence).toBe('medium');
+    expect('alumni_count' in out[0]).toBe(false);
+  });
+
+  it('treats an unrecognised band string as low confidence, never a crash', () => {
+    const out = annotateRanked(
+      [{ field: 'X', probability: 1 }],
+      [{ field_of_study: 'X', sample_size_band: 'not-a-real-band', suppressed: false }],
+    );
+    expect(out[0].confidence).toBe('low');
+  });
+
+  it('handles a stringly suppressed sample_size without coercion accidents', () => {
     const empty = annotateRanked(
       [{ field: 'X', probability: 1 }],
       [{ field_of_study: 'X', sample_size: '', suppressed: true }],

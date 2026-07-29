@@ -16,6 +16,7 @@ import ConfidenceBadge from '@/components/arah/ConfidenceBadge.jsx';
 import StaggerReveal from '@/components/motion/StaggerReveal.jsx';
 import AlumniContext from './AlumniContext.jsx';
 import { displayLabel } from '@/lib/i18n/labels';
+import { formatSampleSize } from '@/lib/explore/sampleSize';
 import en from '@/lib/i18n/en';
 
 function finite(v) {
@@ -41,15 +42,28 @@ export default function ResultList({ entries, total }) {
             tone={i === 0 ? 'cyan' : 'violet'}
           />
 
-          {finite(entry.alumni_count) && finite(total) && total > 0 ? (
-            <p className="mt-4 max-w-[52ch] text-[15px] leading-[1.6] text-text">
-              <span className="font-mono">{entry.alumni_count}</span>{' '}
-              {en.results.explainOf} <span className="font-mono">{total}</span>{' '}
-              {en.results.explainTail}
-            </p>
-          ) : null}
+          {(() => {
+            // Exact for a suppressed entry, banded ('10–19') for an
+            // unsuppressed one — never an exact number for an
+            // unsuppressed field (see lib/quiz/submission.js#annotateRanked
+            // and 0009_field_stats_hardening.sql). One shared formatter so
+            // this sentence and /explore's cards can never drift apart on
+            // what "safe to show" means.
+            const display = formatSampleSize(entry.alumni_count, entry.alumni_band);
+            return display !== null && finite(total) && total > 0 ? (
+              <p className="mt-4 max-w-[52ch] text-[15px] leading-[1.6] text-text">
+                <span className="font-mono">{display}</span>{' '}
+                {en.results.explainOf} <span className="font-mono">{total}</span>{' '}
+                {en.results.explainTail}
+              </p>
+            ) : null;
+          })()}
 
-          <ConfidenceBadge sampleSize={entry.alumni_count} className="mt-4" />
+          <ConfidenceBadge
+            tier={entry.confidence}
+            sampleSize={entry.alumni_count}
+            className="mt-4"
+          />
 
           <AlumniContext
             entry={entry}

@@ -31,6 +31,7 @@ import {
 } from '@/lib/supabase/queries';
 import { FIELDS, getFieldRawBySlug } from '@/lib/explore/fields';
 import { pickQuotes } from '@/lib/explore/pickQuotes';
+import { formatSampleSize } from '@/lib/explore/sampleSize';
 import { displayLabel } from '@/lib/i18n/labels';
 import en from '@/lib/i18n/en';
 import Kicker from '@/components/arah/Kicker.jsx';
@@ -87,6 +88,9 @@ export default async function FieldDetailPage({ params }) {
   if (!stats) notFound();
 
   const suppressed = Boolean(stats.suppressed);
+  // Band for an unsuppressed field, exact count for a suppressed one —
+  // never an exact count for an unsuppressed field (0009 hardening).
+  const sampleSizeDisplay = formatSampleSize(stats.sample_size, stats.sample_size_band);
 
   // Quotes are only ever fetched for an unsuppressed field — structurally,
   // not just visually, omitted for the two small fields.
@@ -117,7 +121,7 @@ export default async function FieldDetailPage({ params }) {
         ) : null}
 
         <p className="mt-7 max-w-[52ch] text-base leading-[1.6] text-text md:text-lg">
-          <span className="font-mono">{stats.sample_size}</span>{' '}
+          <span className="font-mono">{sampleSizeDisplay}</span>{' '}
           {en.explore.detail.sampleSizeLabel}
         </p>
       </section>

@@ -16,6 +16,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { fetchFieldStats } from '@/lib/supabase/queries';
 import { getSlugForField } from '@/lib/explore/fields';
+import { sampleSizeSortWeight } from '@/lib/explore/sampleSize';
 import Kicker from '@/components/arah/Kicker.jsx';
 import FlowButton from '@/components/arah/FlowButton.jsx';
 import StaggerReveal from '@/components/motion/StaggerReveal.jsx';
@@ -31,9 +32,17 @@ export default async function ExplorePage() {
   const supabase = await createClient();
   const rows = await fetchFieldStats(supabase);
 
-  const sorted = [...rows].sort(
-    (a, b) => (b.sample_size ?? 0) - (a.sample_size ?? 0)
-  );
+  // Sorted by (banded) sample size descending. Never by the exact
+  // unsuppressed count — that number isn't in the row at all any more
+  // (0009_field_stats_hardening.sql) — so this sorts by band, then
+  // alphabetically within a band or among suppressed fields, rather than
+  // by a precision the view deliberately no longer exposes.
+  const sorted = [...rows].sort((a, b) => {
+    const weight =
+      sampleSizeSortWeight(b.sample_size, b.sample_size_band) -
+      sampleSizeSortWeight(a.sample_size, a.sample_size_band);
+    return weight !== 0 ? weight : a.field_of_study.localeCompare(b.field_of_study);
+  });
 
   return (
     <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-6 py-14 md:px-16 md:py-20">
@@ -58,6 +67,7 @@ export default async function ExplorePage() {
                 raw={row.field_of_study}
                 slug={slug}
                 sampleSize={row.sample_size}
+                sampleSizeBand={row.sample_size_band}
                 avgSatisfaction={row.avg_satisfaction}
                 commonPreu={row.common_preu}
                 suppressed={row.suppressed}

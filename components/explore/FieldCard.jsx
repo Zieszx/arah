@@ -11,6 +11,7 @@
 // ever drift from one place.
 import Link from 'next/link';
 import { displayLabel } from '@/lib/i18n/labels';
+import { formatSampleSize } from '@/lib/explore/sampleSize';
 import en from '@/lib/i18n/en';
 
 function finite(v) {
@@ -34,6 +35,7 @@ export default function FieldCard({
   raw,
   slug,
   sampleSize,
+  sampleSizeBand,
   avgSatisfaction,
   commonPreu,
   suppressed,
@@ -41,6 +43,10 @@ export default function FieldCard({
 }) {
   const { name, detail } = splitLabel(displayLabel(raw));
   const blurb = en.explore.fieldBlurbs[slug];
+  // Band for an unsuppressed field ('10–19' etc), exact count for a
+  // suppressed one — never an exact count for an unsuppressed field, see
+  // lib/explore/sampleSize.js.
+  const sampleSizeDisplay = formatSampleSize(sampleSize, sampleSizeBand);
 
   return (
     <Link
@@ -72,7 +78,7 @@ export default function FieldCard({
             <dt className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
               {en.explore.sampleSizeLabel}
             </dt>
-            <dd className="font-mono text-[15px] text-text">{sampleSize}</dd>
+            <dd className="font-mono text-[15px] text-text">{sampleSizeDisplay}</dd>
           </div>
           {!suppressed && finite(avgSatisfaction) ? (
             <div className="flex flex-col gap-1">

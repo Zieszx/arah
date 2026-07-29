@@ -33,9 +33,21 @@ export function getConfidenceTier(sampleSize) {
  * count is spelled out in a full sentence, visibly, every time. This
  * wording is deliberate and must not be softened: it exists so a
  * student never mistakes a thin sample for a real recommendation.
+ *
+ * `tier` is an optional precomputed override (field_stats hardening,
+ * 0009_field_stats_hardening.sql, made the exact sample size for an
+ * unsuppressed field unavailable to callers — only a band survives —
+ * so a caller with a band already knows the tier and should pass it
+ * directly rather than coercing a band string through
+ * `getConfidenceTier`, which expects a number). When omitted, the tier
+ * is derived from `sampleSize` exactly as before — every existing
+ * caller (the /demo reference page, and this component's own tests)
+ * keeps working unchanged. The low-tier sentence always uses
+ * `sampleSize` directly; that path only ever fires for a suppressed
+ * entry, where the exact count is safe to show (see the migration).
  */
-export default function ConfidenceBadge({ sampleSize, className }) {
-  const tier = getConfidenceTier(sampleSize);
+export default function ConfidenceBadge({ sampleSize, tier: tierProp, className }) {
+  const tier = tierProp ?? getConfidenceTier(sampleSize);
 
   return (
     <div className={cn('inline-flex flex-col items-start gap-1.5', className)}>

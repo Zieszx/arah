@@ -70,10 +70,13 @@ const SUPPRESSED_ENTRY = {
   suppressed: true,
 };
 
+// alumni_band, not alumni_count: field_stats hardening (0009) never
+// exposes an exact sample size for an unsuppressed field — see
+// lib/quiz/submission.js#annotateRanked.
 const FULL_ENTRY = {
   field: 'Health & Medical Sciences (Medicine, Pharmacy, Dentristry etc)',
   probability: 0.003922,
-  alumni_count: 19,
+  alumni_band: '10-19',
   confidence: 'medium',
   suppressed: false,
   avg_satisfaction: 3.37,
@@ -124,7 +127,7 @@ describe('AlumniContext honesty', () => {
         entry: {
           field: 'Media & Communication',
           probability: 0.195,
-          alumni_count: 18,
+          alumni_band: '10-19',
           confidence: 'medium',
           suppressed: false,
           avg_satisfaction: 4.61,
@@ -140,7 +143,7 @@ describe('AlumniContext honesty', () => {
   it('unsuppressed but with no reportable stats: renders nothing at all', async () => {
     const { container, root } = await mount(
       React.createElement(AlumniContext, {
-        entry: { field: 'X', probability: 0.1, alumni_count: 25, suppressed: false },
+        entry: { field: 'X', probability: 0.1, alumni_band: '20-49', suppressed: false },
       })
     );
     expect(container.textContent).toBe('');
@@ -160,12 +163,15 @@ describe('ResultList', () => {
     root.unmount();
   });
 
-  it('renders the explainability sentence from stored counts under each field', async () => {
+  it('renders the explainability sentence from the stored band/count under each field', async () => {
     const { container, root } = await mount(
       React.createElement(ResultList, { entries, total: 207 })
     );
     const text = container.textContent;
-    expect(text).toContain(`19 ${en.results.explainOf} 207 ${en.results.explainTail}`);
+    // Unsuppressed: the band ('10-19', displayed with an en dash), never
+    // an exact number.
+    expect(text).toContain(`10–19 ${en.results.explainOf} 207 ${en.results.explainTail}`);
+    // Suppressed: the exact count is still safe and still shown.
     expect(text).toContain(`9 ${en.results.explainOf} 207 ${en.results.explainTail}`);
     root.unmount();
   });

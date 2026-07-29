@@ -61,7 +61,7 @@ describe('FieldCard', () => {
       React.createElement(FieldCard, {
         raw: 'Health & Medical Sciences (Medicine, Pharmacy, Dentristry etc)',
         slug: 'health-medical-sciences',
-        sampleSize: 19,
+        sampleSizeBand: '10-19',
         avgSatisfaction: 3.37,
         commonPreu: 'Matriculation',
         suppressed: false,
@@ -74,12 +74,28 @@ describe('FieldCard', () => {
     root.unmount();
   });
 
+  it('unsuppressed: shows the banded sample size, never an exact count (0009 hardening)', async () => {
+    const { container, root } = mount(
+      React.createElement(FieldCard, {
+        raw: 'Health & Medical Sciences (Medicine, Pharmacy, Dentristry etc)',
+        slug: 'health-medical-sciences',
+        sampleSizeBand: '10-19',
+        avgSatisfaction: 3.37,
+        commonPreu: 'Matriculation',
+        suppressed: false,
+      })
+    );
+    expect(container.textContent).toContain('10–19');
+    expect(container.textContent).not.toContain('19 students');
+    root.unmount();
+  });
+
   it('links to /explore/<slug>', async () => {
     const { container, root } = mount(
       React.createElement(FieldCard, {
         raw: 'Law & Legal Studies',
         slug: 'law-legal-studies',
-        sampleSize: 16,
+        sampleSizeBand: '10-19',
         avgSatisfaction: 3.56,
         commonPreu: 'Diploma',
         suppressed: false,
