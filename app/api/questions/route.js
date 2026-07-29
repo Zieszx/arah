@@ -1,5 +1,8 @@
-// POST /api/quiz — the join between the student-facing quiz and the
-// trained model.
+// POST /api/questions — the join between the student-facing questions
+// flow (still called "quiz" internally — see lib/i18n/en.js) and the
+// trained model. Renamed from /api/quiz alongside the /questions route;
+// this endpoint has no external callers, only this app's own client
+// components, so every caller was updated in the same change.
 //
 // Sequence: authenticate → validate server-side (the trust boundary; the
 // browser's validateAnswers is a convenience) → persist the raw answers →
@@ -129,7 +132,7 @@ export async function POST(request) {
     // 4. The model.
     const { prediction, detail } = await fetchPrediction(answers);
     if (!prediction) {
-      console.error(`[api/quiz] prediction failed for response ${quizResponse.id}: ${detail}`);
+      console.error(`[api/questions] prediction failed for response ${quizResponse.id}: ${detail}`);
       return Response.json(
         { error: 'prediction_unavailable', message: en.api.predictionUnavailable },
         { status: 502 },
@@ -154,7 +157,7 @@ export async function POST(request) {
     return Response.json({ id: row.id }, { status: 201 });
   } catch (err) {
     // Full detail to the server log; a calm generic message to the client.
-    console.error('[api/quiz]', err);
+    console.error('[api/questions]', err);
     return Response.json(
       { error: 'server_error', message: en.api.serverError },
       { status: 500 },

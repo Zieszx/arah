@@ -122,11 +122,11 @@ export default function DemoPage() {
         </h1>
 
         <p className="mt-6 max-w-[34ch] text-[15px] text-muted-foreground md:max-w-[46ch] md:text-base">
-          Matched against real outcomes from the students who took this quiz
-          before you — not guesswork.
+          Matched against real outcomes from the students who answered these
+          questions before you — not guesswork.
         </p>
 
-        <FlowButton className="mt-10 w-fit">Start the quiz</FlowButton>
+        <FlowButton className="mt-10 w-fit">Answer the questions</FlowButton>
       </section>
 
       {/* ------------------------------------------------------------ */}
@@ -198,17 +198,17 @@ export default function DemoPage() {
 
         <div className="mt-10 flex flex-wrap items-end gap-x-10 gap-y-8 md:mt-14">
           <StateSample label="default">
-            <FlowButton data-demo="default">Start the quiz</FlowButton>
+            <FlowButton data-demo="default">Answer the questions</FlowButton>
           </StateSample>
           <StateSample label="hover">
-            <FlowButton data-demo="hover">Start the quiz</FlowButton>
+            <FlowButton data-demo="hover">Answer the questions</FlowButton>
           </StateSample>
           <StateSample label="focus">
-            <FlowButton data-demo="focus">Start the quiz</FlowButton>
+            <FlowButton data-demo="focus">Answer the questions</FlowButton>
           </StateSample>
           <StateSample label="disabled">
             <FlowButton disabled data-demo="disabled">
-              Start the quiz
+              Answer the questions
             </FlowButton>
           </StateSample>
           <StateSample label="as link">

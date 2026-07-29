@@ -8,7 +8,8 @@
 // movement. The hook flips `enabled` after mount, so — hook-order rule —
 // every hook here runs unconditionally before any conditional rendering.
 //
-// Submission POSTs to /api/quiz (built in Task 4). Until that route
+// Submission POSTs to /api/questions (built in Task 4, renamed from
+// /api/quiz alongside the /questions route rename). Until that route
 // exists the POST 404s; the catch below turns any failure — network, 4xx,
 // 5xx, bad JSON — into a calm inline message, and the answers stay in
 // state and in localStorage, so nothing is ever lost to a failed submit.
@@ -56,7 +57,7 @@ export default function QuizFlow() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const res = await fetch('/api/quiz', {
+      const res = await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ answers: quiz.payload() }),

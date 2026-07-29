@@ -21,7 +21,7 @@
 // service-role admin client (lib/supabase/admin.js), same as the two other
 // sanctioned uses of that client. Authentication is still checked first,
 // against the ordinary RLS-bound request client, exactly like
-// app/api/quiz/route.js and app/api/account/delete/route.js — the admin
+// app/api/questions/route.js and app/api/account/delete/route.js — the admin
 // client bypasses RLS, not the auth check.
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -37,7 +37,7 @@ export async function POST(request) {
     // 1. Authenticate. proxy.js does not guard /contribute (the page is
     // browsable signed out — app/contribute/page.jsx shows a sign-in
     // prompt instead of the form in that case), so this route is its own
-    // gate, exactly like /api/quiz.
+    // gate, exactly like /api/questions.
     const supabase = await createClient();
     const {
       data: { user },

@@ -3,7 +3,7 @@
 // all, everything interactive lives in ContributeForm.jsx.
 //
 // Deliberately NOT in proxy.js's PROTECTED_PREFIXES (proxy.js only guards
-// /quiz, /results, /account, /admin): the page itself is browsable signed
+// /questions, /results, /account, /admin): the page itself is browsable signed
 // out, so a student can read the honest ask before deciding whether to
 // sign in, rather than being redirected away from a page they haven't
 // even seen yet. Submission still requires auth — app/api/contribute/route.js

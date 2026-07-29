@@ -237,7 +237,7 @@ describe('MarginalisedNotice', () => {
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     const [url, init] = fetchSpy.mock.calls[0];
-    expect(url).toBe('/api/quiz');
+    expect(url).toBe('/api/questions');
     expect(JSON.parse(init.body)).toEqual({
       answers: { ...answers, preu: 'STPM' },
     });

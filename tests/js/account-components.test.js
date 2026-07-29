@@ -2,7 +2,7 @@
 //
 // Component-level tests for the /account UI:
 //  - OrphanCard: honest orphan messaging, one-click retry against
-//    /api/quiz with the SAME stored answers, calm failure handling;
+//    /api/questions with the SAME stored answers, calm failure handling;
 //  - DeleteAccountSection: the deliberate two-step confirmation (open
 //    dialog, then type DELETE exactly) that makes the signup page's
 //    delete promise genuine — a single accidental tap must never delete
@@ -81,7 +81,7 @@ describe('OrphanCard', () => {
     root.unmount();
   });
 
-  it('retry resubmits the SAME stored answers to /api/quiz and navigates on success', async () => {
+  it('retry resubmits the SAME stored answers to /api/questions and navigates on success', async () => {
     const fetchSpy = vi.fn(async () => ({
       ok: true,
       json: async () => ({ id: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' }),
@@ -98,7 +98,7 @@ describe('OrphanCard', () => {
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     const [url, init] = fetchSpy.mock.calls[0];
-    expect(url).toBe('/api/quiz');
+    expect(url).toBe('/api/questions');
     expect(JSON.parse(init.body)).toEqual({ answers });
     expect(pushSpy).toHaveBeenCalledWith(
       '/results/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'

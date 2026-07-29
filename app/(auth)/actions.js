@@ -30,7 +30,7 @@ const E = en.auth.errors;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Where a fresh session lands when no ?next= was carried in.
-const DEFAULT_NEXT = '/quiz';
+const DEFAULT_NEXT = '/questions';
 
 // The ?next= value is attacker-controllable (it's a URL parameter), so it
 // must stay a same-origin path: absolute URLs, protocol-relative "//evil.com"

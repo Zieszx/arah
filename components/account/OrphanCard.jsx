@@ -2,11 +2,11 @@
 
 // A quiz_responses row whose prediction never completed — the ML service
 // was down mid-submission (proven live during Task 4 testing; POST
-// /api/quiz deliberately persists the answers BEFORE calling the model,
-// so this is an expected, recoverable state, not data loss). Shown
+// /api/questions deliberately persists the answers BEFORE calling the
+// model, so this is an expected, recoverable state, not data loss). Shown
 // honestly rather than as a broken or empty row, with a one-click retry.
 //
-// Retry resubmits the SAME stored answers to /api/quiz, exactly like
+// Retry resubmits the SAME stored answers to /api/questions, exactly like
 // MarginalisedNotice's re-run (components/results/MarginalisedNotice.jsx):
 // it creates a fresh quiz_responses + predictions pair rather than
 // mutating this row, so this card's own history entry is untouched — if
@@ -30,7 +30,7 @@ export default function OrphanCard({ answers, dateLabel, className }) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch('/api/quiz', {
+      const res = await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ answers }),

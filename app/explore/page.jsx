@@ -85,7 +85,7 @@ export default async function ExplorePage() {
         <p className="mt-4 max-w-[52ch] text-[15px] leading-[1.6] text-muted-foreground md:text-base">
           {en.explore.ctaBody}
         </p>
-        <FlowButton href="/quiz" className="mt-8 w-fit">
+        <FlowButton href="/questions" className="mt-8 w-fit">
           {en.explore.ctaButton}
         </FlowButton>
       </section>

@@ -36,7 +36,7 @@ export default function Hero() {
         {t.body}
       </p>
 
-      <FlowButton href="/quiz" className="mt-10 w-fit">
+      <FlowButton href="/questions" className="mt-10 w-fit">
         {t.cta}
       </FlowButton>
     </section>

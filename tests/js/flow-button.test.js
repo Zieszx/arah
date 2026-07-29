@@ -27,11 +27,11 @@ describe('FlowButton polymorphism', () => {
 
   it('renders a native <a href> when href is passed, with no button element', () => {
     const { container, root } = mount(
-      React.createElement(FlowButton, { href: '/quiz' }, 'Start')
+      React.createElement(FlowButton, { href: '/questions' }, 'Start')
     );
     const el = container.querySelector('a');
     expect(el).not.toBeNull();
-    expect(el.getAttribute('href')).toBe('/quiz');
+    expect(el.getAttribute('href')).toBe('/questions');
     expect(container.querySelector('button')).toBeNull();
     root.unmount();
   });
@@ -53,7 +53,7 @@ describe('FlowButton polymorphism', () => {
   it('disables a link variant via aria-disabled (anchors have no native disabled) and drops href', () => {
     const onClick = vi.fn();
     const { container, root } = mount(
-      React.createElement(FlowButton, { href: '/quiz', disabled: true, onClick }, 'Start')
+      React.createElement(FlowButton, { href: '/questions', disabled: true, onClick }, 'Start')
     );
     const el = container.querySelector('a');
     expect(el.getAttribute('aria-disabled')).toBe('true');

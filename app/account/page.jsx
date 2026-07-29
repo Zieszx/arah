@@ -98,7 +98,7 @@ export default async function AccountPage() {
             <p className="mt-3 max-w-[52ch] text-[15px] leading-[1.6] text-muted-foreground">
               {en.account.empty.body}
             </p>
-            <FlowButton href="/quiz" className="mt-7 w-fit">
+            <FlowButton href="/questions" className="mt-7 w-fit">
               {en.account.empty.cta}
             </FlowButton>
           </div>

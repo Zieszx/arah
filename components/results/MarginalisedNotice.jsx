@@ -4,9 +4,9 @@
 // skipped the pre-U question, so the model averaged across all five routes
 // (weighted by how common each is). This panel says so plainly and offers
 // a one-click re-run: pick a route, we POST the SAME stored answers plus
-// that route to /api/quiz, and navigate to the fresh prediction.
+// that route to /api/questions, and navigate to the fresh prediction.
 //
-// The re-run never mutates this result — /api/quiz creates a new
+// The re-run never mutates this result — /api/questions creates a new
 // quiz_responses + predictions pair, so the original shared link keeps
 // showing exactly what it always showed.
 //
@@ -37,7 +37,7 @@ export default function MarginalisedNotice({ answers, className }) {
     setBusyRoute(route);
     setError(null);
     try {
-      const res = await fetch('/api/quiz', {
+      const res = await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ answers: { ...answers, preu: route } }),

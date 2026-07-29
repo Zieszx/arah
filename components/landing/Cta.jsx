@@ -12,7 +12,7 @@ export default function Cta() {
         <h2 className="font-display max-w-[18ch] text-[30px] leading-[1.15] md:text-[48px]">
           {t.title}
         </h2>
-        <FlowButton href="/quiz" className="mt-8 w-fit">
+        <FlowButton href="/questions" className="mt-8 w-fit">
           {t.button}
         </FlowButton>
         <p className="mt-4 text-[13px] text-muted-foreground">{t.body}</p>

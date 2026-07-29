@@ -16,7 +16,7 @@
 import { NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const PROTECTED_PREFIXES = ["/quiz", "/results", "/account", "/admin"];
+const PROTECTED_PREFIXES = ["/questions", "/results", "/account", "/admin"];
 
 function isProtectedPath(pathname) {
   return PROTECTED_PREFIXES.some(
