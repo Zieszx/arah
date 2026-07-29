@@ -18,8 +18,9 @@ import { adminEntryHref } from './admin-entry';
 import featureSpec from '@/services/ml/feature_spec.json';
 
 const FOOTER_LINKS = [
-  // /explore, /contribute and /privacy ship in Plan 4 — linked now by
-  // decision; a 404 today is expected and fine.
+  // /explore and /contribute shipped in Plan 4 (Tasks 2-4). /privacy has
+  // not shipped yet — linked now by decision; a 404 there today is
+  // expected and fine.
   { href: '/explore', label: en.chrome.footerNav.explore },
   { href: '/contribute', label: en.chrome.footerNav.contribute },
   { href: '/account', label: en.chrome.footerNav.account },

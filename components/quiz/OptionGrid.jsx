@@ -116,11 +116,16 @@ function NumberScale({ group, value, onNumber }) {
         })}
       </div>
       <div className="mt-3 flex items-baseline justify-between gap-4 text-[13px] text-muted-foreground">
+        {/* scaleLowLabel/scaleHighLabel let a second numeric group (e.g.
+            /contribute's satisfaction question, Plan 4 Task 4) supply its
+            own endpoint copy instead of the public-speaking-specific
+            fallback below, which was this component's only numeric group
+            until now. */}
         <span>
-          {group.min} — {en.quiz.speakingLow}
+          {group.min} — {group.scaleLowLabel ?? en.quiz.speakingLow}
         </span>
         <span className="text-right">
-          {group.max} — {en.quiz.speakingHigh}
+          {group.max} — {group.scaleHighLabel ?? en.quiz.speakingHigh}
         </span>
       </div>
     </div>
