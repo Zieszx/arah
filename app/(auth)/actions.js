@@ -169,6 +169,23 @@ export async function signup(prevState, formData) {
   redirect(next);
 }
 
+// Sign out and land on the public home page. Invoked from the site
+// header's <form action={...}> (both the desktop bar and the mobile
+// drawer), so it inherits the same Server Action plumbing as login/signup:
+// the auth cookies are cleared here on the server, and redirect() sits
+// outside any try/catch because it throws NEXT_REDIRECT by design.
+// signOut() failing (already-expired session, network blip) is not a
+// user-facing problem — the redirect happens regardless, and the proxy
+// treats a request without valid cookies as signed out anyway.
+export async function logout() {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error('signOut failed:', error.code);
+  }
+  redirect('/');
+}
+
 // Create the user's profiles row if it doesn't exist yet. Runs as the
 // authenticated user, which is exactly what RLS + the column grants from
 // supabase/migrations/0005_profiles_admin.sql allow: insert of (id) where

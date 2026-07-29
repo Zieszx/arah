@@ -14,7 +14,6 @@
 // state and in localStorage, so nothing is ever lost to a failed submit.
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { AnimatePresence, motion } from 'motion/react';
 import FlowButton from '@/components/arah/FlowButton.jsx';
 import ProgressRing from './ProgressRing.jsx';
@@ -97,14 +96,9 @@ export default function QuizFlow() {
 
   return (
     <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-6 py-8 md:px-16 md:py-12">
-      <header className="flex items-center justify-between gap-6">
-        <Link
-          href="/"
-          className="font-display inline-flex min-h-11 w-fit items-center text-lg uppercase text-text/90 focus-visible:outline-2 focus-visible:outline-offset-2 md:text-xl"
-          style={{ letterSpacing: '0.20em' }}
-        >
-          ARAH
-        </Link>
+      {/* The ARAH logotype moved into the global SiteHeader (Task 7);
+          this row keeps only the quiz's own progress ring. */}
+      <header className="flex items-center justify-end gap-6">
         {quiz.ready ? (
           <ProgressRing step={quiz.step} total={quiz.total} />
         ) : null}

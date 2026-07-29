@@ -20,7 +20,6 @@
 //  - every field name renders through displayLabel (the stored rows keep
 //    the raw survey strings, typos included).
 import { notFound, redirect } from 'next/navigation';
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { fetchPredictionById, fetchQuizAnswers } from '@/lib/supabase/queries';
 import { displayLabel } from '@/lib/i18n/labels';
@@ -112,14 +111,9 @@ export default async function ResultsPage({ params }) {
 
   return (
     <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-6 py-8 md:px-16 md:py-12">
-      <header className="flex items-center justify-between gap-6">
-        <Link
-          href="/"
-          className="font-display inline-flex min-h-11 w-fit items-center text-lg uppercase text-text/90 focus-visible:outline-2 focus-visible:outline-offset-2 md:text-xl"
-          style={{ letterSpacing: '0.20em' }}
-        >
-          ARAH
-        </Link>
+      {/* The ARAH logotype moved into the global SiteHeader (Task 7);
+          this row keeps only the per-result provenance line. */}
+      <header className="flex items-center justify-end gap-6">
         <span className="hidden font-mono text-xs text-muted-foreground sm:inline">
           {provenance}
         </span>
@@ -189,17 +183,15 @@ export default async function ResultsPage({ params }) {
         </FlowButton>
       </section>
 
-      <footer className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-hairline pt-8 md:mt-24">
+      {/* Per-result provenance stays with the result (the STORED model
+          version, which can differ from the current one the global
+          SiteFooter states). The old "back home" link moved into the
+          global chrome. */}
+      <footer className="mt-16 border-t border-hairline pt-8 md:mt-24">
         <span className="font-mono text-xs text-muted-foreground">
           {en.results.matchedAgainst} {total} {en.results.alumni} ·{' '}
           {en.results.model} {row.model_version}
         </span>
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center font-mono text-xs text-violet-lt underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt"
-        >
-          back home
-        </Link>
       </footer>
     </main>
   );

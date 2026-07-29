@@ -9,14 +9,9 @@ export const metadata = {
 export default function Home() {
   return (
     <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-center px-6 py-24 md:px-16">
-      <div
-        className="font-display text-lg uppercase text-text/90 md:text-xl"
-        style={{ letterSpacing: '0.20em' }}
-      >
-        ARAH
-      </div>
-
-      <Kicker className="mt-8">post-SPM pathway finder</Kicker>
+      {/* The ARAH logotype now lives in the global SiteHeader (Task 7) —
+          repeating it here would put two marks on one screen. */}
+      <Kicker>post-SPM pathway finder</Kicker>
 
       <h1 className="font-display mt-6 max-w-[16ch] text-[36px] leading-[1.1] md:text-[56px]">
         The landing page is still being built.

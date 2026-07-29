@@ -2,6 +2,8 @@ import { displayFont, bodyFont } from "@/lib/fonts";
 import ParticleField from "@/components/motion/ParticleField.jsx";
 import CursorSpotlight from "@/components/motion/CursorSpotlight.jsx";
 import SmoothScroll from "@/components/motion/SmoothScroll.jsx";
+import SiteHeader from "@/components/layout/SiteHeader.jsx";
+import SiteFooter from "@/components/layout/SiteFooter.jsx";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -24,8 +26,13 @@ export default function RootLayout({ children }) {
         <CursorSpotlight />
         {/* Content gets its own stacking context above both layers. */}
         <SmoothScroll>
+          {/* Global chrome (Task 7): header and footer wrap every page.
+              Both read the session server-side through the shared, cached
+              getViewer() — one auth check per request between them. */}
           <div className="relative z-[2] flex min-h-full flex-1 flex-col">
+            <SiteHeader />
             {children}
+            <SiteFooter />
           </div>
         </SmoothScroll>
       </body>
