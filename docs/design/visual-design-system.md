@@ -219,35 +219,68 @@ identifying; a quote plus a field with n=7 is. Never join them for this panel.
 Below 768px the panel stacks **above** the form showing a single quote, so the human
 proof is seen before the work is asked for.
 
-### Sliding between signup and login
+### Sliding overlay panel — signup left, login right
 
-The two forms live in one shared shell. Switching between them **slides horizontally**
-rather than navigating to a new page — signup slides out to the left as login slides in
-from the right, and the reverse going back. The advice panel stays put; only the form
-column moves.
+Both forms sit side by side in one shell: **signup occupies the left half, login the
+right half**, always mounted. A panel slides horizontally *over the top*, covering one
+and revealing the other. **The panel is what moves; the forms do not.**
 
 ```
-signup active                    login active
-┌──────────┬────────┐            ┌──────────┬────────┐
-│ [signup] │ advice │  ──────▶   │ [login]  │ advice │
-│  login → │        │            │ ← signup │        │
-└──────────┴────────┘            └──────────┴────────┘
-      form column slides; panel is fixed
+SIGNUP active  — panel sits right, covering login
+┌──────────────┬──────────────┐
+│  [ SIGN UP ] │▓▓▓▓ PANEL ▓▓▓│
+│   email      │▓ [ FROM A    │
+│   password   │▓   REAL      │
+│   confirm    │▓   STUDENT ] │
+│  (Create →)  │▓ “Choose what│
+│              │▓  YOU want.” │
+│              │▓ (Sign in)   │
+└──────────────┴──────────────┘
+              ◀── panel slides left ──▶
+LOGIN active  — panel sits left, covering signup
+┌──────────────┬──────────────┐
+│▓▓▓▓ PANEL ▓▓▓│  [ LOG IN ]  │
+│▓ [ FROM A    │   email      │
+│▓   REAL      │   password   │
+│▓   STUDENT ] │              │
+│▓ “Take your  │  (Sign in →) │
+│▓  time.”     │              │
+│▓ (Sign up)   │              │
+└──────────────┴──────────────┘
 ```
 
-Requirements:
-- **Both `/signup` and `/login` remain real, addressable routes.** Deep links, the
-  `?next=` param and browser back must all work. The slide is a transition between
-  routes, not a replacement for them — a client-side-only toggle would break
-  `/login?next=/quiz`, which the auth guard depends on.
-- Duration ~380ms with the same `cubic-bezier(0.16, 1, 0.3, 1)` easing as the stagger.
-  Slide only — no fade-through-white, no scale, no bounce.
-- Focus moves to the newly revealed form's first field once the slide settles, and the
-  change is announced politely to screen readers. A sighted user sees the movement; a
-  screen-reader user must be told.
-- Under `prefers-reduced-motion` the swap is **instant** — no horizontal movement at all.
-- Height differences between the two forms are handled by animating the container
-  height, so the page never jumps.
+The panel is the violet→cyan gradient, carrying a real advice quote, its
+`[ FROM A REAL STUDENT ]` kicker, and the ghost button that switches sides.
+
+Duration ~380ms, easing `cubic-bezier(0.16, 1, 0.3, 1)`. Slide only — no fade-to-white,
+no scale, no bounce.
+
+**Accessibility — this pattern's traps, all mandatory:**
+
+1. **The covered form must be genuinely inert.** Both forms are in the DOM at all times,
+   so a keyboard user would otherwise tab straight into an invisible form and type into
+   fields they cannot see. Apply the `inert` attribute to the hidden side and remove it
+   from the revealed side. `opacity: 0` or `visibility: hidden` alone is not sufficient
+   — verify by tabbing through the whole page and confirming focus never lands on a
+   covered field.
+2. **Two password fields in one DOM confuses browser autofill and password managers.**
+   Give each form a distinct `name`/`id` and `autocomplete` value — signup uses
+   `new-password`, login uses `current-password` — and wrap them as separate `<form>`
+   elements, never one form with both.
+3. **Move focus to the revealed form's first field** once the slide settles, and announce
+   the change in a polite live region. A sighted user sees the panel move; a screen-reader
+   user is told nothing unless we say it.
+4. Under `prefers-reduced-motion` the swap is **instant** — the panel jumps, no horizontal
+   travel at all.
+
+**Routing:** `/signup` and `/login` both remain real, addressable routes. Deep links, the
+`?next=` param and browser back must all work — the auth guard redirects to
+`/login?next=/quiz` and that must land with login revealed. Treat the slide as a
+transition between two routes sharing a layout, not as a client-side-only toggle.
+
+**Below 768px** there is no room for a side-by-side split: the panel becomes a compact
+band above the form showing one quote, and switching is an ordinary route change with a
+short cross-fade rather than a horizontal slide.
 
 ---
 
