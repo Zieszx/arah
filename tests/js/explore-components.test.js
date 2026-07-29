@@ -109,18 +109,26 @@ describe('FieldCard', () => {
 });
 
 describe('CommonRoutes', () => {
-  it('renders entries sorted by count, descending, with real counts', async () => {
+  // Fixture shaped like a real field_detail_stats row post-0010 hardening:
+  // rounded percentages (nearest 5, 5 floor for any present category),
+  // never exact headcounts — see 0010_field_detail_stats_hardening.sql.
+  it('renders entries sorted by share, descending, as rounded percentages — never a bare count', async () => {
     const { container, root } = mount(
       React.createElement(CommonRoutes, {
         kicker: 'pre-university routes',
-        distribution: { Diploma: 13, 'A-Levels': 11, Foundation: 19, Matriculation: 1 },
+        distribution: { Diploma: 30, 'A-Levels': 25, Foundation: 40, Matriculation: 5 },
       })
     );
     const labels = [...container.querySelectorAll('li > div > span:first-child')].map(
       (n) => n.textContent
     );
     expect(labels).toEqual(['Foundation', 'Diploma', 'A-Levels', 'Matriculation']);
-    expect(container.textContent).toContain('19');
+    // Every displayed figure carries a % sign — never a lone integer that
+    // could be mistaken for a headcount.
+    const values = [...container.querySelectorAll('li > div > span:last-child')].map(
+      (n) => n.textContent
+    );
+    expect(values).toEqual(['~40%', '~30%', '~25%', '~5%']);
     root.unmount();
   });
 

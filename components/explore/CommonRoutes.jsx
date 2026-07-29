@@ -5,22 +5,31 @@
 // differ in copy and the source object.
 //
 // Pure presentational component: no hooks, no client state, server-safe —
-// same shape as components/results/AlumniContext.jsx. Every count rendered
-// here comes straight from field_detail_stats (0008 migration), which is
-// null for suppressed fields; the caller only ever passes a real
-// distribution object for unsuppressed fields, so this component never has
-// to make its own suppression decision.
+// same shape as components/results/AlumniContext.jsx. Every value rendered
+// here comes straight from field_detail_stats (0008, hardened by
+// 0010_field_detail_stats_hardening.sql), which is null for suppressed
+// fields; the caller only ever passes a real distribution object for
+// unsuppressed fields, so this component never has to make its own
+// suppression decision.
+//
+// Values are rounded PERCENTAGES since 0010, not exact headcounts — the
+// exact-count shape this component originally rendered was the leak that
+// migration closed (an exact per-category count made an approved
+// contribution's category directly readable by diffing two reads). The
+// displayed "%" suffix is load-bearing, not decorative: showing a bare
+// number here again would silently imply precision the data no longer
+// has.
 import { displayLabel } from '@/lib/i18n/labels';
 
 export default function CommonRoutes({ kicker, intro, distribution, className }) {
   const entries = Object.entries(distribution ?? {})
-    .map(([label, count]) => ({ label, count: Number(count) || 0 }))
-    .filter((e) => e.count > 0)
-    .sort((a, b) => b.count - a.count);
+    .map(([label, pct]) => ({ label, pct: Number(pct) || 0 }))
+    .filter((e) => e.pct > 0)
+    .sort((a, b) => b.pct - a.pct);
 
   if (entries.length === 0) return null;
 
-  const max = Math.max(...entries.map((e) => e.count));
+  const max = Math.max(...entries.map((e) => e.pct));
 
   return (
     <section className={className}>
@@ -46,14 +55,14 @@ export default function CommonRoutes({ kicker, intro, distribution, className })
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-[14px] text-text">{displayLabel(entry.label)}</span>
               <span className="shrink-0 font-mono text-[13px] text-muted-foreground">
-                {entry.count}
+                ~{entry.pct}%
               </span>
             </div>
             <span className="mt-1.5 block h-2 w-full overflow-hidden rounded-full bg-ink">
               <span
                 className="block h-full rounded-full"
                 style={{
-                  width: `${Math.max((entry.count / max) * 100, 4)}%`,
+                  width: `${Math.max((entry.pct / max) * 100, 4)}%`,
                   backgroundImage:
                     'linear-gradient(90deg, var(--color-violet), var(--color-violet-lt))',
                 }}
