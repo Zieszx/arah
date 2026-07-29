@@ -1,0 +1,172 @@
+/*
+ * All visible styling for the survey DataTable — see SurveyTable.jsx's
+ * header comment. PrimeReact's own theme CSS is never imported; this
+ * module supplies every rule the DataTable needs, targeting the class
+ * names PrimeReact's classic DataTable/Column render (p-datatable-*,
+ * p-sortable-column, etc.) as plain global selectors.
+ *
+ * This is still route-scoped: as a CSS Module, Next.js hashes every class
+ * name declared here and only ever loads this stylesheet as part of the
+ * chunk for the component that imports it (SurveyTable.jsx, used only by
+ * app/(admin)/admin/survey-data/page.jsx) — see that file's header
+ * comment and node_modules/next/dist/docs/01-app/02-guides/
+ * package-bundling.md. The .tableRoot class below is what's actually
+ * hashed and applied to the DataTable's wrapper; every p-* selector is
+ * nested under it so even a same-named class elsewhere in a future page
+ * could never pick these rules up by accident.
+ *
+ * Numerals rule: Instrument Serif's old-style "1" reads as a lowercase
+ * "l" — every numeral-bearing cell (satisfaction) uses font-mono via a
+ * Tailwind class in the JSX, not here.
+ */
+
+.tableRoot {
+  background: var(--color-surface);
+  font-size: 16px;
+}
+
+.tableRoot :global(table) {
+  width: 100%;
+  min-width: 920px;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* Fixed column proportions so the advice column (the widest, longest
+   free-text content) actually wraps and clamps instead of forcing the
+   table ever wider — table-layout:fixed makes every cell respect these
+   rather than auto-sizing to its longest line of content. */
+.tableRoot :global(.p-datatable-thead) > tr > th:nth-child(1),
+.tableRoot :global(.p-datatable-tbody) > tr > td:nth-child(1) {
+  width: 16%;
+}
+.tableRoot :global(.p-datatable-thead) > tr > th:nth-child(2),
+.tableRoot :global(.p-datatable-tbody) > tr > td:nth-child(2) {
+  width: 14%;
+}
+.tableRoot :global(.p-datatable-thead) > tr > th:nth-child(3),
+.tableRoot :global(.p-datatable-tbody) > tr > td:nth-child(3) {
+  width: 13%;
+}
+.tableRoot :global(.p-datatable-thead) > tr > th:nth-child(4),
+.tableRoot :global(.p-datatable-tbody) > tr > td:nth-child(4) {
+  width: 11%;
+}
+.tableRoot :global(.p-datatable-thead) > tr > th:nth-child(5),
+.tableRoot :global(.p-datatable-tbody) > tr > td:nth-child(5) {
+  width: 17%;
+}
+.tableRoot :global(.p-datatable-thead) > tr > th:nth-child(6),
+.tableRoot :global(.p-datatable-tbody) > tr > td:nth-child(6) {
+  width: 29%;
+}
+
+.tableRoot :global(.p-datatable-thead) > tr > th {
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-hairline, rgba(18, 16, 29, 0.12));
+  padding: 0;
+  text-align: left;
+  vertical-align: middle;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.tableRoot :global(.p-datatable-tbody) > tr {
+  border-bottom: 1px solid var(--color-hairline, rgba(18, 16, 29, 0.12));
+  transition: background-color 200ms ease;
+}
+
+.tableRoot :global(.p-datatable-tbody) > tr:last-child {
+  border-bottom: none;
+}
+
+.tableRoot :global(.p-datatable-tbody) > tr:nth-child(even) {
+  background: var(--color-surface-2);
+}
+
+.tableRoot :global(.p-datatable-tbody) > tr:hover {
+  background: var(--color-violet-soft, #ede9fe);
+}
+
+.tableRoot :global(.p-datatable-tbody) > tr > td {
+  padding: 14px 16px;
+  color: var(--color-ink);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.headerLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-violet-ink);
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.sortButton {
+  display: inline-flex;
+  min-height: 44px;
+  width: 100%;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.sortButton:hover {
+  background: var(--color-violet-soft, #ede9fe);
+}
+
+.sortButton:active {
+  color: var(--color-violet-pl, #4c1d95);
+}
+
+.sortButton:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: -2px;
+}
+
+.sortIcon {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  opacity: 0.35;
+}
+
+.sortIcon[data-active] {
+  opacity: 1;
+  fill: var(--color-violet-ink);
+}
+
+.sortIcon[data-order='-1'] path:first-child {
+  opacity: 0.35;
+}
+.sortIcon[data-order='-1'] path:last-child {
+  opacity: 1;
+}
+.sortIcon[data-order='1'] path:first-child {
+  opacity: 1;
+}
+.sortIcon[data-order='1'] path:last-child {
+  opacity: 0.35;
+}
+
+.adviceCol {
+  min-width: 320px;
+  max-width: 420px;
+}
+
+.advice {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
