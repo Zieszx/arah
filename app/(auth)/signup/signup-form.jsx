@@ -1,14 +1,16 @@
 'use client';
 
-// Signup form. Same useActionState pattern as login. Two extra concerns:
+// Signup form. Same useActionState pattern as login, plus two concerns:
 //
 // 1. The data notice (components/arah/DataNotice.jsx) renders INSIDE the
 //    form, after the fields and before the submit button — a product
 //    requirement: the reader must pass it on the way to the button, not
 //    find it behind a link.
-// 2. If the Supabase project requires email confirmation, the action
-//    returns { confirmEmail: true } instead of redirecting; the form is
-//    then replaced by a check-your-inbox panel.
+// 2. There is no email-confirmation interstitial: the action auto-confirms
+//    the account server-side and redirects straight into the quiz. The
+//    only non-redirect success path is `formNotice` — the account was
+//    created but the server couldn't finish signing them in, so we say
+//    exactly that and point at the login page.
 import { useActionState } from 'react';
 import { signup } from '../actions';
 import { TextField, SubmitButton, SwitchLink } from '../form-controls';
@@ -21,22 +23,8 @@ export default function SignupForm({ next, className }) {
   const [state, formAction] = useActionState(signup, initialState);
   const t = en.auth.signup;
   const f = en.auth.fields;
-  const c = en.auth.confirmEmail;
   const errors = state?.fieldErrors ?? {};
-
-  if (state?.confirmEmail) {
-    const loginHref = next
-      ? `/login?next=${encodeURIComponent(next)}`
-      : '/login';
-    return (
-      <div role="status" className="flex max-w-[420px] flex-col gap-4">
-        <p className="text-[15px] leading-[1.6] text-text/90">{c.body}</p>
-        <p className="text-[13px] text-muted-foreground">
-          <SwitchLink href={loginHref}>{c.cta}</SwitchLink>
-        </p>
-      </div>
-    );
-  }
+  const loginHref = next ? `/login?next=${encodeURIComponent(next)}` : '/login';
 
   return (
     <form
@@ -79,6 +67,12 @@ export default function SignupForm({ next, className }) {
       {errors.form ? (
         <p role="alert" className="text-[13px] leading-[1.5] text-danger">
           {errors.form}
+        </p>
+      ) : null}
+      {state?.formNotice ? (
+        <p role="status" className="text-[13px] leading-[1.6] text-text/90">
+          {state.formNotice}{' '}
+          <SwitchLink href={loginHref}>{t.switchCta}</SwitchLink>
         </p>
       ) : null}
       <SubmitButton pendingLabel={t.pending}>{t.submit}</SubmitButton>

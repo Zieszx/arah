@@ -20,6 +20,7 @@
 // redirect response leaves the server.
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import en from '@/lib/i18n/en';
 
 const E = en.auth.errors;
@@ -93,9 +94,9 @@ export async function login(prevState, formData) {
   }
 
   // Safety net for accounts whose profiles row doesn't exist yet — e.g. a
-  // signup that went through the email-confirmation path (no session at
-  // signup time, so the row couldn't be inserted then). No-op when the row
-  // already exists.
+  // signup that hit the created-but-couldn't-sign-in fallback (no session
+  // at signup time, so the row couldn't be inserted then). No-op when the
+  // row already exists.
   await ensureProfile(supabase, data.user.id);
 
   redirect(next);
@@ -118,30 +119,52 @@ export async function signup(prevState, formData) {
     return { fieldErrors, values: { email } };
   }
 
+  // Product decision (2026-07-29): ARAH does not do email confirmation.
+  // The address is only an identifier — nothing is ever sent to it — and
+  // making a student wait on a mail that may never arrive is pure funnel
+  // loss. The account is therefore created ALREADY CONFIRMED through the
+  // service-role admin client (lib/supabase/admin.js — server-only, the
+  // key never reaches the browser). This deliberately does not go through
+  // anon signUp(): with the project's "confirm email" toggle on, signUp
+  // queues a confirmation email before anything can be auto-confirmed,
+  // which both sends a mail we don't want and trips Supabase's built-in
+  // SMTP rate limit (~2/hour) — observed live during verification. The
+  // admin path sends nothing, and behaves identically if the project
+  // toggle is later switched off.
+  let userId;
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    });
+    if (error) {
+      return { fieldErrors: mapAuthError(error), values: { email } };
+    }
+    userId = data.user.id;
+  } catch (err) {
+    // Admin client misconfigured or unreachable. Log server-side only.
+    console.error('signup admin createUser failed:', err?.code ?? err?.message);
+    return { fieldErrors: { form: E.generic }, values: { email } };
+  }
+
+  // Now establish the browser session with the normal RLS-bound server
+  // client, which writes the auth cookies from this Server Action.
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({ email, password });
-  if (error) {
-    return { fieldErrors: mapAuthError(error), values: { email } };
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (signInError) {
+    // The account exists but the sign-in step failed. Never surface the
+    // raw error — log it and tell the student plainly that their account
+    // is ready and they should sign in.
+    console.error('post-signup sign-in failed:', signInError.code);
+    return { formNotice: en.auth.signup.createdSignInFallback, values: { email } };
   }
 
-  // When "confirm email" is enabled, Supabase obfuscates an existing account
-  // by returning a fake user with no identities instead of an error, so a
-  // signup form can't be used to probe which emails have accounts. We still
-  // surface it honestly to the legitimate owner mistyping their own state —
-  // the recommended check is identities.length === 0.
-  if (data?.user && (data.user.identities?.length ?? 0) === 0) {
-    return { fieldErrors: { email: E.emailTaken }, values: { email } };
-  }
-
-  // No session means email confirmation is required before sign-in. The
-  // profiles row can't be created yet (RLS only lets an *authenticated*
-  // user insert their own row), so it is created on first login instead —
-  // see ensureProfile() below.
-  if (!data?.session) {
-    return { confirmEmail: true, values: { email } };
-  }
-
-  await ensureProfile(supabase, data.user.id);
+  await ensureProfile(supabase, userId);
 
   redirect(next);
 }
