@@ -14,6 +14,9 @@
   --color-cyan: #22D3EE;
   --color-text: #EFEDFA;
   --color-amber: #FFB627;
+  /* Danger — the documented form-error red (visual-design-system.md §3).
+     ~7:1 on --color-ink, so it is safe for small helper text. */
+  --color-danger: #FF6B6B;
 
   --font-display: var(--font-display), Georgia, serif;
   --font-body: var(--font-body), system-ui, sans-serif;
