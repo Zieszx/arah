@@ -20,6 +20,7 @@
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NOT_SURE } from '@/lib/quiz/useQuizState';
+import { displayLabel } from '@/lib/i18n/labels';
 import en from '@/lib/i18n/en';
 
 const CARD_BASE = cn(
@@ -73,7 +74,10 @@ function ChoiceCard({ group, option, multi, checked, unavailable, onPick }) {
         className="sr-only"
       />
       <Indicator multi={multi} checked={checked} />
-      <span>{option === NOT_SURE ? en.quiz.notSure : option}</span>
+      {/* Visible text goes through displayLabel (survey typos corrected);
+          the input's `value` above stays the raw spec string — the model
+          side must only ever see raw values. */}
+      <span>{option === NOT_SURE ? en.quiz.notSure : displayLabel(option)}</span>
     </label>
   );
 }

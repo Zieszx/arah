@@ -102,6 +102,20 @@ describe('rendered options match feature_spec.json exactly', () => {
     expect(anyChecked).toBe(false); // nothing pre-selected, ever
   });
 
+  it('survey typos render their corrected label, but the submitted value stays the raw spec string', () => {
+    const traits = orderedGroups().find((g) => g.key === 'traits');
+    const container = renderGroup(traits, undefined);
+    // The input the model side will see keeps the raw (typo) value...
+    const rawInput = container.querySelector('input[value="Resiliant"]');
+    expect(rawInput).not.toBeNull();
+    // ...while the human-visible card text is corrected.
+    const labelText = rawInput.closest('label').textContent;
+    expect(labelText).toContain('Resilient');
+    expect(labelText).not.toContain('Resiliant');
+    // And no input anywhere carries the display spelling as its value.
+    expect(container.querySelector('input[value="Resilient"]')).toBeNull();
+  });
+
   it('at the max_select limit, unchecked options stay enabled (clicks must never vanish silently)', () => {
     const group = orderedGroups().find((g) => g.type === 'multi' && g.max_select);
     const container = mount(
