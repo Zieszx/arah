@@ -1,29 +1,50 @@
-import FlowButton from '@/components/arah/FlowButton.jsx';
-import Kicker from '@/components/arah/Kicker.jsx';
+// The public landing page (Plan 4, Task 1) — the first thing a Malaysian
+// post-SPM student sees, and the page the client screenshots for their own
+// pitch. Replaces the holding page.
+//
+// The narrative, in order: Hero -> Finding -> How it works -> Proof -> CTA
+// (docs/superpowers/plans/2026-07-29-arah-landing-explore-contribute.md,
+// Task 1). A Server Component throughout — every section is static markup
+// except the one Recharts chart inside Finding, which is dynamically
+// imported client-side only (see components/landing/FindingChartLoader.jsx)
+// so it never touches this page's own bundle.
+//
+// Hero is the first thing painted and needs no "entry" to reveal against
+// (see components/landing/Hero.jsx for why it is intentionally left out of
+// Reveal). The four sections after it each get GSAP ScrollTrigger's rise
+// via Reveal.jsx, gated on useMotionCapability() — every section renders
+// fully visible, unstyled by Reveal, on first paint; the animation is
+// something that happens ON TOP of an already-complete page for capable
+// users, never a precondition for the content existing.
+import Hero from '@/components/landing/Hero.jsx';
+import Finding from '@/components/landing/Finding.jsx';
+import HowItWorks from '@/components/landing/HowItWorks.jsx';
+import Proof from '@/components/landing/Proof.jsx';
+import Cta from '@/components/landing/Cta.jsx';
+import Reveal from '@/components/landing/Reveal.jsx';
+import en from '@/lib/i18n/en';
 
 export const metadata = {
-  title: 'ARAH — Post-SPM Pathway Finder',
-  description: 'Find the course that actually fits, matched from real student outcomes.',
+  title: en.landing.metaTitle,
+  description: en.landing.metaDescription,
 };
 
 export default function Home() {
   return (
-    <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-center px-6 py-24 md:px-16">
-      {/* The ARAH logotype now lives in the global SiteHeader (Task 7) —
-          repeating it here would put two marks on one screen. */}
-      <Kicker>post-SPM pathway finder</Kicker>
-
-      <h1 className="font-display mt-6 max-w-[16ch] text-[36px] leading-[1.1] md:text-[56px]">
-        The landing page is still being built.
-      </h1>
-
-      <p className="mt-6 max-w-[34ch] text-[15px] text-muted-foreground md:max-w-[46ch] md:text-base">
-        In the meantime, see the design system running on the demo route.
-      </p>
-
-      <FlowButton href="/demo" className="mt-10 w-fit">
-        View the demo
-      </FlowButton>
+    <main className="flex flex-1 flex-col">
+      <Hero />
+      <Reveal>
+        <Finding />
+      </Reveal>
+      <Reveal>
+        <HowItWorks />
+      </Reveal>
+      <Reveal>
+        <Proof />
+      </Reveal>
+      <Reveal>
+        <Cta />
+      </Reveal>
     </main>
   );
 }
