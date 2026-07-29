@@ -169,6 +169,58 @@ z3  page content
 
 ---
 
+## 5b. Staggered reveal — added 2026-07-29
+
+Cards and list items appear one at a time as they enter the viewport. Client-chosen
+values, do not adjust for taste:
+
+```js
+// components/motion/StaggerReveal.jsx
+const STAGGER = {
+  delayStep: 60,      // ms between successive children
+  duration: 420,      // ms
+  translateY: 16,     // px, rises into place
+  easing: 'cubic-bezier(0.16, 1, 0.3, 1)',   // ease-out, no overshoot
+  once: true,         // fires on first enter only, never replays on scroll-back
+};
+```
+
+Rationale: 16px and 420ms match the weighted, settling feel of the tuned sand physics.
+**Nothing bounces** — no spring, no overshoot, no scale. A bigger movement was
+considered and rejected because it competes with the particle field already moving
+behind it.
+
+Rules:
+- Wrap a list; children animate in DOM order.
+- Fires **once** on enter. Replaying on every scroll-back is nauseating on long pages.
+- Under `prefers-reduced-motion`, children render at final position immediately — never
+  `opacity: 0` with no fallback, which leaves reduced-motion users staring at a blank page.
+- Never stagger more than ~8 items; beyond that the last item feels broken. Long lists
+  animate the first 8 and render the rest instantly.
+
+## 5c. Auth layout — added 2026-07-29
+
+Signup and login use a **two-column split** (after the 21st.dev `sign-in` pattern):
+
+| Side | Content |
+|---|---|
+| **Left** | ARAH logotype, `Kicker`, Instrument Serif headline, the form, `FlowButton` |
+| **Right** | A rotating **real advice quote** from the survey, with `[ FROM A REAL STUDENT ]` as its kicker, over the particle field |
+
+The right panel uses genuine free-text advice from the 207 respondents — not a stock
+photo, not invented testimonials. It demonstrates the product's value on the screen where
+a student is deciding whether to bother.
+
+**Privacy constraint, non-negotiable.** `alumni_profiles` is not client-readable. Expose
+quotes through a dedicated `SECURITY DEFINER` view returning **only the advice text** —
+no field of study, no demographics, no satisfaction score, no id. A quote alone is not
+identifying; a quote plus a field with n=7 is. Never join them for this panel.
+
+Below 768px the panel stacks **above** the form showing a single quote, so the human
+proof is seen before the work is asked for.
+
+---
+
 ## 6. Components
 
 | Component | Pattern |
