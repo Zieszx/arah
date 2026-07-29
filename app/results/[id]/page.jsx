@@ -22,6 +22,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { fetchPredictionById, fetchQuizAnswers } from '@/lib/supabase/queries';
+import { isRenderableEntry } from '@/lib/results/ranked';
 import { displayLabel } from '@/lib/i18n/labels';
 import en from '@/lib/i18n/en';
 import Kicker from '@/components/arah/Kicker.jsx';
@@ -38,17 +39,6 @@ export const metadata = {
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/** True for a stored ranked entry this page can honestly render. */
-function isRenderableEntry(entry) {
-  return (
-    entry &&
-    typeof entry.field === 'string' &&
-    entry.field !== '' &&
-    typeof entry.probability === 'number' &&
-    Number.isFinite(entry.probability)
-  );
-}
 
 /**
  * Presentation-only split of a field label: the class names carry a long
