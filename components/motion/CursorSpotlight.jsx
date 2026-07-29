@@ -4,9 +4,12 @@ import { useEffect, useRef } from 'react';
 import { useMotionCapability } from '@/lib/motion/useReducedMotion.js';
 import { SPOTLIGHT } from '@/lib/motion/config.js';
 
-// Shared gradient shape: a soft violet-to-cyan glow that fades to nothing at
-// SPOTLIGHT.stop. Values come from lib/motion/config.js — never hardcoded
-// here, the config test locks them and a duplicate would silently drift.
+// Shared gradient shape: on paper this deepens the page rather than adding
+// light — a soft violet tint (both stops are the same hue at different
+// alphas, see lib/motion/config.js's light-theme note) that fades to
+// nothing at SPOTLIGHT.stop. Values come from lib/motion/config.js — never
+// hardcoded here, the config test locks the physics constants and a
+// duplicate would silently drift.
 const GRADIENT = `radial-gradient(${SPOTLIGHT.size}px circle at var(--spot-x, 50%) var(--spot-y, 50%), ${SPOTLIGHT.inner}, ${SPOTLIGHT.mid} 44%, transparent ${SPOTLIGHT.stop})`;
 
 /**

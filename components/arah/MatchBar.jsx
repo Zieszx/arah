@@ -5,10 +5,19 @@ import { motion } from 'motion/react';
 import { useMotionCapability } from '@/lib/motion/useReducedMotion.js';
 import { cn } from '@/lib/utils';
 
+// Light-theme re-tune (light-theme-conversion.md §5): the amber gradient's
+// start was a hardcoded #F59E0B (amber-500) — measured 1.93-2.15:1 against
+// paper/surface/surface-2, the same "cannot survive on white" failure the
+// spec calls out for the old badge amber. Re-derived to amber-700, paired
+// with --color-amber (amber-800) at the far end — both clear 3:1 against
+// every background this bar sits on (paper 4.83/6.81, surface 5.02/7.09,
+// surface-2 4.51/6.37), which matters most at the 3% width case (the
+// smallest real fill on /results): the fill must still read as a distinct
+// colour from the --surface-2 track, not just a sliver of paler noise.
 const TONE_GRADIENTS = {
   cyan: 'linear-gradient(90deg, var(--color-violet), var(--color-cyan))',
   violet: 'linear-gradient(90deg, var(--color-violet), var(--color-violet-lt))',
-  amber: 'linear-gradient(90deg, #F59E0B, var(--color-amber))',
+  amber: 'linear-gradient(90deg, #B45309, var(--color-amber))',
 };
 
 function clampPercent(value) {
@@ -54,11 +63,15 @@ export default function MatchBar({ label, percent, tone = 'cyan', className }) {
         <span>{label}</span>
         <span className="tabular-nums font-medium">{rounded}%</span>
       </div>
+      {/* Track on --surface-2, per light-theme-conversion.md §5 — --ink is
+          now body text, not a background; bg-ink here would render a
+          near-black track, not the light "sunken" groove the light theme
+          wants. */}
       <ProgressPrimitive.Root
         value={rounded}
         max={100}
         aria-label={label}
-        className="h-2.5 w-full overflow-hidden rounded-full bg-ink"
+        className="h-2.5 w-full overflow-hidden rounded-full bg-surface-2"
       >
         <motion.div
           key={enabled ? 'animated' : 'static'}

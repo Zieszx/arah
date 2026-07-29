@@ -6,8 +6,9 @@
 // already announces "Question n of 10 — …" on every step, and announcing
 // both would double up for screen-reader users.
 //
-// --color-violet on --color-ink is ~3.52:1 — fine for a graphical arc
-// (WCAG 1.4.11 needs 3:1), and the readout text itself uses --color-text.
+// --color-violet on --color-surface (light-theme conversion, 2026-07-29)
+// is ~7.10:1 — comfortably past the 3:1 WCAG 1.4.11 needs for a graphical
+// arc, and the readout text itself uses --color-text.
 import { cn } from '@/lib/utils';
 
 export default function ProgressRing({ step, total, size = 64, className }) {

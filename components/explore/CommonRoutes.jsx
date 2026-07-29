@@ -58,7 +58,10 @@ export default function CommonRoutes({ kicker, intro, distribution, className })
                 ~{entry.pct}%
               </span>
             </div>
-            <span className="mt-1.5 block h-2 w-full overflow-hidden rounded-full bg-ink">
+            {/* Track on --surface-2, matching MatchBar's light-theme re-tune
+                (light-theme-conversion.md §5) — --ink is body text now,
+                not a background. */}
+            <span className="mt-1.5 block h-2 w-full overflow-hidden rounded-full bg-surface-2">
               <span
                 className="block h-full rounded-full"
                 style={{

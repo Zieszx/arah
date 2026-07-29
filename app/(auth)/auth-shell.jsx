@@ -176,13 +176,20 @@ export default function AuthShell({ quotes, children }) {
               backgroundImage: 'linear-gradient(180deg, var(--color-violet), var(--color-cyan))',
             }}
           >
-            {/* Scrim: white text directly on the raw gradient fails
-                contrast at the cyan end (measured 1.81:1 — WCAG AA needs
-                4.5:1). A flat ink scrim at 45% opacity brings both ends
-                comfortably past AA (white on scrimmed cyan 5.19:1,
-                scrimmed violet 11.19:1 — see auth-redesign-report.md)
-                while the gradient itself still reads through underneath. */}
-            <div className="absolute inset-0 bg-ink/45" aria-hidden="true" />
+            {/* Scrim, re-checked for the light-theme gradient (violet→teal,
+                both re-derived darker, light-theme-conversion.md §2/§5):
+                unlike the dark theme's violet→cyan bug (white text failed
+                at the cyan end, 1.81:1), white text on the RAW light-theme
+                gradient already clears AA at both ends — white on violet
+                7.10:1, white on teal 5.36:1. A scrim is therefore no
+                longer needed for contrast, but dropping it entirely let
+                the panel's edge blend awkwardly into the surrounding
+                paper/surface and made the quote read as sitting "on a
+                sticker" rather than in a deepened, considered panel — so
+                a much lighter 20% ink scrim is kept for that reason alone,
+                not for legibility (white/violet 8.49:1, white/teal 6.59:1
+                with the scrim on, both with room to spare). */}
+            <div className="absolute inset-0 bg-ink/20" aria-hidden="true" />
             <Kicker className="relative text-white/85">{t.panel.kicker}</Kicker>
             <blockquote className="relative">
               <p className="font-display text-[22px] leading-[1.3] text-white lg:text-[26px]">
@@ -277,8 +284,10 @@ function MobileBand({ active, signupQuote, loginQuote, kicker }) {
             }}
           >
             {/* Scrim, sized to the full box (see the desktop panel's
-                identical comment on why white text needs it). */}
-            <div className="absolute inset-0 bg-ink/45" aria-hidden="true" />
+                identical comment on the light-theme re-check: no longer
+                needed for AA, kept at a lighter 20% for the panel's own
+                depth). */}
+            <div className="absolute inset-0 bg-ink/20" aria-hidden="true" />
             <div className="relative px-6 py-5">
               <Kicker className="text-white/85">{kicker}</Kicker>
               <p className="font-display mt-2 text-[17px] leading-[1.35] text-white">

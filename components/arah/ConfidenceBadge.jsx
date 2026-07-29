@@ -1,7 +1,16 @@
 import { cn } from '@/lib/utils';
 
+// Light-theme re-tune (light-theme-conversion.md §5): `high` used
+// `border-white/10 bg-white/5` — a near-invisible lightening trick that
+// only reads against a dark card. On paper that pair renders as an
+// almost-transparent pill with no visible edge at all, so `high` now
+// uses --hairline/--surface-2 for the same "neutral, doesn't compete
+// with the accent tiers" pill the design system calls for (§6: "high
+// neutral · medium amber · low amber"). `medium`/`low` keep the
+// amber-tinted pattern; --color-amber itself was re-derived (see
+// app/globals.css) since the old #FFB627 measured 1.8:1 on paper.
 const TIER_STYLE = {
-  high: 'border-white/10 bg-white/5 text-violet-lt',
+  high: 'border-hairline bg-surface-2 text-ink',
   medium: 'border-amber/30 bg-amber/10 text-amber',
   low: 'border-amber/30 bg-amber/10 text-amber',
 };

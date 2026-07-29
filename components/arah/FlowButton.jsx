@@ -46,7 +46,11 @@ const FlowButton = forwardRef(function FlowButton(
         // shape + label
         'group/flow inline-flex items-center justify-center gap-2 rounded-full',
         'px-6 py-3 text-sm font-semibold text-white select-none',
-        // gradient fill — spec'd colors, never hardcoded elsewhere
+        // gradient fill — spec'd colors, never hardcoded elsewhere. Light-
+        // theme re-check (light-theme-conversion.md §5): this exact check
+        // caught a 1.81:1 white-on-cyan failure in the dark build; on the
+        // light theme's violet(#6D28D9)->teal(#0E7490) gradient white
+        // clears 4.5:1 at BOTH ends (7.10:1 / 5.36:1 measured).
         '[background-image:linear-gradient(90deg,var(--color-violet),var(--color-cyan))]',
         'transition-[filter] duration-200 ease-out hover:brightness-110',
         // a visible, high-contrast focus ring for keyboard users — this is

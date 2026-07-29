@@ -5,18 +5,71 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-ink: #08070F;
-  --color-surface: #12101D;
-  --color-surface-2: #1B1730;
-  --color-violet: #7C3AED;
-  --color-violet-lt: #A78BFA;
-  --color-violet-pl: #C4B5FD;
-  --color-cyan: #22D3EE;
-  --color-text: #EFEDFA;
-  --color-amber: #FFB627;
-  /* Danger — the documented form-error red (visual-design-system.md §3).
-     ~7:1 on --color-ink, so it is safe for small helper text. */
-  --color-danger: #FF6B6B;
+  /*
+   * Light-theme conversion (docs/design/light-theme-conversion.md,
+   * decided 2026-07-29) — supersedes the dark palette in
+   * docs/design/visual-design-system.md §3. Formal/educational: paper
+   * ground, dark text, restrained accents.
+   *
+   * The trap this file exists to avoid (spec §1): the dark-theme accents
+   * were chosen to gain contrast AGAINST DARKNESS. Inverting the ground
+   * without re-deriving every accent produces text nobody can read —
+   * measured on this file's own #FBFAFC paper: the old --violet-lt
+   * (#A78BFA) lands at 1.9:1, the old --cyan (#22D3EE) at 1.9:1, the old
+   * --violet-pl (#C4B5FD) at 1.6:1, the old amber (#FFB627) at 1.8:1 —
+   * every one of them unreadable/invisible. Every accent below is
+   * re-derived DARKER than its dark-theme value, not carried across.
+   *
+   * Token NAMES are kept stable on purpose (~25 call sites reference
+   * --color-ink, --color-violet-lt or --color-cyan across Kicker,
+   * FlowButton, MatchBar, focus rings, the chart aliases, etc.) — only
+   * the values change, plus a few newly-named tokens the spec introduces
+   * (paper, violet-ink, violet-soft, teal, teal-soft). Where a legacy
+   * name's ROLE also changed (ink was the page ground, is now body text;
+   * cyan was a bright secondary accent, is now the muted "teal" role),
+   * that is a deliberate repoint, not an oversight — see the per-token
+   * notes below and light-theme-conversion.md §2.
+   */
+
+  /* ground + structure */
+  --color-paper: #FBFAFC;      /* page ground */
+  --color-surface: #FFFFFF;    /* cards, panels — raised above paper */
+  --color-surface-2: #F3F2F7;  /* sunken, hover, table stripes */
+  /* --color-ink: was the darkest page-ground value (#08070F). On paper
+     its role flips to body text/headings — spec §2 defines --ink this
+     way directly. 18.06:1 on --color-paper (target 4.5:1 body). */
+  --color-ink: #12101D;
+
+  /* accents — deeper than their dark-theme counterparts (spec §1) */
+  --color-violet: #6D28D9;       /* primary accent: fills, borders, large text — 6.83:1 on paper (target 3:1) */
+  --color-violet-ink: #5B21B6;   /* text-safe violet on paper — 8.63:1 on paper (target 4.5:1 body) */
+  --color-violet-soft: #EDE9FE;  /* tints, selected backgrounds */
+  --color-teal: #0E7490;         /* secondary accent, replaces cyan for anything textual — 5.15:1 on paper */
+  --color-teal-soft: #CFFAFE;    /* tints */
+
+  /* legacy names, repointed (kept so existing call sites don't need
+     individual edits — see the file-level note above) */
+  --color-violet-lt: var(--color-violet-ink); /* kickers, links, hover text, focus rings — was a light violet meant to pop off ink; now the text-safe violet-ink shade */
+  /* --color-violet-pl: no direct spec equivalent (dark theme used it for
+     sand grains/chart-4/active-state text — three different roles on one
+     token, carried over as-is). Re-derived as a step darker than
+     violet-ink for a legible "more emphasis than hover" active state —
+     10.53:1 on paper — while staying in the same violet family as
+     chart-3/5 for the chart doublet's "more series" fallback (spec §3). */
+  --color-violet-pl: #4C1D95;
+  --color-cyan: var(--color-teal); /* was the bright gradient partner; now teal — white on both gradient ends re-measured below (FlowButton) */
+  --color-text: var(--color-ink);  /* body text alias */
+  /* --color-amber: dark-theme's #FFB627 measures 1.8:1 on paper —
+     unreadable, the worst offender the spec calls out. Re-derived to
+     amber-800 for a warning tone that still reads as legible prose
+     (ConfidenceBadge's low-confidence sentence "carries the product's
+     honesty" — ~6.8-7.1:1 on paper/surface, target 4.5:1). */
+  --color-amber: #92400E;
+  /* Danger — the documented form-error red (visual-design-system.md §3),
+     re-derived for paper (old #FF6B6B was tuned for ~7:1 on dark --ink
+     and reads far too light on white). 6.22:1 on --color-paper, 6.4:1 on
+     --color-surface — comfortably past 4.5:1 for small helper text. */
+  --color-danger: #B91C1C;
 
   --font-display: var(--font-display), Georgia, serif;
   --font-body: var(--font-body), system-ui, sans-serif;
@@ -33,12 +86,13 @@
 /*
  * shadcn/ui (`npx shadcn init`) writes its semantic tokens against a
  * light `:root` + `.dark` class-toggle scheme by default. ARAH has no
- * light mode and no theme toggle — the whole product is the ink theme
- * from Task 1 — so every shadcn semantic token below is pointed at the
- * approved ARAH tokens instead of shadcn's neutral-gray defaults. The
- * unreachable `.dark { ... }` override block shadcn generated has been
- * removed rather than left as dead code (no element ever gets a `.dark`
- * class).
+ * theme toggle — the whole product is one theme, formerly the dark "ink"
+ * theme from Task 1, now the light "paper" theme from
+ * docs/design/light-theme-conversion.md — so every shadcn semantic token
+ * below is pointed at the approved ARAH tokens instead of shadcn's
+ * neutral-gray defaults. The unreachable `.dark { ... }` override block
+ * shadcn generated has been removed rather than left as dead code (no
+ * element ever gets a `.dark` class).
  *
  * `--muted` is the one genuine naming collision with the pre-existing
  * design system: Task 1 defined `--muted` as a de-emphasized *text*
@@ -52,25 +106,44 @@
  * playing conceptually.
  */
 :root {
+  /*
+   * Light-theme repoint (2026-07-29): every value below still points at
+   * an ARAH token per the block comment above, only the tokens
+   * themselves changed underneath. Two values are re-derived here rather
+   * than in the @theme block because nothing else references them:
+   *  - --muted-foreground / --hairline now use the exact rgba(18,16,29,…)
+   *    figures from light-theme-conversion.md §2 (18,16,29 is
+   *    --color-ink's rgb triple) — 0.64 alpha measures 5.59:1 on
+   *    --color-paper (target 4.5:1); the old 0.10/0.62 alpha values were
+   *    tuned for light-text-on-dark and would be back-to-front here.
+   *  - --primary/--primary-foreground flip from "bright violet fill +
+   *    dark text" (right for a dark ground) to "solid violet fill +
+   *    white text" (right for paper) — white on --color-violet measures
+   *    7.10:1.
+   *  - --destructive and --input, both previously tuned for a translucent
+   *    light-on-dark look (a light-lavender-tinted border reads as
+   *    invisible on white), now reuse --color-danger and a dark-tinted
+   *    hairline respectively.
+   */
   --muted: var(--color-surface-2);
-  --muted-foreground: rgba(239, 237, 250, 0.62);
-  --hairline: rgba(239, 237, 250, 0.10);
-  --background: var(--color-ink);
-  --foreground: var(--color-text);
+  --muted-foreground: rgba(18, 16, 29, 0.64);
+  --hairline: rgba(18, 16, 29, 0.12);
+  --background: var(--color-paper);
+  --foreground: var(--color-ink);
   --card: var(--color-surface);
-  --card-foreground: var(--color-text);
+  --card-foreground: var(--color-ink);
   --popover: var(--color-surface);
-  --popover-foreground: var(--color-text);
-  --primary: var(--color-violet-lt);
-  --primary-foreground: var(--color-ink);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-violet);
+  --primary-foreground: var(--color-surface);
   --secondary: var(--color-surface-2);
   --secondary-foreground: var(--color-text);
   --accent: var(--color-surface-2);
   --accent-foreground: var(--color-text);
-  --destructive: #F87171;
+  --destructive: var(--color-danger);
   --border: var(--hairline);
-  --input: rgba(239, 237, 250, 0.14);
-  --ring: var(--color-violet-lt);
+  --input: rgba(18, 16, 29, 0.14);
+  --ring: var(--color-violet);
   /*
    * Unused today, but the `@theme inline` block below already wires
    * `--color-chart-1..5` straight through to these — leaving shadcn's
@@ -85,15 +158,19 @@
    * pair would be hard for a deuteranope to separate. chart-3..5 fall
    * back to the violet family for anything with more series.
    *
-   * Amber is `#FFB627`, the single documented warning colour in
-   * docs/design/visual-design-system.md §3. `--chart-2` reuses
-   * `--color-amber` directly rather than repeating the literal — there is
-   * now exactly one amber in the system, also used by ConfidenceBadge.
+   * Amber is now `#92400E` (re-derived for paper, light-theme-conversion.md
+   * §3 — the dark-theme `#FFB627` measured 1.8:1 on paper and could not
+   * survive). `--chart-2` reuses `--color-amber` directly rather than
+   * repeating the literal — there is now exactly one amber in the
+   * system, also used by ConfidenceBadge.
    *
-   * Note for Plan 4: `--color-violet` (#7C3AED) on `--color-ink`
-   * (#08070F) is ~3.52:1 — it clears WCAG 1.4.11's 3:1 threshold for
-   * graphical objects, but only just. Fine for bars/fills; do not use
-   * it for thin sparkline strokes.
+   * Light-theme re-measure (2026-07-29), all five series against
+   * `--color-surface` (#FFFFFF, target 3:1 per WCAG 1.4.11 graphical
+   * objects): chart-1 teal 5.36:1, chart-2 amber 7.09:1, chart-3
+   * violet-ink 8.98:1, chart-4 violet-pl 10.95:1, chart-5 violet 7.10:1
+   * — all comfortably clear. `--color-violet` on `--color-surface` used
+   * to be the tight one (~3.52:1 on the old dark --color-ink); on paper
+   * it is 7.10:1, safe even for thin sparkline strokes now.
    *
    * QA note (2026-07-29): `getComputedStyle(document.documentElement)
    * .getPropertyValue('--color-chart-1')` (the `@theme inline`-generated
@@ -124,17 +201,20 @@
   --radius: 0.625rem;
   --sidebar: var(--color-surface);
   --sidebar-foreground: var(--color-text);
-  --sidebar-primary: var(--color-violet-lt);
-  --sidebar-primary-foreground: var(--color-ink);
+  /* Same primary/foreground fix as above: a solid violet fill needs a
+     light (white) foreground, not --color-ink, or the unused-today
+     shadcn sidebar would render dark text on a dark-violet bar. */
+  --sidebar-primary: var(--color-violet);
+  --sidebar-primary-foreground: var(--color-surface);
   --sidebar-accent: var(--color-surface-2);
   --sidebar-accent-foreground: var(--color-text);
   --sidebar-border: var(--hairline);
-  --sidebar-ring: var(--color-violet-lt);
+  --sidebar-ring: var(--color-violet);
 }
 
 html, body {
-  background: var(--color-ink);
-  color: var(--color-text);
+  background: var(--color-paper);
+  color: var(--color-ink);
 }
 
 body {

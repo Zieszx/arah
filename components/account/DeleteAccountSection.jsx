@@ -196,7 +196,13 @@ export default function DeleteAccountSection({ className }) {
               disabled={submitting}
               aria-invalid={confirmText.length > 0 && !confirmed ? true : undefined}
               className={cn(
-                'mt-2 h-12 w-full rounded-lg border bg-ink px-4 text-[15px] text-text',
+                // bg-surface-2, not bg-ink: this dialog card already sits on
+                // bg-surface, so the input needs a visibly recessed fill of
+                // its own. On the dark theme bg-ink (the darkest page-ground
+                // value) supplied that "sunken" look; on paper --ink is body
+                // text, not a background, so bg-surface-2 (the light
+                // theme's own "sunken" token) takes over the same role.
+                'mt-2 h-12 w-full rounded-lg border bg-surface-2 px-4 text-[15px] text-text',
                 'transition-[border-color] duration-200 hover:border-text/25',
                 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt',
                 'disabled:cursor-not-allowed disabled:opacity-50'

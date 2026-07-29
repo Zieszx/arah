@@ -251,7 +251,12 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
           aria-label={en.chrome.menuLabel}
           className={cn(
             'fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col overflow-y-auto',
-            'bg-ink/95 px-6 pb-10 pt-8 backdrop-blur-md md:hidden',
+            // bg-surface/95, not bg-ink/95: --ink is body text on the light
+            // theme, not a background — the drawer needs to stay on the
+            // light "paper/surface" system like the rest of the page, at
+            // near-opacity so content scrolling underneath doesn't show
+            // through the open menu.
+            'bg-surface/95 px-6 pb-10 pt-8 backdrop-blur-md md:hidden',
             'animate-in fade-in slide-in-from-top-2 duration-200'
           )}
         >

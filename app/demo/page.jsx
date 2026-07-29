@@ -43,23 +43,29 @@ const TYPE_SCALE = [
   },
 ];
 
+// Light-theme conversion, 2026-07-29 (docs/design/light-theme-conversion.md):
+// hex values here are for display only — the swatch itself always renders
+// the live token via `className`, so these labels exist purely so a
+// visitor can read off the current value without opening devtools. Keep
+// them in sync with app/globals.css's @theme block by hand; nothing
+// enforces that automatically.
 const PALETTE = [
-  { name: 'ink', hex: '#08070F', className: 'bg-ink' },
-  { name: 'surface', hex: '#12101D', className: 'bg-surface' },
-  { name: 'surface-2', hex: '#1B1730', className: 'bg-surface-2' },
-  { name: 'violet', hex: '#7C3AED', className: 'bg-violet' },
-  { name: 'violet-lt', hex: '#A78BFA', className: 'bg-violet-lt' },
-  { name: 'violet-pl', hex: '#C4B5FD', className: 'bg-violet-pl' },
-  { name: 'cyan', hex: '#22D3EE', className: 'bg-cyan' },
-  { name: 'text', hex: '#EFEDFA', className: 'bg-text' },
+  { name: 'paper', hex: '#FBFAFC', className: 'bg-paper' },
+  { name: 'surface', hex: '#FFFFFF', className: 'bg-surface' },
+  { name: 'surface-2', hex: '#F3F2F7', className: 'bg-surface-2' },
+  { name: 'ink (text)', hex: '#12101D', className: 'bg-ink' },
+  { name: 'violet', hex: '#6D28D9', className: 'bg-violet' },
+  { name: 'violet-lt (violet-ink)', hex: '#5B21B6', className: 'bg-violet-lt' },
+  { name: 'violet-pl', hex: '#4C1D95', className: 'bg-violet-pl' },
+  { name: 'cyan (teal)', hex: '#0E7490', className: 'bg-cyan' },
 ];
 
 const CHART_COLORS = [
-  { name: 'chart-1', hex: '#22D3EE', className: 'bg-chart-1' },
-  { name: 'chart-2', hex: '#FFB627', className: 'bg-chart-2' },
-  { name: 'chart-3', hex: '#A78BFA', className: 'bg-chart-3' },
-  { name: 'chart-4', hex: '#C4B5FD', className: 'bg-chart-4' },
-  { name: 'chart-5', hex: '#7C3AED', className: 'bg-chart-5' },
+  { name: 'chart-1', hex: '#0E7490', className: 'bg-chart-1' },
+  { name: 'chart-2', hex: '#92400E', className: 'bg-chart-2' },
+  { name: 'chart-3', hex: '#5B21B6', className: 'bg-chart-3' },
+  { name: 'chart-4', hex: '#4C1D95', className: 'bg-chart-4' },
+  { name: 'chart-5', hex: '#6D28D9', className: 'bg-chart-5' },
 ];
 
 const RESULTS = [
@@ -242,8 +248,8 @@ export default function DemoPage() {
             linked by distance, that gently give way around the cursor.
           </li>
           <li>
-            A 100px cursor spotlight — a soft violet-to-cyan glow that
-            tracks the pointer.
+            A 100px cursor spotlight — a soft violet tint that deepens the
+            page as it tracks the pointer.
           </li>
           <li>
             A brushed-scatter sand cursor — grains that fly with the
