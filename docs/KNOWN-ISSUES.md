@@ -77,6 +77,14 @@ watching which URLs the browser prefetched, not by any test — so
 `tests/js/nav-links-resolve.test.js` now fails if any chrome link points at a route that
 does not exist.
 
+**The results page claimed a cohort of 16.** The headline sentence read "20–49 of the 16
+students most like you studied this" — arithmetic nonsense, on the most important sentence
+in the product. It summed `alumni_count` across the ranked entries, which was correct
+until the 0009 hardening left an exact count only on SUPPRESSED fields; what remained to
+sum was 9 + 7. That also published the sum of the two withheld counts. The cohort now
+comes from the model that produced the prediction, new rows stamp it at submit time, and
+a caller with no reliable figure renders nothing rather than a wrong one.
+
 **Nobody could change their own email or password.** The account page only displayed the
 email. `/account` now has display-name, email and password forms; email and password both
 require the current password, re-checked server-side. There is deliberately no
