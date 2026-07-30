@@ -57,6 +57,24 @@ export default function FieldCard({
   return (
     <Link
       href={`/explore/${slug}`}
+      // prefetch={false} is a WORKAROUND, not a preference.
+      //
+      // Every route here is dynamic, and for a dynamic route Next's default
+      // prefetch issues a segment request (next-router-segment-prefetch:
+      // /_tree). In this deployment those return 404 for every public route —
+      // measured, not assumed — so the default currently delivers no
+      // prefetching at all and only console errors.
+      //
+      // Turning it off changes nothing a user experiences: the navigation was
+      // never being accelerated. It removes the errors, and loading.jsx now
+      // covers the perceived-speed gap that prefetch would have.
+      //
+      // REVERT THIS when the segment prefetch is fixed. The real fix is
+      // nextConfig.cacheComponents, which generates the segment outputs —
+      // it currently fails the build against `dynamicParams = false` in
+      // app/explore/[field]/page.jsx and is a genuine migration, not a flag.
+      // See docs/KNOWN-ISSUES.md #1.
+      prefetch={false}
       className="group flex h-full min-h-11 flex-col overflow-hidden rounded-2xl border border-hairline bg-surface transition-colors duration-200 hover:border-violet-lt/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt"
     >
       <div

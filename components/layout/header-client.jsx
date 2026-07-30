@@ -194,7 +194,7 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
       </button>
     </form>
   ) : (
-    <Link href="/login" className={authPillClass}>
+    <Link prefetch={false} href="/login" className={authPillClass}>
       {en.chrome.login}
     </Link>
   );
@@ -221,7 +221,7 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
         )}
       >
         <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between gap-6 px-6 md:px-16">
-          <Link
+          <Link prefetch={false}
             href="/"
             className="font-display inline-flex min-h-11 w-fit items-center text-lg uppercase text-text/90 transition-colors duration-200 hover:text-text active:text-violet-lt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt md:text-xl"
             style={{ letterSpacing: '0.20em' }}
@@ -237,6 +237,9 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
                 <Link
                   key={href}
                   href={href}
+                  // See FieldCard.jsx for why this is off. Measured: the
+                  // default segment prefetch 404s for every public route.
+                  prefetch={false}
                   aria-current={active ? 'page' : undefined}
                   className={navLink(active)}
                 >
@@ -307,7 +310,7 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
             {NAV_LINKS.map(({ href, label }) => {
               const active = isActive(pathname, href);
               return (
-                <Link
+                <Link prefetch={false}
                   key={href}
                   href={href}
                   onClick={closeForNavigation}
@@ -342,7 +345,7 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
                 </button>
               </form>
             ) : (
-              <Link href="/login" onClick={closeForNavigation} className={authPillClass}>
+              <Link prefetch={false} href="/login" onClick={closeForNavigation} className={authPillClass}>
                 {en.chrome.login}
               </Link>
             )}

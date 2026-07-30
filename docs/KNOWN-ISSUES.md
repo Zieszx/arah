@@ -1,37 +1,53 @@
 # ARAH — known issues at delivery
 
-## 1. RSC prefetch requests 404 in production (low severity, cosmetic)
+## 1. Segment prefetch is disabled (worked around, not fixed)
 
-**Symptom.** In a real browser, Next's link-prefetch requests return 404:
-```
-404  /?_rsc=TLJ23gVnbrIc7BPU
-404  /explore/business-management?_rsc=TLJ23gVnbrIc7BPU
-404  /login?next=%2Fquestions
-```
+**What was happening.** Next's link prefetch returned 404 for every public
+route. Diagnosed by replaying the browser's exact request headers one at a
+time:
 
-**Still present at delivery**, re-checked 30 July 2026: every `?_rsc=` prefetch on `/`,
-`/explore` and the field pages returns 404.
+| headers | status | matched |
+| --- | --- | --- |
+| plain | 200 | `/explore` |
+| `rsc: 1` | 200 | `/explore.rsc` |
+| `rsc` + `next-router-prefetch` | 200 | `/explore.rsc` |
+| **+ `next-router-segment-prefetch: /_tree`** | **404** | `/_not-found` |
+| `segment-prefetch` alone | 200 | `/explore.rsc` |
 
-**Impact.** Navigation is unaffected — verified by clicking a real field-card link:
-landed on `/explore/architecture-built-environment`, correct `<h1>`, back button works.
-The cost is (a) no prefetch speed benefit, so navigation is slightly slower on a slow
-connection, and (b) console errors, which look alarming to anyone opening devtools.
+So the failure needs `next-router-prefetch` AND `next-router-segment-prefetch`
+together. Every route in this app is dynamic, and for a dynamic route Next's
+default prefetch asks for a partial route — that segment request. The
+deployment has no segment outputs to serve, so it fell through to
+`/_not-found`.
 
-**Not reproducible outside the browser.** `curl` returns 200 for the identical URLs,
-including with `RSC: 1` and `Next-Router-Prefetch: 1` headers set. So it is triggered by
-something only a browser sends — most likely `sec-fetch-*` headers interacting with the
-Vercel Services catch-all rewrite in `vercel.json`:
+**Two hypotheses tested and rejected.**
 
-```json
-{ "source": "/(.*)", "destination": { "service": "web" } }
-```
+The `vercel.json` catch-all rewrite was the documented suspect. Removing it on
+a preview deploy 404s the *entire site* — it is required for Vercel Services to
+reach the web service at all.
 
-**Suggested next step.** Test whether removing the catch-all (letting the web service be
-the default) resolves it, or raise with Vercel support — Services is a recent product and
-this smells like a routing edge case rather than an application bug.
+`prefetch={true}` (full route instead of partial) does not help: the client
+still sends `next-router-segment-prefetch: /_tree`. Measured, not assumed.
 
-**Why it is not blocking.** No user-facing breakage. Worth fixing before heavy traffic,
-not before demoing.
+**The real fix, and why it is not applied.** `nextConfig.cacheComponents`
+generates the segment outputs. Enabling it fails the build immediately —
+`Route segment config "dynamicParams" is not compatible with
+nextConfig.cacheComponents` in `app/explore/[field]/page.jsx` — and that is
+only the first error. cacheComponents makes data fetching dynamic by default,
+enables PPR, and requires `use cache` adoption throughout. It is a genuine
+migration needing full re-verification, not a flag.
+
+**What was done instead.** `prefetch={false}` on the site chrome and the field
+cards. This costs nothing that was working: those prefetches had a 100%
+failure rate, so they delivered no acceleration at all — only console errors.
+Verified on a preview deploy: zero RSC requests on `/` and `/explore`, and
+navigation still works (header → explore → a field page → privacy, all
+correct, no failures).
+
+`loading.jsx` now covers the perceived-speed gap prefetching would have.
+
+**Revert this** when segment prefetch works — the `prefetch={false}` props
+carry a comment pointing here.
 
 ---
 

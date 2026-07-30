@@ -57,7 +57,7 @@ export default async function SiteFooter() {
       <div className="mx-auto w-full max-w-[1280px] px-6 py-12 md:px-16 md:py-16">
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           <div className="max-w-[38ch]">
-            <Link
+            <Link prefetch={false}
               href="/"
               className="font-display inline-flex min-h-11 w-fit items-center text-lg uppercase text-text/90 transition-colors duration-200 hover:text-text active:text-violet-lt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt"
               style={{ letterSpacing: '0.20em' }}
@@ -71,7 +71,7 @@ export default async function SiteFooter() {
 
           <nav aria-label="Footer" className="flex flex-col gap-1">
             {FOOTER_LINKS.map(({ href, label }) => (
-              <Link key={href} href={href} className={footerLinkClass}>
+              <Link key={href} href={href} prefetch={false} className={footerLinkClass}>
                 {label}
               </Link>
             ))}
@@ -86,7 +86,7 @@ export default async function SiteFooter() {
               see admin-entry.js for why this must stay an absence, never
               display:none. */}
           {adminHref ? (
-            <Link href={adminHref} className={ghostPillClass}>
+            <Link prefetch={false} href={adminHref} className={ghostPillClass}>
               {en.chrome.admin}
             </Link>
           ) : null}
