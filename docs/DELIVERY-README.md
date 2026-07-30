@@ -36,7 +36,7 @@ Start there.
 | `datasets/survey.csv` | **The training data.** 207 real responses — ten answers per person, plus the field they went on to study and how satisfied they were. |
 | `datasets/Post-SPM Academic Pathway and Interest Survey (original export).csv` | The untouched Google Forms export the project began from. |
 | `datasets/reference/mohe-enrolment-2025.csv` | Ministry of Higher Education national enrolment figures, as at 31 Dec 2025. |
-| `datasets/database/` | A restorable database dump — `schema.sql` (structure) and `data.sql` (the 207 alumni rows). |
+| `datasets/database/` | A restorable database dump — `schema.sql` (structure) and `data.sql` (the 207 alumni rows and the 5 reference rows). |
 
 The database dump deliberately contains **no student accounts, answers or
 results**. Those are real people's personal data and do not belong in a file
@@ -50,8 +50,16 @@ produce a training row. `datasets/reference/README.md` explains this in full,
 and `source-code/docs/DATA-SOURCES.md` covers why splitting a national total
 into plausible-looking individuals would have been the wrong thing to do.
 
-Both files also live inside `source-code/ml/data/`, which is where the
-training script reads them from. The copies here are for convenience.
+`survey.csv` and `reference/` also live inside `source-code/ml/data/`, which
+is where the training script reads from. The copies here are for convenience —
+the brief asks for datasets by name, and a reviewer should not have to know
+where in the source tree they sit.
+
+**No third-party dataset feeds the model.** `ml/train.py` reads
+`ml/data/survey.csv` and nothing else. Public career-prediction datasets were
+evaluated and rejected — they are largely synthetic or drawn from fictional
+universities, and none carries the Malaysian SPM questions this model is built
+on. The reasoning is in `source-code/docs/DATA-SOURCES.md`.
 
 ---
 
