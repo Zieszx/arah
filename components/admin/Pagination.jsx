@@ -1,11 +1,17 @@
 // Pagination controls for the admin tables. A Server Component on purpose:
-// every control is a real <Link>, so paging works before hydration and with
+// every control is a real link, so paging works before hydration and with
 // JavaScript unavailable, and each page is a genuine URL an admin can share
 // or return to with the Back button.
 //
+// The controls are PendingLink rather than Link so a click shows immediately
+// that it registered — these navigations block on the server (prefetch 404s,
+// docs/KNOWN-ISSUES.md #1) and the silence was making people click twice.
+// PendingLink still renders a plain anchor on the server, so the
+// works-without-JavaScript property above is unchanged.
+//
 // Renders nothing at all when there is only one page — a lone disabled
 // "Page 1 of 1" is noise on a screen that already states its total.
-import Link from 'next/link';
+import PendingLink from './PendingLink.jsx';
 import { cn } from '@/lib/utils';
 import { pageHref, paginationWindow, PAGE_SIZE_OPTIONS } from '@/lib/admin/pagination';
 import en from '@/lib/i18n/en';
@@ -35,9 +41,9 @@ function Step({ href, disabled, label, children }) {
     );
   }
   return (
-    <Link href={href} aria-label={label} className={cn(controlClass, enabledClass)}>
+    <PendingLink href={href} aria-label={label} className={cn(controlClass, enabledClass)}>
       {children}
-    </Link>
+    </PendingLink>
   );
 }
 
@@ -71,7 +77,7 @@ export default function Pagination({
               {PAGE_SIZE_OPTIONS.map((size) => {
                 const active = Number(searchParams?.pageSize ?? 25) === size;
                 return (
-                  <Link
+                  <PendingLink
                     key={size}
                     // Changing page size must return to page 1: staying on
                     // page 7 while quadrupling the page size lands past the
@@ -87,7 +93,7 @@ export default function Pagination({
                     )}
                   >
                     {size}
-                  </Link>
+                  </PendingLink>
                 );
               })}
             </div>
@@ -116,7 +122,7 @@ export default function Pagination({
                   …
                 </span>
               ) : (
-                <Link
+                <PendingLink
                   key={p}
                   href={pageHref(basePath, searchParams, { page: p })}
                   aria-label={`${t.page} ${p}`}
@@ -129,7 +135,7 @@ export default function Pagination({
                   )}
                 >
                   {p}
-                </Link>
+                </PendingLink>
               )
             )}
 

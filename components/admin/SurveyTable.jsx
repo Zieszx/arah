@@ -29,6 +29,7 @@
 // order.
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import PendingLink from './PendingLink.jsx';
 import { useRouter } from 'next/navigation';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -206,7 +207,7 @@ export default function SurveyTable({
     // A Link, not a button: sorting is a different URL, so it should be
     // shareable and survive Back — and it keeps working before hydration.
     return (
-      <Link
+      <PendingLink
         href={sortHref(col.key)}
         scroll={false}
         className={styles.sortButton}
@@ -214,7 +215,7 @@ export default function SurveyTable({
       >
         <span className={styles.headerLabel}>{col.label}</span>
         <SortIcon active={active} order={ascending ? 1 : -1} />
-      </Link>
+      </PendingLink>
     );
   }
 
