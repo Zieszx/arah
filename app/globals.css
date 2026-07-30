@@ -235,11 +235,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, .font-display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: -0.005em;
-  line-height: 1.1;
+/* MUST stay inside @layer base. Unlayered CSS beats every layered rule in
+   the cascade regardless of specificity, so while this block sat outside a
+   layer it silently outranked all of Tailwind's utilities: any h1/h2/h3
+   written with `tracking-*`, `leading-*` or `font-semibold` got those
+   utilities thrown away without warning. Three micro-label headings on the
+   field pages rendered as unspaced serif because of it, and every display
+   heading's `leading-[1.08]` was quietly flattened to 1.1. Inside base,
+   these are defaults a utility can override — which is the whole point. */
+@layer base {
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    line-height: 1.1;
+  }
 }
 
 /* Neutralises CSS-driven animation only. GSAP, Motion and the canvas layers

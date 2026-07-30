@@ -34,7 +34,7 @@ export default function CommonRoutes({ kicker, intro, distribution, className })
   return (
     <section className={className}>
       {kicker ? (
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-lt">
+        <h3 className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-lt">
           {kicker}
         </h3>
       ) : null}

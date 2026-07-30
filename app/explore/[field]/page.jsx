@@ -146,7 +146,7 @@ export default async function FieldDetailPage({ params }) {
       ) : (
         <>
           <section className="mt-14 max-w-[860px] border-t border-hairline pt-10 md:mt-20">
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-lt">
+            <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-lt">
               {en.explore.detail.satisfactionKicker}
             </h2>
             <p className="mt-2 max-w-[52ch] text-[14px] leading-[1.6] text-muted-foreground">

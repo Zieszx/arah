@@ -21,7 +21,7 @@ export default function AdviceQuotes({ quotes, className }) {
 
   return (
     <section className={className}>
-      <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-lt">
+      <h3 className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-lt">
         {en.explore.detail.quotesKicker}
       </h3>
       <ul className="mt-5 flex flex-col gap-5">
