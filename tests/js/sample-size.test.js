@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   formatSampleSize,
+  formatSampleSizeInSentence,
   sampleSizeSortWeight,
   confidenceFromBand,
 } from '@/lib/explore/sampleSize.js';
@@ -74,5 +75,48 @@ describe('confidenceFromBand', () => {
     expect(confidenceFromBand(undefined)).toBeNull();
     expect(confidenceFromBand('9')).toBeNull();
     expect(confidenceFromBand('100+')).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatSampleSizeInSentence — the prose form.
+//
+// formatSampleSize is right under a stat label, where "20–49" is unambiguous.
+// Dropped into a sentence it produced "20–49 of the 207 students…", which
+// reads as a subtraction before it reads as a range.
+describe('formatSampleSizeInSentence', () => {
+  it('spells a band out in words', () => {
+    expect(formatSampleSizeInSentence(null, '10-19')).toBe('Between 10 and 19');
+    expect(formatSampleSizeInSentence(null, '20-49')).toBe('Between 20 and 49');
+  });
+
+  it('says "More than 50" for the open-ended band', () => {
+    // "Between 50 and +" would be nonsense.
+    expect(formatSampleSizeInSentence(null, '50+')).toBe('More than 50');
+  });
+
+  it('leaves an exact count alone', () => {
+    // "Between 9 and 9" would be absurd, and a range word around one number
+    // implies an uncertainty that is not there.
+    expect(formatSampleSizeInSentence(9, null)).toBe('9');
+    expect(formatSampleSizeInSentence(0, null)).toBe('0');
+  });
+
+  it('prefers the band over an exact count, like its sibling', () => {
+    // A row must never publish an exact count for an unsuppressed field.
+    expect(formatSampleSizeInSentence(37, '20-49')).toBe('Between 20 and 49');
+  });
+
+  it('returns null when neither is available, so callers render nothing', () => {
+    expect(formatSampleSizeInSentence(null, null)).toBeNull();
+    expect(formatSampleSizeInSentence(undefined, undefined)).toBeNull();
+    expect(formatSampleSizeInSentence(null, 'nonsense')).toBeNull();
+  });
+
+  it('reads correctly in the sentence it exists for', () => {
+    const sentence = `${formatSampleSizeInSentence(null, '20-49')} of the 207 students that are most similar to you studied this.`;
+    expect(sentence).toBe(
+      'Between 20 and 49 of the 207 students that are most similar to you studied this.'
+    );
   });
 });

@@ -16,7 +16,7 @@ import ConfidenceBadge from '@/components/arah/ConfidenceBadge.jsx';
 import StaggerReveal from '@/components/motion/StaggerReveal.jsx';
 import AlumniContext from './AlumniContext.jsx';
 import { displayLabel } from '@/lib/i18n/labels';
-import { formatSampleSize } from '@/lib/explore/sampleSize';
+import { formatSampleSizeInSentence } from '@/lib/explore/sampleSize';
 import en from '@/lib/i18n/en';
 
 function finite(v) {
@@ -49,7 +49,7 @@ export default function ResultList({ entries, total }) {
             // and 0009_field_stats_hardening.sql). One shared formatter so
             // this sentence and /explore's cards can never drift apart on
             // what "safe to show" means.
-            const display = formatSampleSize(entry.alumni_count, entry.alumni_band);
+            const display = formatSampleSizeInSentence(entry.alumni_count, entry.alumni_band);
             return display !== null && finite(total) && total > 0 ? (
               <p className="mt-4 max-w-[52ch] text-[15px] leading-[1.6] text-text">
                 <span className="font-mono">{display}</span>{' '}

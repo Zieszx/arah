@@ -24,7 +24,7 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchPredictionById, fetchQuizAnswers } from '@/lib/supabase/queries';
 import { isRenderableEntry } from '@/lib/results/ranked';
 import { cohortSize } from '@/lib/results/cohort';
-import { formatSampleSize } from '@/lib/explore/sampleSize';
+import { formatSampleSizeInSentence } from '@/lib/explore/sampleSize';
 import featureSpec from '@/services/ml/feature_spec.json';
 import { displayLabel } from '@/lib/i18n/labels';
 import en from '@/lib/i18n/en';
@@ -94,7 +94,7 @@ export default async function ResultsPage({ params }) {
   // Exact for a suppressed field, banded for an unsuppressed one — the same
   // formatter ResultList and /explore use, so the three can never disagree
   // about what is safe to show.
-  const topSampleDisplay = formatSampleSize(top.alumni_count, top.alumni_band);
+  const topSampleDisplay = formatSampleSizeInSentence(top.alumni_count, top.alumni_band);
 
   // The marginalised re-run needs the original answers (own row, RLS-scoped).
   const answers =
