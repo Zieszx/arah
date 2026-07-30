@@ -2,9 +2,10 @@
 // post-SPM student sees, and the page the client screenshots for their own
 // pitch. Replaces the holding page.
 //
-// The narrative, in order: Hero -> Finding -> How it works -> Proof -> CTA
-// (docs/superpowers/plans/2026-07-29-arah-landing-explore-contribute.md,
-// Task 1). A Server Component throughout — every section is static markup
+// The narrative, in order: Hero -> Finding -> How it works -> Proof -> CTA.
+// Proof shows BOTH accuracy figures, never only the higher one — see
+// lib/i18n/en.js#landing.proof. A Server Component throughout — every section
+// is static markup
 // except the one Recharts chart inside Finding, which is dynamically
 // imported client-side only (see components/landing/FindingChartLoader.jsx)
 // so it never touches this page's own bundle.

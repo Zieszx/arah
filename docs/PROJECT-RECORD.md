@@ -7,7 +7,9 @@ If something was discussed, it is here.
 Last updated: 2026-07-28
 
 Companion documents:
-- `docs/superpowers/specs/2026-07-28-arah-pathway-finder-design.md` — technical design spec
+- `README.md` — the system overview, stack and how to run it
+- `docs/RETRAINING.md` — how a contribution reaches the model
+- `docs/DATA-SOURCES.md` — where the data comes from, and what cannot be used
 - `docs/design/visual-design-system.md` — visual system and decision trail
 - `docs/design/prototypes/` — five working HTML prototypes
 - `../ARAH-Pitch.pptx` — 19-slide client pitch deck
@@ -307,7 +309,7 @@ the only meaningful form of "no errors" for a system with a model in it.
 | Seed account | `nuhaaa` / `nuhaaa@arah.app`, password in `.env.seed.local` (gitignored, verified) |
 | Node / Vercel CLI | v24.9.0 / 58.0.0 |
 
-**Security notes.** `.gitignore` covers `.vercel`, `.env*`, `.superpowers`; verified via
+**Security notes.** `.gitignore` covers `.vercel` and `.env*`; verified via
 `git check-ignore` that no secret is stageable. The seed password was shared in plaintext
 chat — fine for a demo account, but it must not be reused elsewhere and should be rotated
 before public launch.
