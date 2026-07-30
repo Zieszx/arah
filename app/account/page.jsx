@@ -33,6 +33,8 @@ import { Card } from '@/components/ui/card';
 import StaggerReveal from '@/components/motion/StaggerReveal.jsx';
 import OrphanCard from '@/components/account/OrphanCard.jsx';
 import DeleteAccountSection from '@/components/account/DeleteAccountSection.jsx';
+import AccountSettings from '@/components/account/AccountSettings.jsx';
+import { updateDisplayName, updateEmail, updatePassword } from './actions';
 
 export const metadata = {
   title: en.account.metaTitle,
@@ -71,11 +73,18 @@ export default async function AccountPage() {
     redirect(`/login?next=${encodeURIComponent('/account')}`);
   }
 
-  const [responses, predictions] = await Promise.all([
+  const [responses, predictions, profileResult] = await Promise.all([
     fetchQuizResponsesForUser(supabase, user.id),
     fetchPredictionsForUser(supabase, user.id),
+    // RLS scopes this to the caller's own row, so no id filter is load-bearing
+    // here — but it is written explicitly anyway rather than relying on the
+    // policy to be the only thing standing between accounts.
+    supabase.from('profiles').select('display_name').eq('id', user.id).maybeSingle(),
   ]);
   const history = buildQuizHistory(responses, predictions);
+  // A missing profiles row is not an error: the settings form just starts
+  // blank, and saving a name creates it.
+  const profile = profileResult?.data ?? null;
 
   return (
     <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-6 py-8 md:px-16 md:py-12">
@@ -138,6 +147,21 @@ export default async function AccountPage() {
             )}
           </StaggerReveal>
         )}
+      </section>
+
+      <section className="mt-16 max-w-[860px] md:mt-24">
+        <h2 className="font-display text-[30px] leading-[1.15] md:text-[38px]">
+          {en.account.settings.heading}
+        </h2>
+        <div className="mt-7">
+          <AccountSettings
+            email={user.email}
+            displayName={profile?.display_name ?? null}
+            updateDisplayNameAction={updateDisplayName}
+            updateEmailAction={updateEmail}
+            updatePasswordAction={updatePassword}
+          />
+        </div>
       </section>
 
       <div className="mt-16 max-w-[860px] md:mt-24">
