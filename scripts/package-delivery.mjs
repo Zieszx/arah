@@ -45,6 +45,68 @@ const NAME_EXCLUDE = [
 let copied = 0;
 let skipped = [];
 
+/** The login sheet. Values come from the caller, never from this file. */
+function credentialsSheet(c) {
+  return `# ARAH — demo logins
+
+**Live system:** https://arah-sand.vercel.app/login
+
+Two accounts, for reviewing the system as each kind of user.
+
+---
+
+## Administrator
+
+| | |
+| --- | --- |
+| Email | \`${c.adminEmail}\` |
+| Password | \`${c.adminPassword}\` |
+| Display name | ${c.adminName} |
+
+Signing in lands on **/admin**. All seven console sections are available:
+Overview, Response Charts, Survey Data, Student Responses, Contributions,
+People, Algorithm Tester.
+
+An admin can also use the student side freely — "Back to student site" in the
+top right, and every student route works normally.
+
+## Student
+
+| | |
+| --- | --- |
+| Email | \`${c.studentEmail}\` |
+| Password | \`${c.studentPassword}\` |
+| Display name | ${c.studentName} |
+
+Signing in lands on **/questions**. This account has no admin access: visiting
+any \`/admin\` URL directly redirects to the home page rather than showing a
+login prompt, which is deliberate — someone who was never meant to find the
+console is not invited to try credentials against it.
+
+---
+
+## Anything else needs no account
+
+The landing page, \`/explore\`, every field page, \`/contribute\` and
+\`/privacy\` are all public. An account is only needed to answer the questions
+and keep a result.
+
+---
+
+## Before this goes anywhere public
+
+**Change both passwords.** They were chosen for review, they are written in
+plain text in this file, and this file is meant to be shared. Either account
+can change its own password from **Account settings** at the bottom of
+\`/account\`, using the current password.
+
+There is no reset-by-email link anywhere in the system, because the system
+sends no email at all — so whoever holds an account needs to keep its password
+somewhere they can find it. An administrator cannot read or reset it; passwords
+are stored only as salted hashes and are not recoverable by anyone.
+`;
+}
+
 function excludedByName(name) {
   return NAME_EXCLUDE.some((re) => re.test(name));
 }
@@ -101,6 +163,36 @@ if (fs.existsSync(srcSurvey)) {
 //    and rebuilds the output directory.
 fs.copyFileSync(path.join(SRC, 'docs/DELIVERY-README.md'), path.join(OUT, 'README.md'));
 copied += 1;
+
+// 6. The credentials sheet.
+//
+// GENERATED, never committed. The values are read from .env.seed.local, which
+// is covered by the `.env*` rule in .gitignore — writing them into this
+// script, or into a markdown file in the repo, would put live passwords into
+// version control permanently, and git history is not something you can
+// un-share after the fact.
+//
+// Run with: node --env-file=.env.seed.local scripts/package-delivery.mjs
+// Without those variables the sheet is skipped and the run says so, rather
+// than emitting a file full of "undefined" that looks like it worked.
+const creds = {
+  adminEmail: process.env.SEED_USER_EMAIL,
+  adminPassword: process.env.SEED_USER_PASSWORD,
+  adminName: process.env.SEED_USER_NAME,
+  studentEmail: process.env.SEED_STUDENT_EMAIL,
+  studentPassword: process.env.SEED_STUDENT_PASSWORD,
+  studentName: process.env.SEED_STUDENT_NAME,
+};
+
+if (Object.values(creds).every(Boolean)) {
+  fs.writeFileSync(path.join(OUT, 'CREDENTIALS.md'), credentialsSheet(creds), 'utf8');
+  copied += 1;
+  console.log('wrote CREDENTIALS.md from .env.seed.local');
+} else {
+  console.log(
+    'SKIPPED CREDENTIALS.md — run with --env-file=.env.seed.local to generate it'
+  );
+}
 
 console.log(`copied ${copied} files into ${OUT}`);
 console.log('\nomitted at the top level:');

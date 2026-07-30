@@ -11,11 +11,17 @@ actually went into — with the sample size and confidence behind each one.
 
 ## What is in this folder
 
-| Folder | Contents |
+| | Contents |
 | --- | --- |
+| `CREDENTIALS.md` | Demo logins for the live system — one admin, one student |
 | `source-code/` | The complete application — runnable, see below |
 | `datasets/` | The survey the model is trained on, plus cited reference data |
 | `presentation/` | Pitch deck and technical system overview |
+
+To review the running system, open **https://arah-sand.vercel.app** and sign
+in with either account in `CREDENTIALS.md`. Both passwords should be changed
+before the system is used by real students — either account can change its own
+from Account settings.
 
 `source-code/README.md` is the full technical document: stack, how the
 prediction works, accuracy, privacy design, project layout and every script.
