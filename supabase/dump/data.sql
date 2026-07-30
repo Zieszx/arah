@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict AxJFNUuJGkgkkw2ltfSCm7sZZZNEhUabaCF2ureElcSvoOcUUpfjlnLSpNWNUt5
+\restrict 276qfk5teARoRthW12jofNp6rehAHkXoFHjBvhccbqWblv5rS1b2C4xQxMP4U2G
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 18.4
@@ -238,5 +238,5 @@ c9bef969-c507-4d19-b8d0-71c18a606689	Female	SPM 2021	Selangor	Public School (SMK
 -- PostgreSQL database dump complete
 --
 
-\unrestrict AxJFNUuJGkgkkw2ltfSCm7sZZZNEhUabaCF2ureElcSvoOcUUpfjlnLSpNWNUt5
+\unrestrict 276qfk5teARoRthW12jofNp6rehAHkXoFHjBvhccbqWblv5rS1b2C4xQxMP4U2G
 

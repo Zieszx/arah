@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict UiZeIJcKR9XQoF5PxPwxIQ8TQbzAFqBZJZu8Y4beKl2nqxqRIGecYswlVu1c3yV
+\restrict snOgF6Ibx9w2XOROyrwS6mgmkjZndVFJKrlXy328vIu9Ps1PdspQsppppfrBIw1
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 18.4
@@ -601,5 +601,5 @@ ALTER TABLE public.quiz_responses ENABLE ROW LEVEL SECURITY;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict UiZeIJcKR9XQoF5PxPwxIQ8TQbzAFqBZJZu8Y4beKl2nqxqRIGecYswlVu1c3yV
+\unrestrict snOgF6Ibx9w2XOROyrwS6mgmkjZndVFJKrlXy328vIu9Ps1PdspQsppppfrBIw1
 
