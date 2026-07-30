@@ -23,27 +23,35 @@
 // every panel flip) means the same two quotes stay stable while a student
 // toggles back and forth within one visit.
 import { Suspense } from 'react';
-import { createClient } from '@/lib/supabase/server';
+import { getAdviceQuotes } from '@/lib/explore/publicStats';
 import AuthShell from './auth-shell.jsx';
 
 async function fetchQuotes() {
-  const supabase = await createClient();
-  // Pull a small pool and shuffle in JS rather than `order by random()`:
-  // the view is only 68 rows, and a client-side Fisher-Yates avoids an
-  // unnecessary sequential-scan-with-sort in Postgres on every page load.
-  const { data, error } = await supabase.from('advice_quotes').select('advice').limit(40);
-  if (error || !data || data.length === 0) {
+  // The READ is cached (lib/explore/publicStats.js) — this view is identical
+  // for everyone and changed only by moderation. /login measured ~1.07s
+  // median before this, the slowest page in the product, purely because it
+  // re-queried the view on every load.
+  //
+  // The SHUFFLE stays out here on purpose. Caching it too would pin the same
+  // two quotes for every visitor for five minutes, which is the one thing
+  // this panel is not supposed to do.
+  let pool;
+  try {
+    pool = await getAdviceQuotes();
+  } catch (error) {
     // A quote is a nice-to-have for the panel, not load-bearing — if the
     // view is briefly unreachable, the auth page still has to work.
-    if (error) console.error('advice_quotes fetch failed:', error.code ?? error.message);
+    console.error('advice_quotes fetch failed:', error?.code ?? error?.message);
     return [];
   }
-  const pool = [...data];
-  for (let i = pool.length - 1; i > 0; i -= 1) {
+  if (!Array.isArray(pool) || pool.length === 0) return [];
+
+  const shuffled = [...pool];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  return pool.slice(0, 2).map((row) => row.advice);
+  return shuffled.slice(0, 2);
 }
 
 export default async function AuthLayout({ children }) {
