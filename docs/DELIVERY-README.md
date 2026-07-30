@@ -96,7 +96,7 @@ is present and none should be added before sharing.
 
 ```bash
 cd source-code
-npm test            # 371 JavaScript tests
+npm test            # 393 JavaScript tests
 python -m pytest    # 36 Python tests
 ```
 

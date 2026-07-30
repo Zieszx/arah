@@ -173,7 +173,7 @@ function note(s, text) {
     ['Machine learning', 'scikit-learn · NumPy · pandas · Joblib', 'pandas is training-only and deliberately absent from the deployed service.'],
     ['Data', 'Supabase Postgres · Row Level Security', 'Access rules live in the database, not only in application code.'],
     ['Charts', 'Recharts', 'The same component set on public pages and in the admin console.'],
-    ['Quality', 'Vitest · pytest · ESLint · Playwright', '387 JavaScript tests and 36 Python tests.'],
+    ['Quality', 'Vitest · pytest · ESLint · Playwright', '393 JavaScript tests and 36 Python tests.'],
   ];
   let y = 1.85;
   rows.forEach(([label, tech, why], i) => {
@@ -471,10 +471,10 @@ function note(s, text) {
 {
   const s = slide('Quality and verification', 'What has actually been proven.', { titleH: 0.6 });
   const stats = [
-    ['387', 'JavaScript tests', VIOLET],
+    ['393', 'JavaScript tests', VIOLET],
     ['36', 'Python tests', VIOLET_LT],
-    ['84', 'commits', CYAN],
-    ['10', 'database migrations', CYAN_LT],
+    ['92', 'commits', CYAN],
+    ['11', 'database migrations', CYAN_LT],
   ];
   const cw = 2.82, gap = 0.32;
   stats.forEach(([n, label, colour], i) => {

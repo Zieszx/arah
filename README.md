@@ -145,7 +145,7 @@ components/       UI, grouped by area: admin, explore, results, motion, layout
 lib/              Data access, ML mirror, i18n, admin logic, motion config
 services/ml/      The deployed Python service: encoder, model, ASGI entrypoint
 ml/               Training, measurement, and the dataset
-supabase/         10 SQL migrations, applied in order
+supabase/         11 SQL migrations, applied in order
 scripts/          Seeding and the training-set export
 tests/            js/ (Vitest) and python/ (pytest)
 docs/             Retraining, data sources, known issues, design system
@@ -155,7 +155,7 @@ docs/             Retraining, data sources, known issues, design system
 
 ## Testing
 
-371 JavaScript tests and 36 Python tests. Beyond the usual coverage they pin
+393 JavaScript tests and 36 Python tests. Beyond the usual coverage they pin
 the things that fail silently: encoder parity between the two languages, the
 privacy suppression and banding rules, the admin privilege guards, and the
 PostgREST query escaping.
