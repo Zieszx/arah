@@ -18,9 +18,11 @@ import { adminEntryHref } from './admin-entry';
 import featureSpec from '@/services/ml/feature_spec.json';
 
 const FOOTER_LINKS = [
-  // /explore and /contribute shipped in Plan 4 (Tasks 2-4). /privacy has
-  // not shipped yet — linked now by decision; a 404 there today is
-  // expected and fine.
+  // All four of these resolve. /privacy was linked here before the page
+  // existed, with a comment saying the 404 was fine during development — it
+  // was not fine at delivery, and app/privacy/page.jsx now exists. If a link
+  // is ever added here ahead of its route again, it will 404 on every page of
+  // the site, which is how this one went unnoticed for so long.
   { href: '/explore', label: en.chrome.footerNav.explore },
   { href: '/contribute', label: en.chrome.footerNav.contribute },
   { href: '/account', label: en.chrome.footerNav.account },

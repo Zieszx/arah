@@ -9,6 +9,9 @@
 404  /login?next=%2Fquestions
 ```
 
+**Still present at delivery**, re-checked 30 July 2026: every `?_rsc=` prefetch on `/`,
+`/explore` and the field pages returns 404.
+
 **Impact.** Navigation is unaffected — verified by clicking a real field-card link:
 landed on `/explore/architecture-built-environment`, correct `<h1>`, back button works.
 The cost is (a) no prefetch speed benefit, so navigation is slightly slower on a slow
@@ -34,9 +37,10 @@ not before demoing.
 
 ## 2. `lenis-smooth` class absent (cosmetic, no impact)
 
-Lenis adds `lenis` to `<html>` but not `lenis-smooth`. Scrolling reaches 100% of the page
-after the stylesheet fix, so this appears to be a version/naming difference rather than a
-fault. Noted so a future reader does not chase it.
+Lenis adds `lenis` to `<html>` but not `lenis-smooth` — confirmed again at delivery, the
+class list ends `... font-sans lenis`. Scrolling reaches 100% of the page after the
+stylesheet fix, so this is a version/naming difference rather than a fault. Noted so a
+future reader does not chase it.
 
 ---
 
@@ -61,8 +65,34 @@ closes that gap; the remaining four steps are manual and documented in
 **Authenticated journey unverified by hand.** Now driven end to end against production:
 login → ten questions → `/results/<id>` (top match Business & Management at 66%) →
 `/account` lists the run. No page errors. Role separation checked at the same time — the
-demo student account is redirected away from all five admin routes while the admin
-account reaches all five.
+demo student account is redirected away from all seven admin routes while the admin
+account reaches all seven.
+
+**The footer linked to `/privacy`, which did not exist.** On every page of the site, for
+the whole build, behind a comment saying the 404 was "expected and fine" during
+development. It was not fine at delivery — on a product about honest handling of
+students' data, that is the worst possible broken link. `app/privacy/page.jsx` now exists
+and states what is actually stored, who can see it, and how to delete it. Found by
+watching which URLs the browser prefetched, not by any test — so
+`tests/js/nav-links-resolve.test.js` now fails if any chrome link points at a route that
+does not exist.
+
+**Nobody could change their own email or password.** The account page only displayed the
+email. `/account` now has display-name, email and password forms; email and password both
+require the current password, re-checked server-side. There is deliberately no
+reset-by-email link, because the system sends no mail at all.
+
+**Out-of-range pagination showed nothing.** `?q=engineering&page=99` reported no results
+when 23 rows matched: PostgREST answers an out-of-range range with error PGRST103 and a
+null count rather than an empty page, so the clamp had no total to work with. All three
+paged screens shared the hole; `lib/admin/pagedQuery.js` now owns it.
+
+**Admin chrome duplicated on client navigation.** Two headers and three wordmarks after
+navigating from a student page into `/admin`, because a root layout does not re-render on
+client-side navigation. Moved to a client-side gate.
+
+**Response-chart labels overlapped at 390px.** A flat row height could not hold a
+four-line option label in a narrow axis column. Row height now follows the wrapping.
 
 **Header nav had no current-page state.** Added, with `aria-current="page"` in both the
 desktop row and the mobile drawer.
