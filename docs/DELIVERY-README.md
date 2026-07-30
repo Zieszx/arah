@@ -24,6 +24,7 @@ before the system is used by real students — either account can change its own
 from Account settings.
 
 **Start here if you want to understand what the system does:**
+`source-code/docs/EXPLAIN-SIMPLY.md` is one page with no jargon.
 `source-code/docs/PREDICTIVE-ANALYSIS.md` explains how the prediction works in
 plain language, and `source-code/docs/PROJECT-CHECKPOINTS.md` lists everything
 that was built.

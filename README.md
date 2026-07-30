@@ -168,6 +168,8 @@ npm test && python -m pytest
 
 ## Documentation
 
+- [`docs/EXPLAIN-SIMPLY.md`](docs/EXPLAIN-SIMPLY.md) — one page, no jargon,
+  for explaining the system to a client or a parent
 - [`docs/PREDICTIVE-ANALYSIS.md`](docs/PREDICTIVE-ANALYSIS.md) — how the
   prediction works, in plain language, written to be explained to a client
 - [`docs/PROJECT-CHECKPOINTS.md`](docs/PROJECT-CHECKPOINTS.md) — everything
