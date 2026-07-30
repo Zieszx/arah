@@ -48,10 +48,16 @@ export default function FieldCard({
   // lib/explore/sampleSize.js.
   const sampleSizeDisplay = formatSampleSize(sampleSize, sampleSizeBand);
 
+  // h-full matters: StaggerReveal puts each card inside a wrapper <div>, and
+  // it is that wrapper — not this Link — which is the grid item the row
+  // stretches. Without h-full the card only grows to its own content, so the
+  // mt-auto CTA below pins to the bottom of a *short* card and the "See the
+  // full picture" links come out ragged across a row. Caught on /explore in
+  // production, where three cards in one row ended at three different heights.
   return (
     <Link
       href={`/explore/${slug}`}
-      className="group flex min-h-11 flex-col overflow-hidden rounded-2xl border border-hairline bg-surface transition-colors duration-200 hover:border-violet-lt/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt"
+      className="group flex h-full min-h-11 flex-col overflow-hidden rounded-2xl border border-hairline bg-surface transition-colors duration-200 hover:border-violet-lt/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt"
     >
       <div
         aria-hidden="true"

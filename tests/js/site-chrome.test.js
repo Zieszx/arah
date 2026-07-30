@@ -18,6 +18,14 @@ vi.mock('next/link', () => ({
     React.createElement('a', { href, ...props }, children),
 }));
 
+// The header marks the current section from usePathname(). Outside a real
+// App Router tree that returns null, so the tests drive it explicitly —
+// including the null case, which must simply light nothing.
+const pathnameRef = { current: '/' };
+vi.mock('next/navigation', () => ({
+  usePathname: () => pathnameRef.current,
+}));
+
 // jsdom has no matchMedia; the header uses it to auto-close the drawer
 // when the viewport grows past 768px.
 window.matchMedia = (query) => ({
@@ -90,6 +98,69 @@ function openDrawer(container) {
   });
   return toggle;
 }
+
+// Reads the desktop nav's current-page marker. aria-current is the contract
+// the styling hangs off, so asserting on it covers both at once.
+function currentHrefs(container) {
+  return Array.from(container.querySelectorAll('a[aria-current="page"]')).map(
+    (a) => a.getAttribute('href')
+  );
+}
+
+describe('HeaderChrome active navigation state', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    pathnameRef.current = '/';
+  });
+
+  it('marks nothing on the landing page — no nav entry points at /', () => {
+    pathnameRef.current = '/';
+    const { container, root } = renderHeader();
+    expect(currentHrefs(container)).toEqual([]);
+    root.unmount();
+  });
+
+  it('marks exactly the section being viewed, and only that one', () => {
+    pathnameRef.current = '/explore';
+    const { container, root } = renderHeader();
+    expect(currentHrefs(container)).toEqual(['/explore']);
+    root.unmount();
+  });
+
+  it('keeps the section lit on a detail page beneath it', () => {
+    // A field page is still "in" Explore; going dark here reads as a bug.
+    pathnameRef.current = '/explore/engineering';
+    const { container, root } = renderHeader();
+    expect(currentHrefs(container)).toEqual(['/explore']);
+    root.unmount();
+  });
+
+  it('does not treat a shared prefix as the same section', () => {
+    // /questions must not light up for a sibling like /questions-archive.
+    pathnameRef.current = '/questions-archive';
+    const { container, root } = renderHeader();
+    expect(currentHrefs(container)).toEqual([]);
+    root.unmount();
+  });
+
+  it('marks nothing when the pathname is unknown (null)', () => {
+    pathnameRef.current = null;
+    const { container, root } = renderHeader();
+    expect(currentHrefs(container)).toEqual([]);
+    root.unmount();
+  });
+
+  it('marks the matching entry inside the mobile drawer too', () => {
+    pathnameRef.current = '/contribute';
+    const { container, root } = renderHeader();
+    openDrawer(container);
+    const drawerCurrent = Array.from(
+      document.getElementById('site-menu').querySelectorAll('a[aria-current="page"]')
+    ).map((a) => a.getAttribute('href'));
+    expect(drawerCurrent).toEqual(['/contribute']);
+    root.unmount();
+  });
+});
 
 describe('HeaderChrome mobile drawer', () => {
   beforeEach(() => {

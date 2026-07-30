@@ -21,6 +21,7 @@
 // ~0ms, so no useMotionCapability gating is needed at all.
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import en from '@/lib/i18n/en';
 
@@ -36,11 +37,38 @@ const NAV_LINKS = [
 // file — Tailwind v4's outline-none sets --tw-outline-style: none
 // unconditionally and would silently kill the focus-visible ring (the
 // FlowButton comment documents the mechanism; it bit this project before).
+// The base recipe. Active state is layered on top by navLink() below rather
+// than baked in here, because the drawer reuses the same idea at a much
+// larger type size.
 const navLinkClass = cn(
-  'inline-flex min-h-11 items-center text-sm text-muted-foreground',
+  'relative inline-flex min-h-11 items-center text-sm text-muted-foreground',
   'transition-colors duration-200 hover:text-text active:text-violet-lt',
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt'
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt',
+  // The underline is an ::after hairline that scales in from the left. It is
+  // laid out at full width even when inactive (scale-x-0) so switching pages
+  // never reflows the nav row.
+  'after:absolute after:inset-x-0 after:bottom-2.5 after:h-px after:origin-left',
+  'after:bg-violet-pl after:transition-transform after:duration-300 after:content-[""]'
 );
+
+// Marks the current section. `/explore/engineering` keeps `/explore` lit —
+// a detail page is still "in" that section, and going dark there reads as a
+// navigation bug. No entry is `/`, so prefix matching is safe for all of
+// them; a `/` entry would need an exact check instead.
+// usePathname() is typed `string | null` and really does hand back null
+// outside a mounted App Router tree, so this must not assume a string —
+// nothing is "current" when we don't know where we are.
+function isActive(pathname, href) {
+  if (typeof pathname !== 'string') return false;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function navLink(active) {
+  return cn(
+    navLinkClass,
+    active ? 'text-text after:scale-x-100' : 'after:scale-x-0'
+  );
+}
 
 const authPillClass = cn(
   'inline-flex min-h-11 items-center rounded-full border border-hairline px-5',
@@ -50,6 +78,7 @@ const authPillClass = cn(
 );
 
 export default function HeaderChrome({ signedIn, logoutAction }) {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const toggleRef = useRef(null);
@@ -202,11 +231,19 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
 
           {/* Desktop nav — hidden below 768px. */}
           <nav aria-label="Site" className="hidden items-center gap-8 md:flex">
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link key={href} href={href} className={navLinkClass}>
-                {label}
-              </Link>
-            ))}
+            {NAV_LINKS.map(({ href, label }) => {
+              const active = isActive(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? 'page' : undefined}
+                  className={navLink(active)}
+                >
+                  {label}
+                </Link>
+              );
+            })}
             {authAction}
           </nav>
 
@@ -267,20 +304,35 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
           )}
         >
           <nav aria-label="Site" className="flex flex-col gap-2">
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={closeForNavigation}
-                className={cn(
-                  'font-display inline-flex min-h-12 w-fit items-center text-3xl text-text',
-                  'transition-colors duration-200 hover:text-violet-lt active:text-violet-pl',
-                  'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-lt'
-                )}
-              >
-                {label}
-              </Link>
-            ))}
+            {NAV_LINKS.map(({ href, label }) => {
+              const active = isActive(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={closeForNavigation}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'font-display inline-flex min-h-12 w-fit items-center gap-3 text-3xl',
+                    'transition-colors duration-200 hover:text-violet-lt active:text-violet-pl',
+                    'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-lt',
+                    active ? 'text-violet-pl' : 'text-text'
+                  )}
+                >
+                  {/* A colour swap alone is a weak signal at this size on a
+                      near-white panel, so the current item also carries a
+                      rule — two cues, neither of which is colour on its own. */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'h-px w-6 transition-colors duration-200',
+                      active ? 'bg-violet-pl' : 'bg-transparent'
+                    )}
+                  />
+                  {label}
+                </Link>
+              );
+            })}
           </nav>
           <div className="mt-10 border-t border-hairline pt-8">
             {signedIn ? (
