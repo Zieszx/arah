@@ -39,6 +39,51 @@ This is real, authoritative data. It is also the wrong shape:
   improvement — it would be a change made on faith, to a system that gives
   teenagers advice about their education.
 
+## The public datasets, checked by name
+
+Asked twice, so checked concretely rather than dismissed on principle. What is
+actually on Kaggle under "career prediction":
+
+| Dataset | Why it cannot be used |
+| --- | --- |
+| Computer Science Students Career Prediction | Its own description says the students are from a **fictional university** |
+| Career Prediction Dataset | Numerical and spatial **aptitude test scores** — a different instrument entirely, with no SPM data |
+| Career Path Prediction for Different Fields | Non-Malaysian population, generic field taxonomy |
+| Job Description Dataset | Generated with **Faker**, a library whose only purpose is producing fake records |
+
+Provenance aside, there is a harder problem: **no overlap on the questions
+that matter.** Our model reads ten inputs, and every one is Malaysia-specific:
+
+| Our model needs | Present in those datasets |
+| --- | --- |
+| SPM stream (Sains, Perniagaan, Islamic Studies…) | no |
+| SPM results band ("6 – 8 As") | no — GPA or aptitude scores instead |
+| Pre-U route (STPM, Matrikulasi, Foundation) | no |
+| School type (SMK, SBP/MRSM) | no |
+| Malaysian subject groupings | no |
+
+Merging would mean inventing an SPM stream and a results band for every
+foreign record. That is not importing data; it is manufacturing respondents,
+and the accuracy figure would then measure how well the model had learned an
+invention.
+
+## A real option, for detail rather than accuracy
+
+The **MOHE Graduate Tracer Study** (*Kajian Pengesanan Graduan*) is genuine,
+compulsory, published Malaysian data: employment status, time to employment,
+starting salary, and whether the job matched the field. It answers the
+question a student asks *next* — "what happens after I study this?"
+
+It would belong beside the prediction on each field page, cited to MoHE with
+the year, and never inside the model. Not built at handover: the per-field
+breakdowns live in published PDFs that were not machine-read, and estimating
+them from headline figures would be the same fabrication this document rejects
+everywhere else.
+
+Verified headline figures only, for whoever picks this up:
+84.4% graduate employability (2020, down from 86.2%), and 66.6% of graduates
+working in a field related to their study.
+
 ## What must not be done
 
 **Synthetic respondents.** It is easy to generate a few thousand plausible
