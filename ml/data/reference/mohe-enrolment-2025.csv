@@ -1,0 +1,6 @@
+segment,level,total_students,malaysian_students,international_students,international_pct,as_of,source
+All higher education institutions,All levels,1264541,1105403,159138,12.6,2025-12-31,MoHE
+Public universities,All levels,634706,578141,56565,8.9,2025-12-31,MoHE
+Public universities,Undergraduate,520105,502212,17893,3.44,2025-12-31,MoHE
+Public universities,Postgraduate,114601,75929,38672,33.74,2025-12-31,MoHE
+Five research universities,All levels,186824,145727,41097,22.0,2025-12-31,MoHE

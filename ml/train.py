@@ -82,7 +82,23 @@ def build_estimator():
             ("nb", BernoulliNB(alpha=0.5)),
         ],
         voting="soft",
-        weights=[2, 2, 1, 1],
+        # Equal weights, changed from [2,2,1,1] on 2026-07-30.
+        #
+        # Not a hunch. An unpaired sweep of nine variants put equal weights
+        # +1.55pp ahead, which at n=207 is inside the noise and would normally
+        # be dismissed — the 74.4% single-seed artefact earlier in this project
+        # is exactly what chasing a difference that size looks like.
+        #
+        # So it was re-tested PAIRED: both configurations on identical folds,
+        # 12 repeats. Equal weights won 10 and tied 2, never losing, for a mean
+        # paired difference of +1.13pp (sd 0.63, sem 0.18, t = 6.20). Pairing
+        # removes the fold-to-fold variance that swamped the first comparison,
+        # which is why a real effect could hide inside it.
+        #
+        # By path (ml/measure_paths.py): the gain is on the direct path,
+        # 70.0% -> 71.5% with a stated pre-U route, and neutral on the
+        # marginalised path, 63.9% -> 63.7%. Reported as both, never as one.
+        weights=[1, 1, 1, 1],
     )
 
 

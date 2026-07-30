@@ -49,9 +49,13 @@ Four steps. Only the first is automated.
 ```bash
 npm run export:training     # 1. append approved contributions to the CSV
 python ml/train.py          # 2. refit; aborts below the 66.0% top-3 CV floor
-                            # 3. read the printed accuracy
+python ml/measure_paths.py  # 3. both published figures, plus the baseline
                             # 4. commit the artefacts, then redeploy
 ```
+
+`measure_paths.py` is the script behind the two numbers on the site. Run it
+after every retrain and update `lib/i18n/en.js` if they moved — a stale
+accuracy claim is the one kind of bug this project cannot ship.
 
 **Step 1** (`scripts/export-training-csv.mjs`) appends verified
 `alumni_profiles` rows that are not already in `ml/data/survey.csv`. It
@@ -64,8 +68,8 @@ no-op that writes nothing.
 anything if repeated cross-validation lands below 66.0% top-3.
 
 **Step 3 is a human judgement and cannot be skipped.** Passing the floor is not
-the same as being better. Compare against the current figures — 69.1% top-3
-with a stated pre-U route, 62.8% without, against a 49.3% most-popular-field
+the same as being better. Compare against the current figures — 71.5% top-3
+with a stated pre-U route, 63.7% without, against a 49.3% most-popular-field
 baseline. Confidence interval is roughly ±6pp at n=207, so a 1–2pp move is
 noise, not improvement. If accuracy dropped meaningfully, do not ship it;
 `git checkout` the artefacts and work out why first.
