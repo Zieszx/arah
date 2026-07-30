@@ -23,6 +23,11 @@ in with either account in `CREDENTIALS.md`. Both passwords should be changed
 before the system is used by real students — either account can change its own
 from Account settings.
 
+**Start here if you want to understand what the system does:**
+`source-code/docs/PREDICTIVE-ANALYSIS.md` explains how the prediction works in
+plain language, and `source-code/docs/PROJECT-CHECKPOINTS.md` lists everything
+that was built.
+
 `source-code/README.md` is the full technical document: stack, how the
 prediction works, accuracy, privacy design, project layout and every script.
 Start there.

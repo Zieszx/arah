@@ -168,6 +168,10 @@ npm test && python -m pytest
 
 ## Documentation
 
+- [`docs/PREDICTIVE-ANALYSIS.md`](docs/PREDICTIVE-ANALYSIS.md) — how the
+  prediction works, in plain language, written to be explained to a client
+- [`docs/PROJECT-CHECKPOINTS.md`](docs/PROJECT-CHECKPOINTS.md) — everything
+  delivered, and everything deliberately not delivered
 - [`docs/RETRAINING.md`](docs/RETRAINING.md) — how a contribution reaches the
   model, and why retraining is deliberately manual
 - [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md) — where the data comes from,
