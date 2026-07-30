@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "seed:alumni": "node --env-file=.env.development.local scripts/seed-alumni.mjs",
     "seed:user": "node --env-file=.env.development.local --env-file=.env.seed.local scripts/seed-user.mjs",
-    "export:training": "node --env-file=.env.development.local scripts/export-training-csv.mjs"
+    "export:training": "node --env-file=.env.development.local scripts/export-training-csv.mjs",
+    "deck": "node decks/system-overview.js && python decks/qa.py"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
@@ -41,6 +42,7 @@
     "eslint-config-next": "16.2.12",
     "jsdom": "^29.1.1",
     "pg": "^8.22.0",
+    "pptxgenjs": "^4.0.1",
     "tailwindcss": "^4",
     "vitest": "^4.1.10"
   }

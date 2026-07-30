@@ -21,7 +21,7 @@ const OUT = path.join(PARENT, 'Delivery');
 // Explicit allowlist. Everything else at the repo root is omitted.
 const TOP_LEVEL_KEEP = new Set([
   'app', 'components', 'lib', 'ml', 'public', 'scripts', 'services',
-  'supabase', 'tests', 'docs',
+  'supabase', 'tests', 'docs', 'decks',
   'README.md', 'package.json', 'package-lock.json', 'next.config.mjs',
   'vercel.json', 'eslint.config.mjs', 'jsconfig.json', 'postcss.config.mjs',
   'components.json', 'proxy.js', 'pytest.ini', 'requirements-dev.txt',
