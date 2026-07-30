@@ -21,6 +21,7 @@
 // ~0ms, so no useMotionCapability gating is needed at all.
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useLinkStatus } from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import en from '@/lib/i18n/en';
@@ -43,13 +44,44 @@ const NAV_LINKS = [
 const navLinkClass = cn(
   'relative inline-flex min-h-11 items-center text-sm text-muted-foreground',
   'transition-colors duration-200 hover:text-text active:text-violet-lt',
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt',
-  // The underline is an ::after hairline that scales in from the left. It is
-  // laid out at full width even when inactive (scale-x-0) so switching pages
-  // never reflows the nav row.
-  'after:absolute after:inset-x-0 after:bottom-2.5 after:h-px after:origin-left',
-  'after:bg-violet-pl after:transition-transform after:duration-300 after:content-[""]'
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt'
 );
+
+/**
+ * The underline under a nav item. A real child rather than an ::after, because
+ * it now has to react to THREE states, and a pseudo-element cannot read the
+ * link's pending status:
+ *
+ *   active   the page you are on
+ *   pending  clicked, navigation in flight
+ *   neither  hidden
+ *
+ * The pending state is the point. Navigation here costs a server round trip
+ * (prefetch is off — see the prefetch={false} comment below), and measured
+ * against production the first visual change took 579ms on /explore and never
+ * came at all on routes that had no loading.jsx. Half a second of a menu
+ * looking untouched is exactly how someone ends up clicking it four times.
+ *
+ * useLinkStatus must be called from a component INSIDE the Link — it reads the
+ * nearest Link ancestor, so a flag passed down from the component rendering
+ * the Link would not work.
+ */
+function NavUnderline({ active }) {
+  const { pending } = useLinkStatus();
+  const shown = active || pending;
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'absolute inset-x-0 bottom-2.5 h-px origin-left bg-violet-pl',
+        'transition-transform duration-200',
+        shown ? 'scale-x-100' : 'scale-x-0',
+        // A pending underline pulses so it reads as "working", not "arrived".
+        pending && !active && 'animate-pulse'
+      )}
+    />
+  );
+}
 
 // Marks the current section. `/explore/engineering` keeps `/explore` lit —
 // a detail page is still "in" that section, and going dark there reads as a
@@ -64,9 +96,27 @@ function isActive(pathname, href) {
 }
 
 function navLink(active) {
-  return cn(
-    navLinkClass,
-    active ? 'text-text after:scale-x-100' : 'after:scale-x-0'
+  return cn(navLinkClass, active && 'text-text');
+}
+
+/**
+ * The drawer's leading rule. Same job as NavUnderline: it marks the current
+ * item, and it appears the instant a link is clicked so a tap is acknowledged
+ * before the route has loaded. On a phone this matters more than on desktop —
+ * there is no hover state to have given any prior feedback.
+ */
+function DrawerRule({ active }) {
+  const { pending } = useLinkStatus();
+  const shown = active || pending;
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'h-px w-6 transition-colors duration-200',
+        shown ? 'bg-violet-pl' : 'bg-transparent',
+        pending && !active && 'animate-pulse'
+      )}
+    />
   );
 }
 
@@ -244,6 +294,7 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
                   className={navLink(active)}
                 >
                   {label}
+                  <NavUnderline active={active} />
                 </Link>
               );
             })}
@@ -324,14 +375,9 @@ export default function HeaderChrome({ signedIn, logoutAction }) {
                 >
                   {/* A colour swap alone is a weak signal at this size on a
                       near-white panel, so the current item also carries a
-                      rule — two cues, neither of which is colour on its own. */}
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'h-px w-6 transition-colors duration-200',
-                      active ? 'bg-violet-pl' : 'bg-transparent'
-                    )}
-                  />
+                      rule — two cues, neither of which is colour on its own.
+                      The same rule doubles as the pending indicator. */}
+                  <DrawerRule active={active} />
                   {label}
                 </Link>
               );

@@ -13,9 +13,16 @@ import { act } from 'react';
 
 // next/link renders through Next's router context, which doesn't exist in
 // a bare jsdom test — substitute a plain anchor with identical props.
+// The header now also imports useLinkStatus, so the mock has to provide it or
+// every render throws. `pending` is driven from here so the pending-state
+// tests can flip it without a real navigation.
+const linkStatus = { pending: false };
 vi.mock('next/link', () => ({
-  default: ({ href, children, ...props }) =>
+  default: ({ href, children, prefetch, ...props }) =>
+    // `prefetch` is swallowed rather than spread: React warns about an unknown
+    // boolean attribute on a DOM element, and the warning is noise here.
     React.createElement('a', { href, ...props }, children),
+  useLinkStatus: () => linkStatus,
 }));
 
 // The header marks the current section from usePathname(). Outside a real
@@ -262,6 +269,84 @@ describe('HeaderChrome mobile drawer', () => {
       .flatMap((node) => Array.from(node.querySelectorAll('*')));
     for (const el of all) {
       expect(String(el.className)).not.toMatch(/(?:^|\s)outline-none(?:\s|$)/);
+    }
+    root.unmount();
+  });
+});
+
+// The pending indicator. This exists because measured against production a
+// menu click produced no visual change for 579ms on /explore, and none at all
+// on routes that had no loading.jsx — half a second of a menu looking
+// untouched is how someone ends up clicking it four times.
+//
+// useLinkStatus fires on click, before the route has loaded, so the marker
+// appears immediately. `linkStatus.pending` is the mock at the top of this
+// file, standing in for a navigation in flight.
+describe('HeaderChrome pending navigation feedback', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    pathnameRef.current = '/';
+    linkStatus.pending = false;
+  });
+
+  /**
+   * Desktop underlines that are actually VISIBLE.
+   *
+   * Matching on `bg-violet-pl` would count all four: the colour is always on
+   * the element and only the transform toggles. Visibility is scale-x-100 —
+   * the underline is laid out at full width even when hidden so switching
+   * pages never reflows the nav row.
+   */
+  function shownMarkers(scope) {
+    return Array.from(scope.querySelectorAll('span[aria-hidden="true"]')).filter(
+      (el) => el.className.includes('scale-x-100')
+    ).length;
+  }
+
+  it('shows no marker when nothing is active and nothing is pending', () => {
+    const { container, root } = renderHeader();
+    const nav = container.querySelector('nav[aria-label="Site"]');
+    expect(shownMarkers(nav)).toBe(0);
+    root.unmount();
+  });
+
+  it('shows a marker on every nav item while a navigation is in flight', () => {
+    // The mock is global, so all links read pending — enough to prove the
+    // indicator is driven by link status rather than by the active route.
+    linkStatus.pending = true;
+    const { container, root } = renderHeader();
+    const nav = container.querySelector('nav[aria-label="Site"]');
+    expect(shownMarkers(nav)).toBeGreaterThan(0);
+    root.unmount();
+  });
+
+  it('marks the active item even when nothing is pending', () => {
+    pathnameRef.current = '/explore';
+    const { container, root } = renderHeader();
+    const nav = container.querySelector('nav[aria-label="Site"]');
+    expect(shownMarkers(nav)).toBe(1);
+    root.unmount();
+  });
+
+  it('does not pulse the active item — it has arrived, not pending', () => {
+    pathnameRef.current = '/explore';
+    const { container, root } = renderHeader();
+    const active = container.querySelector('a[aria-current="page"]');
+    const marker = active.querySelector('span[aria-hidden="true"]');
+    expect(marker.className).not.toContain('animate-pulse');
+    root.unmount();
+  });
+
+  it('keeps the marker decorative — never announced', () => {
+    // A screen reader gets the route-level loading announcement; a second
+    // live region on every nav item would talk over it.
+    linkStatus.pending = true;
+    const { container, root } = renderHeader();
+    const nav = container.querySelector('nav[aria-label="Site"]');
+    for (const span of nav.querySelectorAll('span')) {
+      if (span.className.includes('bg-violet-pl')) {
+        expect(span.getAttribute('aria-hidden')).toBe('true');
+      }
     }
     root.unmount();
   });

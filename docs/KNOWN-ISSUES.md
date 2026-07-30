@@ -51,12 +51,21 @@ carry a comment pointing here.
 
 ---
 
-## 2. `lenis-smooth` class absent (cosmetic, no impact)
+## 2. `lenis-smooth` class absent — CLOSED, not a defect
 
-Lenis adds `lenis` to `<html>` but not `lenis-smooth` — confirmed again at delivery, the
-class list ends `... font-sans lenis`. Scrolling reaches 100% of the page after the
-stylesheet fix, so this is a version/naming difference rather than a fault. Noted so a
-future reader does not chase it.
+Lenis adds `lenis` to `<html>` but not `lenis-smooth`. Chased to the end rather
+than left as a shrug: `node_modules/lenis/dist/lenis.css` uses that class in
+exactly one rule,
+
+```css
+.lenis.lenis-smooth iframe { pointer-events: none; }
+```
+
+and this application renders **no iframes at all** (`grep -rn "<iframe" app
+components` returns nothing). The class is therefore inert here — there is no
+behaviour it could have changed. Scrolling reaches 100% of every page.
+
+Closed. Re-open only if an iframe is ever added.
 
 ---
 
