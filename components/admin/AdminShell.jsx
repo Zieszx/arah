@@ -29,10 +29,10 @@ export default function AdminShell({ profile, signOutAction, children }) {
         profile={profile}
         signOutAction={signOutAction}
       />
-      {/* xl:pl-60 reserves the pinned sidebar's 240px column; below that
+      {/* xl:pl-64 reserves the pinned sidebar's 256px column; below that
           breakpoint the sidebar is off-canvas and this column is full
-          width. */}
-      <div className="flex min-h-full flex-col xl:pl-60">
+          width. Keep this in step with the aside's own w-64. */}
+      <div className="flex min-h-full flex-col xl:pl-64">
         <AdminHeader
           profile={profile}
           open={open}

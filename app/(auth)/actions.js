@@ -31,16 +31,42 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Where a fresh session lands when no ?next= was carried in.
 const DEFAULT_NEXT = '/questions';
+// ...unless the account is an admin, whose work starts in the console. This
+// is only a landing default: nothing stops an admin from browsing the
+// student site, and the header's own links still go where they say.
+const ADMIN_NEXT = '/admin';
 
 // The ?next= value is attacker-controllable (it's a URL parameter), so it
 // must stay a same-origin path: absolute URLs, protocol-relative "//evil.com"
-// and backslash tricks are all collapsed to the default. Prevents an open
-// redirect from a link like /login?next=https://phish.example.
+// and backslash tricks are all rejected. Prevents an open redirect from a
+// link like /login?next=https://phish.example.
+//
+// Returns null rather than the default when there is no usable value, so the
+// caller can tell "the user asked to go somewhere specific" apart from "we
+// are choosing for them" — an admin who followed /login?next=/contribute must
+// land on /contribute, not be yanked into the console.
 function safeNext(raw) {
-  if (typeof raw !== 'string') return DEFAULT_NEXT;
-  if (!raw.startsWith('/')) return DEFAULT_NEXT;
-  if (raw.startsWith('//') || raw.startsWith('/\\')) return DEFAULT_NEXT;
+  if (typeof raw !== 'string') return null;
+  if (!raw.startsWith('/')) return null;
+  if (raw.startsWith('//') || raw.startsWith('/\\')) return null;
   return raw;
+}
+
+// Fails open to the student destination: a profiles read that errors must
+// never strand a normal student on an admin route they cannot see, and an
+// admin sent to /questions is a mild inconvenience, not a fault.
+async function landingFor(supabase, userId, explicitNext) {
+  if (explicitNext) return explicitNext;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', userId)
+    .maybeSingle();
+  if (error) {
+    console.error('landing profiles read failed:', error.code);
+    return DEFAULT_NEXT;
+  }
+  return data?.is_admin ? ADMIN_NEXT : DEFAULT_NEXT;
 }
 
 // Translate a Supabase AuthError into field-level copy. Codes are from
@@ -99,7 +125,9 @@ export async function login(prevState, formData) {
   // row already exists.
   await ensureProfile(supabase, data.user.id);
 
-  redirect(next);
+  const destination = await landingFor(supabase, data.user.id, next);
+
+  redirect(destination);
 }
 
 export async function signup(prevState, formData) {
@@ -166,7 +194,9 @@ export async function signup(prevState, formData) {
 
   await ensureProfile(supabase, userId);
 
-  redirect(next);
+  // A brand-new account is never an admin, so this only honours an explicit
+  // ?next= and otherwise sends them to the questions — no profiles read.
+  redirect(next ?? DEFAULT_NEXT);
 }
 
 // Sign out and land on the public home page. Invoked from the site

@@ -34,8 +34,11 @@ export default function AdminHeader({ profile, open, onToggle, toggleRef, signOu
   const name = profile?.display_name || profile?.email || 'Admin';
 
   return (
+    // h-[72px] matches the sidebar's brand block exactly, so the breadcrumb
+    // baseline and the "Admin console" subtitle sit on the same line across
+    // the divider instead of being a few pixels out.
     <header className="sticky top-0 z-30 border-b border-hairline bg-surface/95 backdrop-blur-md">
-      <div className="flex h-16 items-center gap-4 px-4 md:px-6">
+      <div className="flex h-[72px] items-center gap-4 px-4 md:px-6">
         <button
           ref={toggleRef}
           type="button"

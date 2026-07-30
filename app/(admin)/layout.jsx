@@ -14,10 +14,12 @@
 // This route group is nested INSIDE the existing app/layout.jsx (route
 // groups add wrapping, they don't replace an ancestor root layout — see
 // node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/route-groups.md).
-// app/layout.jsx conditionally skips rendering the public SiteHeader/
-// SiteFooter for any /admin route (detected via the `x-pathname` header
-// proxy.js now forwards) so this shell is the ONLY chrome an admin page
-// shows — no duplicated nav, no duplicated sign-out.
+// app/layout.jsx skips the public SiteHeader/SiteFooter for any /admin route
+// via components/layout/ChromeGate.jsx, so this shell is the ONLY chrome an
+// admin page shows — no duplicated nav, no duplicated sign-out. That gate is
+// client-side for the same reason this file calls requireAdmin() again: a
+// layout does not re-render on client-side navigation. Deciding it on the
+// server left two headers stacked after navigating into /admin.
 import { logout } from '@/app/(auth)/actions';
 import requireAdmin from '@/lib/auth/requireAdmin';
 import AdminShell from '@/components/admin/AdminShell.jsx';

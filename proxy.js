@@ -27,21 +27,17 @@ function isProtectedPath(pathname) {
 export async function proxy(request) {
   const { pathname, search } = request.nextUrl;
 
-  // Forward the resolved pathname as a request header so a Server
-  // Component downstream (app/layout.jsx) can read it via next/headers
-  // `headers()` -- Server Components otherwise have no way to know the
-  // current route (see node_modules/next/dist/docs/01-app/02-guides/authentication.md,
-  // "Layouts and auth checks": layouts don't re-render on client-side
-  // navigation, so this has to be supplied per-request by Proxy, which
-  // DOES run on every navigation). Used to decide whether the public
-  // SiteHeader/SiteFooter render, since app/(admin) supplies its own
-  // chrome (components/admin/AdminShell.jsx) and showing both would
-  // duplicate the nav and the sign-out control. Mutating request.headers
-  // before updateSession() runs means the modified headers propagate
-  // through every NextResponse.next({ request }) it builds internally
-  // (same mechanism updateSession already relies on for refreshed
-  // cookies to reach this render).
-  request.headers.set("x-pathname", pathname);
+  // NOTE: this used to forward the pathname as an `x-pathname` request
+  // header so app/layout.jsx could branch on it and skip the public
+  // SiteHeader/SiteFooter for /admin. That was wrong, and the reason is
+  // worth keeping: Proxy does run on every navigation, but the ROOT LAYOUT
+  // does not re-render on client-side navigation, so it kept whatever it
+  // decided on first paint. Navigating from a student page into /admin left
+  // two headers stacked; direct-loading /admin and navigating back out left
+  // a student page with none. The decision now lives in
+  // components/layout/ChromeGate.jsx, a client component reading
+  // usePathname(), which does update per navigation. Do not reintroduce the
+  // header for this purpose.
 
   const { response, user } = await updateSession(request);
 

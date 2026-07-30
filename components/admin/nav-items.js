@@ -1,23 +1,58 @@
-// Single source of truth for the admin sidebar's nav — shared by
-// AdminSidebar (renders the list) and AdminHeader (derives the
-// breadcrumb from whichever item matches the current path), so the two
-// can never drift out of sync on labels or hrefs.
+// Single source of truth for the admin nav — shared by AdminSidebar (renders
+// the groups) and AdminHeader (derives the breadcrumb from whichever item
+// matches the current path), so the two can never drift on labels or hrefs.
 //
-// Only /admin (Overview, this plan's Task 2) exists today. The other four
-// routes are the rest of Plan 5 — linking to them now, ahead of their own
-// pages landing, is deliberate: the nav is meant to read as the whole
-// admin section from day one, not grow a link at a time. Visiting one
-// before its task ships is an ordinary 404, same as any other
-// not-yet-built route in this codebase.
+// ADMIN_NAV_GROUPS is the structure the sidebar renders. ADMIN_NAV_ITEMS is
+// the flat list derived from it, and remains the contract everything else
+// (breadcrumb, tests) reads — adding a group must never mean remembering to
+// update a second hand-maintained list.
+import {
+  LayoutDashboard,
+  ChartPie,
+  Table2,
+  ClipboardList,
+  Inbox,
+  FlaskConical,
+} from 'lucide-react';
 import en from '@/lib/i18n/en';
 
-export const ADMIN_NAV_ITEMS = [
-  { href: '/admin', label: en.admin.nav.overview },
-  { href: '/admin/survey-data', label: en.admin.nav.surveyData },
-  { href: '/admin/responses', label: en.admin.nav.studentResponses },
-  { href: '/admin/contributions', label: en.admin.nav.contributions },
-  { href: '/admin/algorithm-tester', label: en.admin.nav.algorithmTester },
+export const ADMIN_NAV_GROUPS = [
+  {
+    label: en.admin.nav.groupDashboard,
+    items: [
+      { href: '/admin', label: en.admin.nav.overview, icon: LayoutDashboard },
+      {
+        href: '/admin/response-charts',
+        label: en.admin.nav.responseCharts,
+        icon: ChartPie,
+      },
+    ],
+  },
+  {
+    label: en.admin.nav.groupData,
+    items: [
+      { href: '/admin/survey-data', label: en.admin.nav.surveyData, icon: Table2 },
+      {
+        href: '/admin/responses',
+        label: en.admin.nav.studentResponses,
+        icon: ClipboardList,
+      },
+      { href: '/admin/contributions', label: en.admin.nav.contributions, icon: Inbox },
+    ],
+  },
+  {
+    label: en.admin.nav.groupModel,
+    items: [
+      {
+        href: '/admin/algorithm-tester',
+        label: en.admin.nav.algorithmTester,
+        icon: FlaskConical,
+      },
+    ],
+  },
 ];
+
+export const ADMIN_NAV_ITEMS = ADMIN_NAV_GROUPS.flatMap((group) => group.items);
 
 /**
  * Is `pathname` this nav item's route? `/admin` only matches exactly
@@ -26,6 +61,7 @@ export const ADMIN_NAV_ITEMS = [
  * or any of its own sub-routes.
  */
 export function isNavItemActive(pathname, href) {
+  if (typeof pathname !== 'string') return false;
   if (href === '/admin') return pathname === '/admin';
   return pathname === href || pathname.startsWith(`${href}/`);
 }

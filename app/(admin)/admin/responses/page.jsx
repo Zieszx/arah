@@ -16,9 +16,11 @@
 import Link from 'next/link';
 import requireAdmin from '@/lib/auth/requireAdmin';
 import { getResponsesList } from '@/lib/admin/responses';
+import { parsePageParams } from '@/lib/admin/pagination';
 import { displayLabel } from '@/lib/i18n/labels';
 import { cn } from '@/lib/utils';
 import Kicker from '@/components/arah/Kicker.jsx';
+import Pagination from '@/components/admin/Pagination.jsx';
 import en from '@/lib/i18n/en';
 
 export const metadata = {
@@ -136,15 +138,24 @@ function EmptyState({ title, body }) {
 
 export default async function AdminResponsesPage({ searchParams }) {
   await requireAdmin();
-  const params = await searchParams;
-  const filter = params?.filter === 'disagreements' ? 'disagreements' : 'all';
-  const result = await getResponsesList();
+  const params = (await searchParams) ?? {};
+  const filter = params.filter === 'disagreements' ? 'disagreements' : 'all';
+  const { page, pageSize } = parsePageParams(params);
+  const result = await getResponsesList({ page, pageSize, filter });
   const t = en.admin.responses;
 
+  // The filter is applied in the data layer now, not here — filtering after
+  // paging would only ever filter the current page, which is not what the
+  // tab claims to do.
   const rows = result?.rows ?? null;
   const contributedCount = result?.contributedCount ?? 0;
-  const visibleRows =
-    rows === null ? null : filter === 'disagreements' ? rows.filter((r) => r.disagreementField) : rows;
+  const visibleRows = rows;
+
+  const canonicalParams = {
+    filter: filter === 'all' ? '' : filter,
+    page: result?.page ?? page,
+    pageSize,
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -187,13 +198,34 @@ export default async function AdminResponsesPage({ searchParams }) {
           <EmptyState title={t.emptyAllTitle} body={t.emptyAllBody} />
         )
       ) : (
-        <ul className="flex flex-col gap-3">
-          {visibleRows.map((row) => (
-            <li key={row.id}>
-              <ResponseRow row={row} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="flex flex-col gap-3">
+            {visibleRows.map((row) => (
+              <li key={row.id}>
+                <ResponseRow row={row} />
+              </li>
+            ))}
+          </ul>
+
+          {/* Stated, not silent: the disagreements view only inspects a
+              bounded window of recent submissions, because "disagreement" is
+              a JS fingerprint match with no SQL predicate behind it. */}
+          {result.scanLimited ? (
+            <p className="text-sm text-muted-foreground">
+              {t.scanLimitedNote.replace('{limit}', String(result.scanLimit))}
+            </p>
+          ) : null}
+
+          <Pagination
+            basePath="/admin/responses"
+            searchParams={canonicalParams}
+            page={result.page}
+            pageCount={result.pageCount}
+            totalRows={result.total}
+            rangeStart={result.total === 0 ? 0 : (result.page - 1) * pageSize + 1}
+            rangeEnd={Math.min(result.page * pageSize, result.total)}
+          />
+        </>
       )}
     </div>
   );

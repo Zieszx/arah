@@ -10,10 +10,13 @@
 // `pending` is read from the nearest ancestor <form> running a Server
 // Action (react-dom hook; must live in a child component of the form, per
 // node_modules/next/dist/docs/01-app/02-guides/forms.md "Pending states").
+import { useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react';
 import FlowButton from '@/components/arah/FlowButton.jsx';
 import { cn } from '@/lib/utils';
+import en from '@/lib/i18n/en';
 
 export function TextField({ id, label, hint, error, className, ...inputProps }) {
   const describedBy =
@@ -21,31 +24,71 @@ export function TextField({ id, label, hint, error, className, ...inputProps }) 
       .filter(Boolean)
       .join(' ') || undefined;
 
+  // A password field gets a reveal toggle. Typing a password blind into a
+  // form you cannot check is the single most common cause of a failed login,
+  // and the fix is a control the user drives themselves — the field still
+  // starts masked, and nothing is revealed without a deliberate click.
+  const isPassword = inputProps.type === 'password';
+  const [revealed, setRevealed] = useState(false);
+  const type = isPassword && revealed ? 'text' : inputProps.type;
+
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       <label htmlFor={id} className="w-fit text-[13px] font-medium text-text/90">
         {label}
       </label>
-      <input
-        id={id}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy}
-        className={cn(
-          // 48px tall — comfortably past the 44px touch-target floor.
-          'h-12 w-full rounded-lg border bg-surface px-4 text-[15px] text-text',
-          'transition-[border-color] duration-200',
-          'hover:border-text/25',
-          // Focus ring: focus-visible width only — deliberately no
-          // `outline-none`, which would unconditionally set
-          // --tw-outline-style: none and silently kill the ring (see the
-          // long note in components/arah/FlowButton.jsx). Text inputs
-          // match :focus-visible on any focus, mouse included.
-          'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt',
-          'disabled:cursor-not-allowed disabled:opacity-50',
-          error && 'border-danger/70'
-        )}
-        {...inputProps}
-      />
+      <div className="relative">
+        <input
+          id={id}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          className={cn(
+            // 48px tall — comfortably past the 44px touch-target floor.
+            'h-12 w-full rounded-lg border bg-surface px-4 text-[15px] text-text',
+            'transition-[border-color] duration-200',
+            'hover:border-text/25',
+            // Focus ring: focus-visible width only — deliberately no
+            // `outline-none`, which would unconditionally set
+            // --tw-outline-style: none and silently kill the ring (see the
+            // long note in components/arah/FlowButton.jsx). Text inputs
+            // match :focus-visible on any focus, mouse included.
+            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt',
+            'disabled:cursor-not-allowed disabled:opacity-50',
+            error && 'border-danger/70',
+            // Room for the toggle, so a long password never runs under it.
+            isPassword && 'pr-12'
+          )}
+          {...inputProps}
+          type={type}
+        />
+        {isPassword ? (
+          <button
+            type="button"
+            // Not a submit: inside a <form>, a button with no explicit type
+            // submits it, so pressing Enter after clicking reveal would post
+            // the form instead of toggling.
+            onClick={() => setRevealed((v) => !v)}
+            // aria-pressed rather than a changing label alone, so a screen
+            // reader announces the state, not just the action.
+            aria-pressed={revealed}
+            aria-controls={id}
+            aria-label={revealed ? en.auth.passwordHide : en.auth.passwordShow}
+            title={revealed ? en.auth.passwordHide : en.auth.passwordShow}
+            className={cn(
+              'absolute right-1 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-md',
+              'text-muted-foreground transition-colors duration-200',
+              'hover:text-text active:text-violet-lt',
+              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-lt'
+            )}
+          >
+            {revealed ? (
+              <EyeOff aria-hidden="true" strokeWidth={1.75} className="size-[18px]" />
+            ) : (
+              <Eye aria-hidden="true" strokeWidth={1.75} className="size-[18px]" />
+            )}
+          </button>
+        ) : null}
+      </div>
       {hint && !error ? (
         <p id={`${id}-hint`} className="text-[13px] text-muted-foreground">
           {hint}

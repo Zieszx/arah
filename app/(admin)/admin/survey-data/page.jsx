@@ -16,7 +16,9 @@
 // admin reading survey feedback for support" and "an admin pasting a
 // real student's words into a deck".
 import requireAdmin from '@/lib/auth/requireAdmin';
-import { getSurveyRows } from '@/lib/admin/survey';
+import { getSurveyPage } from '@/lib/admin/survey';
+import { parsePageParams } from '@/lib/admin/pagination';
+import { isSortable } from '@/lib/admin/surveyQuery';
 import Kicker from '@/components/arah/Kicker.jsx';
 import SurveyTable from '@/components/admin/SurveyTable.jsx';
 import en from '@/lib/i18n/en';
@@ -26,10 +28,32 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminSurveyDataPage() {
+const BASE_PATH = '/admin/survey-data';
+
+export default async function AdminSurveyDataPage({ searchParams }) {
   await requireAdmin();
-  const rows = await getSurveyRows();
+
+  // searchParams is a Promise in Next 16.
+  const params = (await searchParams) ?? {};
+  const { page, pageSize } = parsePageParams(params);
+  const query = typeof params.q === 'string' ? params.q : '';
+  // Anything not on the allowlist collapses to the default order rather than
+  // reaching the order clause — `sort` comes straight from the query string.
+  const sort = isSortable(params.sort) ? params.sort : 'field';
+  const order = params.order === 'desc' ? 'desc' : 'asc';
+
+  const result = await getSurveyPage({ page, pageSize, query, sort, order });
   const t = en.admin.surveyData;
+
+  // Echoed back to the table so it can build hrefs that preserve every
+  // filter — normalised, so a hostile `?sort=;drop` never round-trips.
+  const canonicalParams = {
+    q: query,
+    sort,
+    order,
+    page: result?.page ?? page,
+    pageSize,
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -52,7 +76,7 @@ export default async function AdminSurveyDataPage() {
         <p className="text-sm font-medium leading-[1.6] text-amber">{t.notice}</p>
       </div>
 
-      {rows === null ? (
+      {result === null ? (
         <div className="flex h-[220px] flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-hairline text-center">
           <p className="text-sm font-medium text-danger">
             Couldn’t load the survey rows just now.
@@ -60,7 +84,17 @@ export default async function AdminSurveyDataPage() {
           <p className="text-sm text-muted-foreground">Refresh to retry.</p>
         </div>
       ) : (
-        <SurveyTable rows={rows} />
+        <SurveyTable
+          rows={result.rows}
+          total={result.total}
+          page={result.page}
+          pageCount={result.pageCount}
+          query={query}
+          sort={sort}
+          order={order}
+          basePath={BASE_PATH}
+          searchParams={canonicalParams}
+        />
       )}
     </div>
   );

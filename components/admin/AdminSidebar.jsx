@@ -21,10 +21,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import en from '@/lib/i18n/en';
-import { ADMIN_NAV_ITEMS, isNavItemActive } from './nav-items';
+import { ADMIN_NAV_GROUPS, isNavItemActive } from './nav-items';
 
+// Rounded rows inset from the panel edge, not full-bleed rows with a
+// border-left tab. The tab treatment read as a browser chrome artefact once
+// the duplicated site header was removed and the sidebar became the only
+// vertical element on the page.
 const linkBaseClass = cn(
-  'flex min-h-11 items-center border-l-2 px-5 text-[15px] leading-tight',
+  'group/nav flex min-h-11 items-center gap-3 rounded-lg px-3 text-[14.5px] leading-tight',
   'transition-colors duration-200',
   'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet'
 );
@@ -38,30 +42,74 @@ const mobileFooterLinkClass = cn(
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet'
 );
 
+// The wordmark plus a subtitle naming the section. Without the subtitle the
+// sidebar just repeated "ARAH" at the same size and weight as the site
+// header's own wordmark, which read as the logo having been rendered twice
+// rather than as the admin console having a name.
+function BrandBlock({ compact = false }) {
+  return (
+    <div
+      className={cn(
+        'flex flex-col justify-center border-b border-hairline px-5',
+        compact ? 'pb-4 pt-1' : 'h-[72px]'
+      )}
+    >
+      <span
+        className="font-display text-[17px] uppercase leading-none text-ink"
+        style={{ letterSpacing: '0.20em' }}
+      >
+        ARAH
+      </span>
+      <span className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-violet">
+        {en.admin.nav.sectionLabel}
+      </span>
+    </div>
+  );
+}
+
 function NavLinks({ pathname, onNavigate }) {
   return (
-    <ul className="flex flex-col gap-0.5">
-      {ADMIN_NAV_ITEMS.map(({ href, label }) => {
-        const active = isNavItemActive(pathname, href);
-        return (
-          <li key={href}>
-            <Link
-              href={href}
-              onClick={onNavigate}
-              aria-current={active ? 'page' : undefined}
-              className={cn(
-                linkBaseClass,
-                active
-                  ? 'border-violet bg-violet-soft/60 font-medium text-violet-ink'
-                  : 'border-transparent text-muted-foreground hover:border-hairline hover:bg-surface-2 hover:text-ink active:text-violet-ink'
-              )}
-            >
-              {label}
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    <div className="flex flex-col gap-5">
+      {ADMIN_NAV_GROUPS.map((group) => (
+        <div key={group.label}>
+          <p className="px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">
+            {group.label}
+          </p>
+          <ul className="flex flex-col gap-0.5">
+            {group.items.map(({ href, label, icon: Icon }) => {
+              const active = isNavItemActive(pathname, href);
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    onClick={onNavigate}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      linkBaseClass,
+                      active
+                        ? 'bg-violet-soft/70 font-medium text-violet-ink'
+                        : 'text-muted-foreground hover:bg-surface-2 hover:text-ink active:text-violet-ink'
+                    )}
+                  >
+                    <Icon
+                      aria-hidden="true"
+                      strokeWidth={1.75}
+                      className={cn(
+                        'size-[17px] shrink-0 transition-colors duration-200',
+                        active
+                          ? 'text-violet'
+                          : 'text-muted-foreground/70 group-hover/nav:text-ink'
+                      )}
+                    />
+                    <span className="truncate">{label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -164,17 +212,10 @@ export default function AdminSidebar({ open, onClose, toggleRef, profile, signOu
           breakpoint, so it never enters the tab order there. */}
       <aside
         aria-label={en.admin.menuLabel}
-        className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col overflow-y-auto border-r border-hairline bg-surface xl:flex"
+        className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col overflow-y-auto border-r border-hairline bg-surface xl:flex"
       >
-        <div className="flex h-16 items-center px-6">
-          <span
-            className="font-display text-lg uppercase text-ink/90"
-            style={{ letterSpacing: '0.20em' }}
-          >
-            ARAH
-          </span>
-        </div>
-        <nav aria-label={en.admin.menuLabel} className="flex-1 px-2 py-2">
+        <BrandBlock />
+        <nav aria-label={en.admin.menuLabel} className="flex-1 px-3 py-4">
           <NavLinks pathname={pathname} onNavigate={undefined} />
         </nav>
       </aside>
@@ -200,15 +241,8 @@ export default function AdminSidebar({ open, onClose, toggleRef, profile, signOu
               'animate-in fade-in slide-in-from-left-4 duration-200'
             )}
           >
-            <div className="flex h-10 items-center px-4">
-              <span
-                className="font-display text-lg uppercase text-ink/90"
-                style={{ letterSpacing: '0.20em' }}
-              >
-                ARAH
-              </span>
-            </div>
-            <nav aria-label={en.admin.menuLabel} className="mt-4 flex-1">
+            <BrandBlock compact />
+            <nav aria-label={en.admin.menuLabel} className="mt-4 flex-1 px-1">
               <NavLinks pathname={pathname} onNavigate={closeForNavigation} />
             </nav>
             {/* Below 768px, AdminHeader hides the name/back-link/sign-out

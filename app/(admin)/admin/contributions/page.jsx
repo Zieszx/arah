@@ -13,8 +13,10 @@
 // direct POST would succeed.
 import requireAdmin from '@/lib/auth/requireAdmin';
 import { getPendingContributions } from '@/lib/admin/contributions';
+import { parsePageParams } from '@/lib/admin/pagination';
 import Kicker from '@/components/arah/Kicker.jsx';
 import ContributionsQueue from '@/components/admin/ContributionsQueue.jsx';
+import Pagination from '@/components/admin/Pagination.jsx';
 import en from '@/lib/i18n/en';
 
 export const metadata = {
@@ -22,9 +24,13 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminContributionsPage() {
+export default async function AdminContributionsPage({ searchParams }) {
   await requireAdmin();
-  const rows = await getPendingContributions();
+  // searchParams is a Promise in Next 16.
+  const params = (await searchParams) ?? {};
+  const { page, pageSize } = parsePageParams(params);
+  const result = await getPendingContributions({ page, pageSize });
+  const rows = result?.rows ?? null;
   const t = en.admin.contributions;
 
   return (
@@ -58,7 +64,18 @@ export default async function AdminContributionsPage() {
           <p className="text-sm text-muted-foreground">{t.loadErrorBody}</p>
         </div>
       ) : (
-        <ContributionsQueue initialRows={rows} />
+        <>
+          <ContributionsQueue initialRows={rows} />
+          <Pagination
+            basePath="/admin/contributions"
+            searchParams={{ page: result.page, pageSize }}
+            page={result.page}
+            pageCount={result.pageCount}
+            totalRows={result.total}
+            rangeStart={result.total === 0 ? 0 : (result.page - 1) * pageSize + 1}
+            rangeEnd={Math.min(result.page * pageSize, result.total)}
+          />
+        </>
       )}
     </div>
   );
