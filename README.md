@@ -155,7 +155,7 @@ docs/             Retraining, data sources, known issues, design system
 
 ## Testing
 
-393 JavaScript tests and 36 Python tests. Beyond the usual coverage they pin
+398 JavaScript tests and 36 Python tests. Beyond the usual coverage they pin
 the things that fail silently: encoder parity between the two languages, the
 privacy suppression and banding rules, the admin privilege guards, and the
 PostgREST query escaping.
