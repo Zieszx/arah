@@ -135,10 +135,9 @@ export default function UserRow({ user, isSelf, adminCount, action }) {
             ) : null}
           </div>
 
-          <p className="max-w-[62ch] text-[13px] leading-[1.6] text-muted-foreground">
-            {t.passwordNotice}
-          </p>
-
+          {/* The password notice is stated once, at the top of the page. It
+              was here as well and read as the same paragraph twice on screen
+              the moment a row was expanded. */}
           <div className="flex items-center gap-3">
             <button
               type="submit"
