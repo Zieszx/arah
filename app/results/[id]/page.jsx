@@ -23,6 +23,9 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { fetchPredictionById, fetchQuizAnswers } from '@/lib/supabase/queries';
 import { isRenderableEntry } from '@/lib/results/ranked';
+import { cohortSize } from '@/lib/results/cohort';
+import { formatSampleSize } from '@/lib/explore/sampleSize';
+import featureSpec from '@/services/ml/feature_spec.json';
 import { displayLabel } from '@/lib/i18n/labels';
 import en from '@/lib/i18n/en';
 import Kicker from '@/components/arah/Kicker.jsx';
@@ -75,21 +78,23 @@ export default async function ResultsPage({ params }) {
     : [];
   if (ranked.length === 0) notFound();
 
-  // n — the alumni behind this prediction, summed from the STORED row (the
-  // stored ranking covers every field, so this is the whole cohort: 207
-  // today). Derived from the row, not hardcoded, so an old link keeps
-  // stating the n it was actually computed from.
-  const total = ranked.reduce(
-    (sum, e) =>
-      sum + (Number.isFinite(e.alumni_count) ? e.alumni_count : 0),
-    0
-  );
+  // n — the alumni behind this prediction. NOT a sum over the ranked
+  // entries: since the 0009 hardening only SUPPRESSED fields carry an exact
+  // alumni_count, so that sum silently became 9 + 7 = 16 and the page read
+  // "20–49 of the 16 students most like you studied this". See
+  // lib/results/cohort.js. Returns null when it cannot be known, and every
+  // use below renders nothing rather than a wrong number.
+  const total = cohortSize(row.results, featureSpec);
 
   const top = ranked[0];
   const topFive = ranked.slice(0, 5);
   const { name: topName, detail: topDetail } = splitLabel(
     displayLabel(top.field)
   );
+  // Exact for a suppressed field, banded for an unsuppressed one — the same
+  // formatter ResultList and /explore use, so the three can never disagree
+  // about what is safe to show.
+  const topSampleDisplay = formatSampleSize(top.alumni_count, top.alumni_band);
 
   // The marginalised re-run needs the original answers (own row, RLS-scoped).
   const answers =
@@ -97,7 +102,12 @@ export default async function ResultsPage({ params }) {
       ? await fetchQuizAnswers(supabase, row.quiz_response_id)
       : null;
 
-  const provenance = `n = ${total} · ${en.results.model} ${row.model_version}`;
+  // "n = null" would be worse than saying nothing, so the n is dropped from
+  // the provenance line entirely when the cohort cannot be established.
+  const provenance =
+    total === null
+      ? `${en.results.model} ${row.model_version}`
+      : `n = ${total} · ${en.results.model} ${row.model_version}`;
 
   return (
     <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-6 py-8 md:px-16 md:py-12">
@@ -126,11 +136,13 @@ export default async function ResultsPage({ params }) {
           </p>
         ) : null}
 
-        {/* The single most important sentence on the page: the number a
-            17-year-old can reason about and argue with. */}
-        {Number.isFinite(top.alumni_count) && total > 0 ? (
+        {/* The single most important sentence on the page. The count is the
+            shared formatter's output — exact for a suppressed field, banded
+            for an unsuppressed one — and the denominator is the real cohort,
+            never a sum over the entries. Rendered only when both are known. */}
+        {topSampleDisplay !== null && total !== null ? (
           <p className="mt-7 max-w-[52ch] text-base leading-[1.6] text-text md:text-lg">
-            <span className="font-mono">{top.alumni_count}</span>{' '}
+            <span className="font-mono">{topSampleDisplay}</span>{' '}
             {en.results.explainOf}{' '}
             <span className="font-mono">{total}</span>{' '}
             {en.results.explainTail}
@@ -179,8 +191,9 @@ export default async function ResultsPage({ params }) {
           global chrome. */}
       <footer className="mt-16 border-t border-hairline pt-8 md:mt-24">
         <span className="font-mono text-xs text-muted-foreground">
-          {en.results.matchedAgainst} {total} {en.results.alumni} ·{' '}
-          {en.results.model} {row.model_version}
+          {total === null
+            ? `${en.results.model} ${row.model_version}`
+            : `${en.results.matchedAgainst} ${total} ${en.results.alumni} · ${en.results.model} ${row.model_version}`}
         </span>
       </footer>
     </main>

@@ -18,7 +18,8 @@
 // lib/i18n/en.js — never a stack trace, a file path, or a vendor message.
 // Plan 1 fixed exactly that leak in the Python service; it stays fixed here.
 import { createClient } from '@/lib/supabase/server';
-import { validateAnswers } from '@/lib/features';
+import { validateAnswers, getSpec } from '@/lib/features';
+import { cohortSizeFromSpec } from '@/lib/results/cohort';
 import {
   annotateRanked,
   cleanAnswers,
@@ -145,10 +146,15 @@ export async function POST(request) {
 
     // 6. Store the annotated result as the permanent record — /results/<id>
     // reads this row, never recomputes.
+    // cohort_size is stamped HERE, not derived at render time, so a shared
+    // link keeps stating the n it was actually computed against even after a
+    // retrain changes the corpus. Readers fall back to the current spec for
+    // rows written before this existed — see lib/results/cohort.js.
+    const cohort = cohortSizeFromSpec(getSpec());
     const row = await insertPrediction(supabase, {
       quizResponseId: quizResponse.id,
       userId: user.id,
-      results: { ranked },
+      results: cohort === null ? { ranked } : { ranked, cohort_size: cohort },
       modelVersion: prediction.model_version,
       marginalised: prediction.marginalised,
     });
