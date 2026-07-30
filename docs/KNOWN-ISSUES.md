@@ -69,13 +69,33 @@ Closed. Re-open only if an iframe is ever added.
 
 ---
 
-## 3. Disagreements filter is a heuristic
+## 3. Disagreements filter is a heuristic — ACCEPTED, do not "fix" it
 
-`/admin/responses` surfaces students whose later contribution differed from the model's
-top pick. There is no foreign key linking a contribution to its originating submission,
-so the match is a fingerprint heuristic. Flagged in the code. If this signal becomes
-important for model improvement, add a proper `quiz_response_id` column to
-`alumni_profiles` for user-contributed rows.
+`/admin/responses?filter=disagreements` surfaces students whose later
+contribution named a different field from the model's top pick. No foreign key
+links a contribution to the submission it came from, so the match is a
+fingerprint over the answers: it can miss a real pair, and it can pair two
+students who answered identically.
+
+**An earlier draft of this document proposed adding a `quiz_response_id`
+column to `alumni_profiles` for contributed rows. Do not do that.** It would
+make every contribution traceable to an account, and `/privacy` tells students
+the opposite in as many words:
+
+> If you contributed your own outcome through the contribute page, that
+> submission is anonymous and unlinked, so it stays in the dataset.
+
+Adding the link would make that sentence false, and would force a second
+decision with no good answer: when someone deletes their account, either the
+contribution is deleted too — and the model loses real, consented training
+data — or it is kept, and "delete everything" becomes untrue.
+
+The imprecision is the cheaper cost. It affects one internal admin tab that no
+student ever sees, the page states the bound of its own scan on screen, and
+nothing downstream treats the result as exact.
+
+Reviewed and accepted on 30 July 2026. Reopen only if the privacy commitment
+itself is revisited — not because the heuristic is untidy.
 
 ---
 
