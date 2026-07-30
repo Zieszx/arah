@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed:alumni": "node --env-file=.env.development.local scripts/seed-alumni.mjs",
-    "seed:user": "node --env-file=.env.development.local --env-file=.env.seed.local scripts/seed-user.mjs"
+    "seed:user": "node --env-file=.env.development.local --env-file=.env.seed.local scripts/seed-user.mjs",
+    "export:training": "node --env-file=.env.development.local scripts/export-training-csv.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
