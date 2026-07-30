@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 276qfk5teARoRthW12jofNp6rehAHkXoFHjBvhccbqWblv5rS1b2C4xQxMP4U2G
+\restrict kni7bagHFEvni5p3MenMI6AxyP8lTrzLa1MOw5XLOB6LYHIDDcIzIyPR6ETUI9L
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 18.4
@@ -235,8 +235,21 @@ c9bef969-c507-4d19-b8d0-71c18a606689	Female	SPM 2021	Selangor	Public School (SMK
 
 
 --
+-- Data for Name: reference_statistics; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.reference_statistics (id, segment, level, total_students, malaysian_students, international_students, international_pct, as_of, source, source_url, created_at) FROM stdin;
+dde2047c-9146-40d4-90b5-655c2934c967	All higher education institutions	All levels	1264541	1105403	159138	12.60	2025-12-31	MoHE	https://www.mohe.gov.my/en/download/statistics	2026-07-30 06:48:11.685099+00
+3e6b5a98-4a86-4764-adc1-edfc78c37ed1	Public universities	All levels	634706	578141	56565	8.90	2025-12-31	MoHE	https://www.mohe.gov.my/en/download/statistics	2026-07-30 06:48:11.685099+00
+2eb3f333-f83d-4aea-8081-06ad5b53801e	Public universities	Undergraduate	520105	502212	17893	3.44	2025-12-31	MoHE	https://www.mohe.gov.my/en/download/statistics	2026-07-30 06:48:11.685099+00
+f0dedd69-a7a4-4f7a-b078-7daea367df82	Public universities	Postgraduate	114601	75929	38672	33.74	2025-12-31	MoHE	https://www.mohe.gov.my/en/download/statistics	2026-07-30 06:48:11.685099+00
+83b0909d-9918-41b8-98e6-169e3cd2f1d2	Five research universities	All levels	186824	145727	41097	22.00	2025-12-31	MoHE	https://www.mohe.gov.my/en/download/statistics	2026-07-30 06:48:11.685099+00
+\.
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 276qfk5teARoRthW12jofNp6rehAHkXoFHjBvhccbqWblv5rS1b2C4xQxMP4U2G
+\unrestrict kni7bagHFEvni5p3MenMI6AxyP8lTrzLa1MOw5XLOB6LYHIDDcIzIyPR6ETUI9L
 

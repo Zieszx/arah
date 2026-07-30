@@ -8,7 +8,12 @@ Regenerate with `npm run export:db`.
 | File | Contents |
 | --- | --- |
 | `schema.sql` | Structure only — tables, views, functions, triggers, policies |
-| `data.sql` | The 207 `alumni_profiles` rows, as `COPY` statements |
+| `data.sql` | The 207 `alumni_profiles` rows and the 5 `reference_statistics` rows, as `COPY` statements |
+
+`reference_statistics` holds published Ministry of Higher Education figures.
+They are world-readable in the live database for the same reason they are safe
+to export: no row describes an individual. They are **context, never training
+data** — see `docs/DATA-SOURCES.md`.
 
 ## What is NOT in here, and why
 

@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict snOgF6Ibx9w2XOROyrwS6mgmkjZndVFJKrlXy328vIu9Ps1PdspQsppppfrBIw1
+\restrict sppkB0IhqbrAJS9Zd5fcGieUFW1GidIW3qWUp1bru6eb6dhCJGCrQw2DVaw7g7Q
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 18.4
@@ -380,6 +380,36 @@ CREATE TABLE public.quiz_responses (
 
 
 --
+-- Name: reference_statistics; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.reference_statistics (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    segment text NOT NULL,
+    level text NOT NULL,
+    total_students integer NOT NULL,
+    malaysian_students integer,
+    international_students integer,
+    international_pct numeric(5,2),
+    as_of date NOT NULL,
+    source text NOT NULL,
+    source_url text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT reference_statistics_international_pct_check CHECK (((international_pct >= (0)::numeric) AND (international_pct <= (100)::numeric))),
+    CONSTRAINT reference_statistics_international_students_check CHECK ((international_students >= 0)),
+    CONSTRAINT reference_statistics_malaysian_students_check CHECK ((malaysian_students >= 0)),
+    CONSTRAINT reference_statistics_total_students_check CHECK ((total_students >= 0))
+);
+
+
+--
+-- Name: TABLE reference_statistics; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.reference_statistics IS 'Published national aggregates for on-screen context. NEVER training data — see docs/DATA-SOURCES.md.';
+
+
+--
 -- Name: alumni_profiles alumni_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -433,6 +463,22 @@ ALTER TABLE ONLY public.profiles
 
 ALTER TABLE ONLY public.quiz_responses
     ADD CONSTRAINT quiz_responses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reference_statistics reference_statistics_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reference_statistics
+    ADD CONSTRAINT reference_statistics_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reference_statistics reference_statistics_segment_level_as_of_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reference_statistics
+    ADD CONSTRAINT reference_statistics_segment_level_as_of_key UNIQUE (segment, level, as_of);
 
 
 --
@@ -598,8 +644,21 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.quiz_responses ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: reference_statistics reference statistics are public; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "reference statistics are public" ON public.reference_statistics FOR SELECT USING (true);
+
+
+--
+-- Name: reference_statistics; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.reference_statistics ENABLE ROW LEVEL SECURITY;
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict snOgF6Ibx9w2XOROyrwS6mgmkjZndVFJKrlXy328vIu9Ps1PdspQsppppfrBIw1
+\unrestrict sppkB0IhqbrAJS9Zd5fcGieUFW1GidIW3qWUp1bru6eb6dhCJGCrQw2DVaw7g7Q
 

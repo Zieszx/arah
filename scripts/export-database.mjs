@@ -42,7 +42,12 @@ if (!url) {
 
 // Only these tables' contents leave the database. Everything else is either
 // personal data or is rebuilt by the migrations.
-const DATA_TABLES = ['public.alumni_profiles'];
+const DATA_TABLES = [
+  'public.alumni_profiles',
+  // Published national figures. Safe to export for the same reason they are
+  // world-readable: no row describes an individual. See migration 0012.
+  'public.reference_statistics',
+];
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
@@ -77,10 +82,38 @@ console.log(`  supabase/dump/data.sql (${dataLines} lines)`);
 // A dump nobody can verify is a dump nobody will trust. State the row count
 // and fail loudly if the export came back empty.
 const data = fs.readFileSync(path.join(OUT_DIR, 'data.sql'), 'utf8');
-const copyRows = (data.match(/^[^\\-].*\t/gm) ?? []).length;
-if (copyRows === 0) {
+
+// Counted PER TABLE, not as one total. A combined "212 rows" would be
+// arithmetically true and useless — it reads as an alumni count that has
+// silently grown by five.
+const perTable = {};
+let current = null;
+for (const raw of data.split('\n')) {
+  // Trimmed before comparing: an untrimmed check against '\\.' misses the
+  // terminator whenever the line carries a trailing \r, and then `current`
+  // never resets — every SET, comment and blank line after the block keeps
+  // incrementing the last table. That reported 211 alumni and 10 reference
+  // rows for a database holding 207 and 5.
+  const line = raw.trimEnd();
+  const copy = /^COPY (\S+)/.exec(line);
+  if (copy) {
+    current = copy[1];
+    perTable[current] = 0;
+    continue;
+  }
+  if (line === '\\.') {
+    current = null;
+    continue;
+  }
+  if (current && line.trim()) perTable[current] += 1;
+}
+
+const total = Object.values(perTable).reduce((a, b) => a + b, 0);
+if (total === 0) {
   throw new Error('data.sql contains no rows — refusing to claim a successful export');
 }
-console.log(`  ${copyRows} alumni rows exported`);
+for (const [table, n] of Object.entries(perTable)) {
+  console.log(`  ${n} rows from ${table}`);
+}
 console.log('\nExcluded, deliberately: auth.users, profiles, quiz_responses,');
 console.log('predictions — personal data does not belong in a portable dump.');

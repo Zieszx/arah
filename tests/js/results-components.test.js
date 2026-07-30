@@ -168,11 +168,23 @@ describe('ResultList', () => {
       React.createElement(ResultList, { entries, total: 207 })
     );
     const text = container.textContent;
-    // Unsuppressed: the band ('10-19', displayed with an en dash), never
-    // an exact number.
-    expect(text).toContain(`10–19 ${en.results.explainOf} 207 ${en.results.explainTail}`);
-    // Suppressed: the exact count is still safe and still shown.
+    // Unsuppressed: the band, spelled out in words. "10–19 of the 207
+    // students…" read as a subtraction in prose, so the sentence form is
+    // "Between 10 and 19 of the 207…" (lib/explore/sampleSize.js
+    // #formatSampleSizeInSentence). The stat blocks on /explore still use the
+    // en-dash form, which is unambiguous under a label.
+    expect(text).toContain(
+      `Between 10 and 19 ${en.results.explainOf} 207 ${en.results.explainTail}`
+    );
+    // Suppressed: the exact count is still safe and still shown, as a bare
+    // number — "Between 9 and 9" would be absurd.
     expect(text).toContain(`9 ${en.results.explainOf} 207 ${en.results.explainTail}`);
+
+    // Regression guard with teeth: the en-dash form must not reach the
+    // sentence. It is what formatSampleSize produces, and reaching for the
+    // wrong formatter here is the exact mistake this split exists to prevent
+    // — the assertion above would still pass if BOTH forms rendered.
+    expect(text).not.toContain(`10–19 ${en.results.explainOf}`);
     root.unmount();
   });
 
