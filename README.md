@@ -92,8 +92,12 @@ The dataset is 207 teenagers, and the design treats it that way.
   enforced in Postgres rather than only in application code.
 - **Privilege-level admin lock** — admin routes are gated in the app *and* the
   tables are locked by database grant.
-- **Deletion means deletion** — removing an account removes the responses and
-  the predictions.
+- **The account is theirs** — a student changes their own display name, email
+  and password from `/account`, each guarded by their current password.
+  Deleting the account removes the responses and the predictions.
+- **No password is ever readable** — not by an admin, not anywhere. There is
+  also no reset-by-email link, because this system sends no email; changing a
+  password requires knowing the current one.
 
 ---
 
@@ -141,7 +145,7 @@ components/       UI, grouped by area: admin, explore, results, motion, layout
 lib/              Data access, ML mirror, i18n, admin logic, motion config
 services/ml/      The deployed Python service: encoder, model, ASGI entrypoint
 ml/               Training, measurement, and the dataset
-supabase/         11 SQL migrations, applied in order
+supabase/         10 SQL migrations, applied in order
 scripts/          Seeding and the training-set export
 tests/            js/ (Vitest) and python/ (pytest)
 docs/             Retraining, data sources, known issues, design system
@@ -151,7 +155,7 @@ docs/             Retraining, data sources, known issues, design system
 
 ## Testing
 
-354 JavaScript tests and 36 Python tests. Beyond the usual coverage they pin
+371 JavaScript tests and 36 Python tests. Beyond the usual coverage they pin
 the things that fail silently: encoder parity between the two languages, the
 privacy suppression and banding rules, the admin privilege guards, and the
 PostgREST query escaping.
