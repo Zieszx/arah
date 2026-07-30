@@ -158,6 +158,18 @@ if (fs.existsSync(srcSurvey)) {
   fs.copyFileSync(srcSurvey, path.join(dataOut, 'Post-SPM Academic Pathway and Interest Survey (original export).csv'));
 }
 
+// 4b. The database dump, surfaced next to the datasets. The brief asks for
+//     "datasets and any other relevant project materials", and a reviewer
+//     should not have to know it lives under supabase/dump/.
+const dumpSrc = path.join(SRC, 'supabase/dump');
+if (fs.existsSync(dumpSrc)) {
+  const dumpOut = path.join(dataOut, 'database');
+  fs.mkdirSync(dumpOut, { recursive: true });
+  for (const f of fs.readdirSync(dumpSrc)) {
+    fs.copyFileSync(path.join(dumpSrc, f), path.join(dumpOut, f));
+  }
+}
+
 // 5. The folder's own guide. Sourced from the repo rather than written here,
 //    so it is version-controlled and cannot be lost when this script wipes
 //    and rebuilds the output directory.

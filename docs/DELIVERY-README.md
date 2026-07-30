@@ -36,6 +36,12 @@ Start there.
 | `datasets/survey.csv` | **The training data.** 207 real responses — ten answers per person, plus the field they went on to study and how satisfied they were. |
 | `datasets/Post-SPM Academic Pathway and Interest Survey (original export).csv` | The untouched Google Forms export the project began from. |
 | `datasets/reference/mohe-enrolment-2025.csv` | Ministry of Higher Education national enrolment figures, as at 31 Dec 2025. |
+| `datasets/database/` | A restorable database dump — `schema.sql` (structure) and `data.sql` (the 207 alumni rows). |
+
+The database dump deliberately contains **no student accounts, answers or
+results**. Those are real people's personal data and do not belong in a file
+that gets copied around; the dump carries only the consented survey. See
+`datasets/database/README.md`.
 
 The reference file is **context, not training data**, and is deliberately kept
 in a separate folder. National totals say how many people are enrolled in each

@@ -12,7 +12,8 @@
     "seed:alumni": "node --env-file=.env.development.local scripts/seed-alumni.mjs",
     "seed:user": "node --env-file=.env.development.local --env-file=.env.seed.local scripts/seed-user.mjs",
     "export:training": "node --env-file=.env.development.local scripts/export-training-csv.mjs",
-    "deck": "node decks/system-overview.js && python decks/qa.py"
+    "deck": "node decks/system-overview.js && python decks/qa.py",
+    "export:db": "node --env-file=.env.development.local scripts/export-database.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
