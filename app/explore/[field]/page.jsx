@@ -23,12 +23,11 @@
 // see lib/explore/pickQuotes.js and components/explore/AdviceQuotes.jsx.
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
 import {
-  fetchFieldStats,
-  fetchFieldDetailStats,
-  fetchAdviceQuotes,
-} from '@/lib/supabase/queries';
+  getFieldStats,
+  getFieldDetailStats,
+  getAdviceQuotes,
+} from '@/lib/explore/publicStats';
 import { FIELDS, getFieldRawBySlug } from '@/lib/explore/fields';
 import { pickQuotes } from '@/lib/explore/pickQuotes';
 import { formatSampleSize } from '@/lib/explore/sampleSize';
@@ -73,10 +72,11 @@ export default async function FieldDetailPage({ params }) {
   const raw = getFieldRawBySlug(slug);
   if (!raw) notFound();
 
-  const supabase = await createClient();
+  // Cached, session-free reads — see lib/explore/publicStats.js. These
+  // three queries ran on every request and kept this page at ~1.5s warm.
   const [statsRows, detailRows] = await Promise.all([
-    fetchFieldStats(supabase),
-    fetchFieldDetailStats(supabase),
+    getFieldStats(),
+    getFieldDetailStats(),
   ]);
 
   const stats = statsRows.find((r) => r.field_of_study === raw);
@@ -96,7 +96,7 @@ export default async function FieldDetailPage({ params }) {
   // not just visually, omitted for the two small fields.
   const quotes = suppressed
     ? []
-    : pickQuotes(await fetchAdviceQuotes(supabase), slug, QUOTES_PER_PAGE);
+    : pickQuotes(await getAdviceQuotes(), slug, QUOTES_PER_PAGE);
 
   const { name, detail: parenDetail } = splitLabel(displayLabel(raw));
 

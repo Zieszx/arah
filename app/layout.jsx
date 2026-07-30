@@ -1,6 +1,5 @@
 import { displayFont, bodyFont } from "@/lib/fonts";
-import ParticleField from "@/components/motion/ParticleField.jsx";
-import CursorSpotlight from "@/components/motion/CursorSpotlight.jsx";
+import MotionBackdrop from "@/components/motion/MotionBackdrop.jsx";
 import SmoothScroll from "@/components/motion/SmoothScroll.jsx";
 import SiteHeader from "@/components/layout/SiteHeader.jsx";
 import SiteFooter from "@/components/layout/SiteFooter.jsx";
@@ -20,11 +19,11 @@ export default function RootLayout({ children }) {
       className={cn("h-full", "antialiased", displayFont.variable, bodyFont.variable, "font-sans")}
     >
       <body className="min-h-full flex flex-col">
-        {/* Motion backdrop layers: ParticleField at z-0, CursorSpotlight at
-            z-1. Both are siblings behind the content, never inside it, so
-            they never participate in document flow or layout. */}
-        <ParticleField />
-        <CursorSpotlight />
+        {/* Motion backdrop: ParticleField at z-0, CursorSpotlight at z-1.
+            Siblings behind the content, never inside it, so they never
+            participate in document flow or layout. Loaded lazily and skipped
+            on /admin entirely — see MotionBackdrop. */}
+        <MotionBackdrop />
         {/* Content gets its own stacking context above both layers. */}
         <SmoothScroll>
           {/* Global chrome: header and footer wrap every page except /admin,

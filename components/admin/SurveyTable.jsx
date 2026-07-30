@@ -106,13 +106,18 @@ const cell = {
   },
 };
 
+// Explicit widths. Left to itself the table gave `stream` a narrow column and
+// wrapped "Technical & Vocational (Sains Komputer, Rekacipta, Lukisan
+// Kejuruteraan etc)" over seven lines, making a single row taller than four
+// of its neighbours combined. The widths total 100% and the container scrolls
+// horizontally below 768px anyway.
 const COLUMNS = [
-  { key: 'field', label: t.columns.field, sortable: true },
-  { key: 'stream', label: t.columns.stream, sortable: true },
-  { key: 'results', label: t.columns.results, sortable: true },
-  { key: 'preu', label: t.columns.preu, sortable: true },
-  { key: 'satisfaction', label: t.columns.satisfaction, sortable: true },
-  { key: 'advice', label: t.columns.advice, sortable: false },
+  { key: 'field', label: t.columns.field, sortable: true, width: '19%' },
+  { key: 'stream', label: t.columns.stream, sortable: true, width: '22%' },
+  { key: 'results', label: t.columns.results, sortable: true, width: '13%' },
+  { key: 'preu', label: t.columns.preu, sortable: true, width: '12%' },
+  { key: 'satisfaction', label: t.columns.satisfaction, sortable: true, width: '11%' },
+  { key: 'advice', label: t.columns.advice, sortable: false, width: '23%' },
 ];
 
 // How long to wait after the last keystroke before navigating. Search now
@@ -245,11 +250,16 @@ export default function SurveyTable({
             className="min-h-11 w-full rounded-full border border-hairline bg-surface px-4 text-base text-ink placeholder:text-muted-foreground transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
           />
         </label>
-        <p className="text-sm text-muted-foreground">
-          {t.countShowing}{' '}
-          <span className="font-mono tabular-nums text-ink">{total}</span> {t.countRows}
-          {query ? ` ${t.countMatching}` : ''}
-        </p>
+        {/* Only shown while searching. The Pagination footer already states
+            "Showing 1–25 of 207" on every view, and two different "Showing"
+            sentences on one screen read as a bug. What is genuinely useful
+            next to the box is how much the search narrowed things. */}
+        {query ? (
+          <p className="text-sm text-muted-foreground">
+            <span className="font-mono tabular-nums text-ink">{total}</span> {t.countRows}{' '}
+            {t.countMatching}
+          </p>
+        ) : null}
       </div>
 
       {visible.length === 0 ? (
@@ -277,6 +287,8 @@ export default function SurveyTable({
                   key={col.key}
                   header={() => header(col)}
                   body={(row) => cell[col.key](row)}
+                  headerStyle={{ width: col.width }}
+                  style={{ width: col.width }}
                   className={col.key === 'advice' ? styles.adviceCol : undefined}
                 />
               ))}

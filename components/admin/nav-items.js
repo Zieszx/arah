@@ -12,6 +12,7 @@ import {
   Table2,
   ClipboardList,
   Inbox,
+  Users,
   FlaskConical,
 } from 'lucide-react';
 import en from '@/lib/i18n/en';
@@ -38,6 +39,7 @@ export const ADMIN_NAV_GROUPS = [
         icon: ClipboardList,
       },
       { href: '/admin/contributions', label: en.admin.nav.contributions, icon: Inbox },
+      { href: '/admin/users', label: en.admin.nav.users, icon: Users },
     ],
   },
   {

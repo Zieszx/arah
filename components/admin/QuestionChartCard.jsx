@@ -11,13 +11,16 @@
 // The loading fallback matches the chart's computed height so a page of
 // fifteen cards does not reflow as each one hydrates.
 import dynamic from 'next/dynamic';
+import { chartHeightFor } from '@/lib/admin/chartLayout';
 import en from '@/lib/i18n/en';
 
 const t = en.admin.responseCharts;
 
-function estimateHeight(entries, type) {
-  return type === 'num' ? 220 : Math.max(160, entries.length * 38 + 40);
-}
+// The card renders on the server too, so it cannot measure the viewport. It
+// reserves the desktop height; the chart itself recomputes once mounted and
+// grows if the labels wrap further on a narrow screen. Reserving the smaller
+// height instead would make every card jump downward on load.
+const SSR_AXIS_WIDTH = 260;
 
 const QuestionChart = dynamic(() => import('./QuestionChart.jsx'), {
   ssr: false,
@@ -32,7 +35,7 @@ const QuestionChart = dynamic(() => import('./QuestionChart.jsx'), {
 
 export default function QuestionChartCard({ question, respondents }) {
   const { label, entries, type, answered, multi } = question;
-  const height = estimateHeight(entries, type);
+  const height = chartHeightFor(entries, type, SSR_AXIS_WIDTH);
   const skipped = respondents - answered;
 
   return (

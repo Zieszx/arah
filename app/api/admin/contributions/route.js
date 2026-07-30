@@ -17,8 +17,10 @@
 // lib/admin/contributions.js, which uses the service-role client for the
 // same reason every other admin data module does: alumni_profiles has no
 // grants for anon/authenticated at all (0004_tighten_alumni_grants.sql).
+import { revalidateTag } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { approveContribution, rejectContribution } from '@/lib/admin/contributions';
+import { PUBLIC_STATS_TAG } from '@/lib/explore/publicStats';
 import en from '@/lib/i18n/en';
 
 const ACTIONS = { approve: approveContribution, reject: rejectContribution };
@@ -78,6 +80,18 @@ export async function POST(request) {
         { status: 409 }
       );
     }
+
+    // Approving is what admits a row to field_stats (via the
+    // field_stats_refresh_on_verify trigger), so the cached public
+    // aggregates are now potentially stale. Clearing the tag means a
+    // moderator sees the effect of their own decision immediately instead of
+    // waiting out the five-minute window in lib/explore/publicStats.js.
+    //
+    // Note this does NOT mean the published numbers will move: Postgres
+    // still gates the refresh until a field has gained at least three
+    // verified rows (0009_field_stats_hardening.sql). That gate is a privacy
+    // control and is entirely separate from this cache.
+    revalidateTag(PUBLIC_STATS_TAG);
 
     return Response.json({ ok: true, action }, { status: 200 });
   } catch (err) {

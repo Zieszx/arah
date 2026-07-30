@@ -13,8 +13,7 @@
 // themselves stay server-rendered — they're created in this Server
 // Component's scope and merely passed through StaggerReveal's `children`
 // slot, the same composition StaggerReveal's own module doc describes.
-import { createClient } from '@/lib/supabase/server';
-import { fetchFieldStats } from '@/lib/supabase/queries';
+import { getFieldStats } from '@/lib/explore/publicStats';
 import { getSlugForField } from '@/lib/explore/fields';
 import { sampleSizeSortWeight } from '@/lib/explore/sampleSize';
 import Kicker from '@/components/arah/Kicker.jsx';
@@ -29,8 +28,9 @@ export const metadata = {
 };
 
 export default async function ExplorePage() {
-  const supabase = await createClient();
-  const rows = await fetchFieldStats(supabase);
+  // Cached, session-free read — see lib/explore/publicStats.js. This page
+  // used to run its query on every request and stayed at ~1.2s warm.
+  const rows = await getFieldStats();
 
   // Sorted by (banded) sample size descending. Never by the exact
   // unsuppressed count — that number isn't in the row at all any more

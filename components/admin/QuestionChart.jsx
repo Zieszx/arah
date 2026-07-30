@@ -26,6 +26,7 @@ import {
   YAxis,
 } from 'recharts';
 import { useEffect, useState } from 'react';
+import { axisWidthFor, chartHeightFor } from '@/lib/admin/chartLayout';
 
 const CHART_COLORS = [
   'var(--chart-1)',
@@ -35,19 +36,12 @@ const CHART_COLORS = [
   'var(--chart-5)',
 ];
 
-function pickYAxisWidth(viewportWidth) {
-  if (viewportWidth < 400) return 104;
-  if (viewportWidth < 640) return 140;
-  if (viewportWidth < 1024) return 190;
-  return 260;
-}
-
 // Only ever mounted client-side (next/dynamic with ssr: false), so reading
 // window in the initial state cannot mismatch a server render.
 function useYAxisWidth() {
-  const [width, setWidth] = useState(() => pickYAxisWidth(window.innerWidth));
+  const [width, setWidth] = useState(() => axisWidthFor(window.innerWidth));
   useEffect(() => {
-    const onResize = () => setWidth(pickYAxisWidth(window.innerWidth));
+    const onResize = () => setWidth(axisWidthFor(window.innerWidth));
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
@@ -79,9 +73,10 @@ export default function QuestionChart({ entries, type, respondents }) {
   const yAxisWidth = useYAxisWidth();
   const scale = type === 'num';
 
-  // Height grows with the number of bars so a 11-option question does not
-  // squeeze its bars to a few pixels inside a fixed box.
-  const height = scale ? 220 : Math.max(160, entries.length * 38 + 40);
+  // Height grows with the number of bars AND with how far their labels wrap
+  // at this viewport — at 390px a four-line Malaysian option label needs
+  // more than a fixed row, and without this consecutive labels overlap.
+  const height = chartHeightFor(entries, type, yAxisWidth);
 
   return (
     <div style={{ height }}>
