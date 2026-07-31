@@ -236,7 +236,7 @@ const worst = shortSat[shortSat.length - 1];
   });
 
   screenshot(s, {
-    file: '01-landing.crop.png', x: M + 5.63, y: 1.92, w: 6.0, ratio: 1280 / 730,
+    file: '01-landing.crop.png', x: M + 5.63, y: 1.92, w: 6.0, ratio: 1280 / 760,
     caption: 'arah-sand.vercel.app',
   });
 
@@ -890,7 +890,7 @@ const worst = shortSat[shortSat.length - 1];
   const counts = [
     ['359', 'JavaScript tests passing', VIOLET],
     ['36', 'Python tests passing', VIOLET_LT],
-    ['95', 'commits at handover', CYAN],
+    ['101', 'commits', CYAN],
     ['11', 'database migrations', CYAN_LT],
   ];
   const cw = 2.82, gap = 0.32;

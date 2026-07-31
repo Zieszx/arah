@@ -73,7 +73,7 @@ shipped system. When any of these change, the deck changes with them:
 | Findings | 71.5% / 63.7% | `python ml/measure_paths.py` |
 | Quality | JavaScript tests passing | `npm test` |
 | Quality | Python tests passing | `python -m pytest` |
-| Quality | commits at handover | `git rev-list --count HEAD` |
+| Quality | commits | `git rev-list --count HEAD` |
 | Quality, Architecture | migration count | `ls supabase/migrations/*.sql` |
 | Descriptive analysis ×3 | every figure and most of the prose | `python decks/describe_corpus.py` |
 | Throughout | 207 alumni | rows in `ml/data/survey.csv` |
@@ -89,8 +89,8 @@ and accuracy features were removed along with their suites — re-run `npm test`
 rather than assuming.
 
 **The commit count cannot be re-derived from the handover folder**, which is
-not a git checkout. The slide therefore says "commits at handover" rather than
-implying a live count.
+not a git checkout. Run `git rev-list --count HEAD` in the working repo
+instead — the delivery copy carries the number, not the means to check it.
 
 A deck quoting a stale accuracy number in a client meeting is worse than no
 deck. If you are unsure whether a figure is current, re-run the command in the

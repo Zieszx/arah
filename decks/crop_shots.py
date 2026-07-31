@@ -17,10 +17,7 @@ ASSETS = Path(__file__).resolve().parent / "assets"
 
 # (left, top, right, bottom) in the 1440x900 capture.
 CROPS = {
-    # Cropped below the site header on purpose: the captured header still
-    # carries a "Contribute" link, and that feature was removed. Re-capture
-    # after the next deploy if the header is wanted back in frame.
-    "01-landing": (30, 130, 1310, 860),
+    "01-landing": (30, 0, 1310, 760),
     "02-questions": (300, 190, 1320, 860),
     "04-results-top": (110, 180, 1040, 850),
     "05-results-cards": (140, 60, 1010, 670),
