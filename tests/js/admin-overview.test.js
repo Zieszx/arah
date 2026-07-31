@@ -101,7 +101,6 @@ describe('getOverviewStats', () => {
     };
     const stats = await getOverviewStats();
     expect(stats.totalAlumni).toBeNull();
-    expect(stats.pendingContributions).toBeNull();
     // A table that genuinely has zero rows still reports 0, distinct from
     // the null above — the whole point of the null/0 distinction.
     expect(stats.questionsCompleted).toBe(0);

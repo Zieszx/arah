@@ -150,31 +150,6 @@ export default async function AdminResponseDetailPage({ params }) {
         </div>
       </div>
 
-      {detail.disagreementField ? (
-        <div className="rounded-2xl border border-violet/30 bg-violet-soft/50 p-5">
-          <h2 className="font-display text-xl text-ink">{t.disagreementTitle}</h2>
-          <p className="mt-2 max-w-[64ch] text-sm leading-[1.6] text-muted-foreground">
-            {t.disagreementBody}
-          </p>
-          <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-2 text-sm">
-            <div>
-              <dt className="text-muted-foreground">{t.disagreementModelSaid}</dt>
-              <dd className="mt-1 font-medium text-ink">
-                {detail.prediction?.ranked?.[0]?.field
-                  ? displayLabel(detail.prediction.ranked[0].field)
-                  : '—'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t.disagreementTheyContributed}</dt>
-              <dd className="mt-1 font-medium text-violet-ink">
-                {displayLabel(detail.disagreementField)}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      ) : null}
-
       {detail.prediction?.marginalised ? (
         <p className="max-w-[64ch] text-sm leading-[1.6] text-muted-foreground">
           {t.marginalisedNotice}

@@ -1,8 +1,17 @@
 # Retraining ARAH's model
 
 Who this is for: whoever maintains ARAH after handover. It answers one
-question — *when a student contributes their outcome, how does that ever
-reach the model?*
+question — *when a new alumnus outcome is recorded, how does that ever reach
+the model?*
+
+> **Changed since this was written.** `/contribute`, the page through which
+> an alumnus submitted their own outcome, and `/admin/contributions`, the
+> queue an admin approved it from, were both removed at the client's request.
+> Everything below still works, and is still the only way the model changes —
+> but a new row now arrives by an admin inserting it into `alumni_profiles`
+> directly (or by re-running `npm run seed:alumni` against an updated
+> `ml/data/survey.csv`), not through a form. Read `/contribute` in the tables
+> below as "however the row got there".
 
 ## What feeds what
 

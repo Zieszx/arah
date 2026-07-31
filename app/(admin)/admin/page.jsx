@@ -1,6 +1,10 @@
 // /admin — Overview (Plan 5, Task 2). The first proof the shell works:
-// live counts, a field-distribution chart, and the model card that keeps
-// both accuracy figures in front of whoever is demoing this.
+// live counts and a field-distribution chart.
+//
+// The model accuracy card, and the pending-contributions count, were removed
+// at the client's request along with the public accuracy section and the
+// contribute feature. Accuracy is still measurable — ml/measure_paths.py
+// reports it — it is simply no longer surfaced in the product.
 //
 // requireAdmin() runs again here even though app/(admin)/layout.jsx
 // already called it — see that file's header comment and
@@ -13,10 +17,8 @@ import requireAdmin from '@/lib/auth/requireAdmin';
 import { getOverviewStats } from '@/lib/admin/overview';
 import Kicker from '@/components/arah/Kicker.jsx';
 import StatCard from '@/components/admin/StatCard.jsx';
-import ModelAccuracyCard from '@/components/admin/ModelAccuracyCard.jsx';
 import FieldDistributionChartLoader from '@/components/admin/FieldDistributionChartLoader.jsx';
 import en from '@/lib/i18n/en';
-import featureSpec from '@/services/ml/feature_spec.json';
 
 export const metadata = {
   title: en.admin.overview.metaTitle,
@@ -33,7 +35,6 @@ export default async function AdminOverviewPage() {
     { key: 'studentsRegistered', value: stats.studentsRegistered, ...s.studentsRegistered },
     { key: 'questionsCompleted', value: stats.questionsCompleted, ...s.questionsCompleted },
     { key: 'predictionsIssued', value: stats.predictionsIssued, ...s.predictionsIssued },
-    { key: 'pendingContributions', value: stats.pendingContributions, ...s.pendingContributions },
   ];
 
   const hasFieldData = Array.isArray(stats.fieldDistribution) && stats.fieldDistribution.length > 0;
@@ -48,7 +49,7 @@ export default async function AdminOverviewPage() {
         </p>
       </div>
 
-      <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+      <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {cards.map(({ key, value, label, caption, zeroHint }) => (
           <StatCard key={key} label={label} value={value} caption={caption} zeroHint={zeroHint} />
         ))}
@@ -82,8 +83,6 @@ export default async function AdminOverviewPage() {
           )}
         </div>
       </section>
-
-      <ModelAccuracyCard modelVersion={featureSpec.version} n={stats.totalAlumni} />
     </div>
   );
 }

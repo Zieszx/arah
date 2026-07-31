@@ -7,12 +7,11 @@
 // one record to help a student" into "an admin walked away with all of
 // them" (Task 4 brief, and the /signup promise it protects).
 //
-// The disagreements filter (?filter=disagreements) is the one feature
-// this page exists to surface that nothing else in the product can:
-// submissions where the SAME student's answers later turn up in a
-// contribution reporting a different field than the model's top pick —
-// see lib/admin/disagreements.js for exactly how "same student" is
-// inferred without a foreign key linking the two tables.
+// This page used to carry a second tab — a "disagreements" filter over
+// submissions whose answers later reappeared in a /contribute submission
+// naming a different field. /contribute was removed at the client's
+// request, so the filter could never match again and went with it: a
+// control that always returns nothing reads as broken, not as empty.
 import Link from 'next/link';
 import requireAdmin from '@/lib/auth/requireAdmin';
 import { getResponsesList } from '@/lib/admin/responses';
@@ -60,33 +59,6 @@ function MarginalisedBadge({ marginalised }) {
   );
 }
 
-function FilterTabs({ active }) {
-  const t = en.admin.responses;
-  const tabClass = (isActive) =>
-    cn(
-      'inline-flex min-h-11 items-center rounded-full border px-4 text-sm transition-colors duration-200',
-      'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet',
-      isActive
-        ? 'border-violet bg-violet text-white'
-        : 'border-hairline text-ink hover:border-violet/40 hover:text-violet-ink active:text-violet-pl'
-    );
-  return (
-    <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label={t.title}>
-      <Link href="/admin/responses" role="tab" aria-selected={active !== 'disagreements'} className={tabClass(active !== 'disagreements')}>
-        {t.filterAll}
-      </Link>
-      <Link
-        href="/admin/responses?filter=disagreements"
-        role="tab"
-        aria-selected={active === 'disagreements'}
-        className={tabClass(active === 'disagreements')}
-      >
-        {t.filterDisagreements}
-      </Link>
-    </div>
-  );
-}
-
 function ResponseRow({ row }) {
   const t = en.admin.responses;
   return (
@@ -100,14 +72,7 @@ function ResponseRow({ row }) {
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span className="font-mono text-sm text-muted-foreground">{formatDate(row.createdAt)}</span>
-        <div className="flex items-center gap-2">
-          {row.disagreementField ? (
-            <span className="inline-flex items-center rounded-full border border-violet/30 bg-violet-soft px-2.5 py-1 text-xs font-medium uppercase tracking-wide text-violet-ink">
-              {t.disagreesBadge}
-            </span>
-          ) : null}
-          <MarginalisedBadge marginalised={row.marginalised} />
-        </div>
+        <MarginalisedBadge marginalised={row.marginalised} />
       </div>
       <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <span className="text-base font-medium text-ink">
@@ -117,12 +82,6 @@ function ResponseRow({ row }) {
           {row.topField ? displayLabel(row.topField) : t.noPrediction}
         </span>
       </div>
-      {row.disagreementField ? (
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t.detail.disagreementModelSaid}: {row.topField ? displayLabel(row.topField) : '—'} ·{' '}
-          {t.detail.disagreementTheyContributed}: {displayLabel(row.disagreementField)}
-        </p>
-      ) : null}
     </Link>
   );
 }
@@ -139,20 +98,13 @@ function EmptyState({ title, body }) {
 export default async function AdminResponsesPage({ searchParams }) {
   await requireAdmin();
   const params = (await searchParams) ?? {};
-  const filter = params.filter === 'disagreements' ? 'disagreements' : 'all';
   const { page, pageSize } = parsePageParams(params);
-  const result = await getResponsesList({ page, pageSize, filter });
+  const result = await getResponsesList({ page, pageSize });
   const t = en.admin.responses;
 
-  // The filter is applied in the data layer now, not here — filtering after
-  // paging would only ever filter the current page, which is not what the
-  // tab claims to do.
   const rows = result?.rows ?? null;
-  const contributedCount = result?.contributedCount ?? 0;
-  const visibleRows = rows;
 
   const canonicalParams = {
-    filter: filter === 'all' ? '' : filter,
     page: result?.page ?? page,
     pageSize,
   };
@@ -167,54 +119,22 @@ export default async function AdminResponsesPage({ searchParams }) {
         </p>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <FilterTabs active={filter} />
-        {filter === 'disagreements' ? (
-          <p className="max-w-[64ch] text-sm leading-[1.6] text-muted-foreground">
-            {t.filterDisagreementsHint}
-          </p>
-        ) : null}
-      </div>
-
       {rows === null ? (
         <div className="flex h-[220px] flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-hairline text-center">
           <p className="text-sm font-medium text-danger">Couldn’t load submissions just now.</p>
           <p className="text-sm text-muted-foreground">Refresh to retry.</p>
         </div>
-      ) : visibleRows.length === 0 ? (
-        filter === 'disagreements' ? (
-          contributedCount === 0 ? (
-            <EmptyState
-              title={t.emptyDisagreementsNoContributionsTitle}
-              body={t.emptyDisagreementsNoContributionsBody}
-            />
-          ) : (
-            <EmptyState
-              title={t.emptyDisagreementsNoneTitle}
-              body={t.emptyDisagreementsNoneBody}
-            />
-          )
-        ) : (
-          <EmptyState title={t.emptyAllTitle} body={t.emptyAllBody} />
-        )
+      ) : rows.length === 0 ? (
+        <EmptyState title={t.emptyAllTitle} body={t.emptyAllBody} />
       ) : (
         <>
           <ul className="flex flex-col gap-3">
-            {visibleRows.map((row) => (
+            {rows.map((row) => (
               <li key={row.id}>
                 <ResponseRow row={row} />
               </li>
             ))}
           </ul>
-
-          {/* Stated, not silent: the disagreements view only inspects a
-              bounded window of recent submissions, because "disagreement" is
-              a JS fingerprint match with no SQL predicate behind it. */}
-          {result.scanLimited ? (
-            <p className="text-sm text-muted-foreground">
-              {t.scanLimitedNote.replace('{limit}', String(result.scanLimit))}
-            </p>
-          ) : null}
 
           <Pagination
             basePath="/admin/responses"

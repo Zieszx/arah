@@ -63,9 +63,9 @@ Two accounts, for reviewing the system as each kind of user.
 | Password | \`${c.adminPassword}\` |
 | Display name | ${c.adminName} |
 
-Signing in lands on **/admin**. All seven console sections are available:
-Overview, Response Charts, Survey Data, Student Responses, Contributions,
-People, Algorithm Tester.
+Signing in lands on **/admin**. All six console sections are available:
+Overview, Response Charts, Survey Data, Student Responses, People,
+Algorithm Tester.
 
 An admin can also use the student side freely — "Back to student site" in the
 top right, and every student route works normally.
@@ -87,9 +87,8 @@ console is not invited to try credentials against it.
 
 ## Anything else needs no account
 
-The landing page, \`/explore\`, every field page, \`/contribute\` and
-\`/privacy\` are all public. An account is only needed to answer the questions
-and keep a result.
+The landing page, \`/explore\`, every field page and \`/privacy\` are all
+public. An account is only needed to answer the questions and keep a result.
 
 ---
 

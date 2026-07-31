@@ -1,0 +1,258 @@
+{
+  "source": "ml/data/survey.csv",
+  "generatedBy": "decks/describe_corpus.py",
+  "n": 207,
+  "kThreshold": 10,
+  "fields": [
+    {
+      "field": "Business & Management",
+      "n": 44,
+      "suppressed": false
+    },
+    {
+      "field": "Computer Science & Data",
+      "n": 35,
+      "suppressed": false
+    },
+    {
+      "field": "Engineering",
+      "n": 23,
+      "suppressed": false
+    },
+    {
+      "field": "Architecture",
+      "n": 20,
+      "suppressed": false
+    },
+    {
+      "field": "Health & Medical",
+      "n": 19,
+      "suppressed": false
+    },
+    {
+      "field": "Media & Communication",
+      "n": 18,
+      "suppressed": false
+    },
+    {
+      "field": "Law",
+      "n": 16,
+      "suppressed": false
+    },
+    {
+      "field": "Science & Mathematics",
+      "n": 16,
+      "suppressed": false
+    },
+    {
+      "field": "Creative Art",
+      "n": 9,
+      "suppressed": true
+    },
+    {
+      "field": "Humanities",
+      "n": 7,
+      "suppressed": true
+    }
+  ],
+  "satisfactionByField": [
+    {
+      "field": "Media & Communication",
+      "n": 18,
+      "mean": 4.61,
+      "satisfiedShare": 100,
+      "suppressed": false
+    },
+    {
+      "field": "Creative Art",
+      "n": 9,
+      "mean": 4,
+      "satisfiedShare": 78,
+      "suppressed": true
+    },
+    {
+      "field": "Science & Mathematics",
+      "n": 16,
+      "mean": 3.88,
+      "satisfiedShare": 75,
+      "suppressed": false
+    },
+    {
+      "field": "Business & Management",
+      "n": 44,
+      "mean": 3.73,
+      "satisfiedShare": 68,
+      "suppressed": false
+    },
+    {
+      "field": "Humanities",
+      "n": 7,
+      "mean": 3.71,
+      "satisfiedShare": 57,
+      "suppressed": true
+    },
+    {
+      "field": "Law",
+      "n": 16,
+      "mean": 3.56,
+      "satisfiedShare": 62,
+      "suppressed": false
+    },
+    {
+      "field": "Computer Science & Data",
+      "n": 35,
+      "mean": 3.49,
+      "satisfiedShare": 63,
+      "suppressed": false
+    },
+    {
+      "field": "Health & Medical",
+      "n": 19,
+      "mean": 3.37,
+      "satisfiedShare": 53,
+      "suppressed": false
+    },
+    {
+      "field": "Architecture",
+      "n": 20,
+      "mean": 3.25,
+      "satisfiedShare": 60,
+      "suppressed": false
+    },
+    {
+      "field": "Engineering",
+      "n": 23,
+      "mean": 2.83,
+      "satisfiedShare": 39,
+      "suppressed": false
+    }
+  ],
+  "relatedness": [
+    {
+      "related": "Yes",
+      "n": 122,
+      "mean": 3.45,
+      "distribution": [
+        16,
+        16,
+        8,
+        27,
+        33
+      ],
+      "satisfiedShare": 60
+    },
+    {
+      "related": "No",
+      "n": 85,
+      "mean": 3.8,
+      "distribution": [
+        8,
+        11,
+        9,
+        36,
+        35
+      ],
+      "satisfiedShare": 72
+    }
+  ],
+  "routes": [
+    {
+      "route": "Diploma",
+      "min": 1,
+      "q1": 3,
+      "median": 4,
+      "q3": 5,
+      "max": 5,
+      "mean": 3.67,
+      "n": 73
+    },
+    {
+      "route": "Foundation",
+      "min": 1,
+      "q1": 4,
+      "median": 4.0,
+      "q3": 5,
+      "max": 5,
+      "mean": 3.87,
+      "n": 52
+    },
+    {
+      "route": "A-Levels",
+      "min": 1,
+      "q1": 3,
+      "median": 4.0,
+      "q3": 5,
+      "max": 5,
+      "mean": 3.79,
+      "n": 42
+    },
+    {
+      "route": "Matriculation",
+      "min": 1,
+      "q1": 1,
+      "median": 2,
+      "q3": 4,
+      "max": 5,
+      "mean": 2.71,
+      "n": 31
+    },
+    {
+      "route": "STPM",
+      "min": 1,
+      "q1": 2,
+      "median": 4,
+      "q3": 5,
+      "max": 5,
+      "mean": 3.56,
+      "n": 9
+    }
+  ],
+  "results": [
+    {
+      "band": "6 - 8 As (A-, A, A+)",
+      "n": 64
+    },
+    {
+      "band": "3 - 5 As (A-, A, A+)",
+      "n": 59
+    },
+    {
+      "band": "9+ As (A-, A, A+)",
+      "n": 58
+    },
+    {
+      "band": "1 - 2 As (A-, A, A+)",
+      "n": 25
+    },
+    {
+      "band": "Pass (Lulus)",
+      "n": 1
+    }
+  ],
+  "schools": [
+    {
+      "school": "Public School (SMK / SMJKC)",
+      "n": 109
+    },
+    {
+      "school": "Boarding School (SBP / MRSM etc)",
+      "n": 51
+    },
+    {
+      "school": "Private School",
+      "n": 29
+    },
+    {
+      "school": "Religous School (Sekolah Agama)",
+      "n": 18
+    }
+  ],
+  "overallSatisfaction": 3.59,
+  "satisfactionDistribution": [
+    13,
+    14,
+    9,
+    31,
+    34
+  ]
+}

@@ -244,22 +244,17 @@ export default function DemoPage() {
 
         <ul className="mt-8 flex max-w-[42ch] flex-col gap-4 text-[15px] text-muted-foreground md:mt-10">
           <li>
-            An interactive particle field — drifting violet dots, thinly
-            linked by distance, that gently give way around the cursor.
+            Section reveals — each block rises into place once as it enters
+            the viewport, on top of a page that is already fully rendered.
           </li>
           <li>
-            A 100px cursor spotlight — a soft violet tint that deepens the
-            page as it tracks the pointer.
-          </li>
-          <li>
-            A brushed-scatter sand cursor — grains that fly with the
-            direction of travel, then decelerate, on the same canvas as
-            the field.
+            Smooth scrolling, and the match bars on a result filling from
+            zero rather than appearing at their final width.
           </li>
         </ul>
 
         <p className="mt-8 max-w-[42ch] text-[15px] text-text/90 md:mt-10">
-          All three switch off under <code className="font-mono text-[13px]">prefers-reduced-motion</code>{' '}
+          Both switch off under <code className="font-mono text-[13px]">prefers-reduced-motion</code>{' '}
           and on touch devices — no exceptions, no separate setting.
         </p>
       </section>

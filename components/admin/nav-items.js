@@ -11,7 +11,6 @@ import {
   ChartPie,
   Table2,
   ClipboardList,
-  Inbox,
   Users,
   FlaskConical,
 } from 'lucide-react';
@@ -38,7 +37,6 @@ export const ADMIN_NAV_GROUPS = [
         label: en.admin.nav.studentResponses,
         icon: ClipboardList,
       },
-      { href: '/admin/contributions', label: en.admin.nav.contributions, icon: Inbox },
       { href: '/admin/users', label: en.admin.nav.users, icon: Users },
     ],
   },

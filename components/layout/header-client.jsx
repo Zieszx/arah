@@ -29,7 +29,6 @@ import en from '@/lib/i18n/en';
 const NAV_LINKS = [
   { href: '/questions', label: en.chrome.nav.questions },
   { href: '/explore', label: en.chrome.nav.explore },
-  { href: '/contribute', label: en.chrome.nav.contribute },
   { href: '/account', label: en.chrome.nav.account },
 ];
 

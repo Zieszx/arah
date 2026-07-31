@@ -8,8 +8,9 @@
 // never needs the ML service's own base URL (mlBaseUrl() reads
 // process.env, which a client component cannot).
 //
-// Gated exactly like app/api/admin/contributions/route.js: authenticate
-// against the RLS-bound client, THEN re-derive is_admin from the DB. The
+// Gated the way every admin mutation route in this project is:
+// authenticate against the RLS-bound client, THEN re-derive is_admin from
+// the DB — never trust what the page decided to render. The
 // page only decides whether the form renders; this route is what an
 // attacker could actually reach directly, so it re-checks regardless.
 import { createClient } from '@/lib/supabase/server';
@@ -68,8 +69,8 @@ export async function POST(request) {
       );
     }
 
-    // 2. Authorize — re-checked server-side, same posture as
-    // app/api/admin/contributions/route.js.
+    // 2. Authorize — re-checked server-side. The page only decides whether
+    // the form renders; this route is what an attacker could reach directly.
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('is_admin')

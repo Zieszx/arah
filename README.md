@@ -21,8 +21,7 @@ this"*, and that distinction is enforced in the copy, not just intended.
 | `/results/<id>` | Ranked fields, each with its sample and confidence |
 | `/explore` | Every field, with the numbers behind it |
 | `/explore/<field>` | One field in depth: satisfaction, routes, real advice |
-| `/contribute` | Alumni give back their own outcome |
-| `/admin` | Seven-section console, behind a role flag |
+| `/admin` | Six-section console, behind a role flag |
 
 ---
 
@@ -72,9 +71,12 @@ Top-3 accuracy — whether the student's actual field landed in their top three
 | Without one yet | **63.7%** |
 | Naive baseline (always name the three most popular fields) | 49.3% |
 
-Both figures are published on the site, not just the flattering one. At n=207
-the confidence interval is roughly ±6 points, so differences of one or two
-points are noise. Re-measure with `python ml/measure_paths.py`.
+Both figures are reported here, not just the flattering one. They are no
+longer surfaced anywhere in the product — the landing page's accuracy section
+and the admin accuracy card were removed at the client's request — but the
+measurement is unchanged and still re-runnable with
+`python ml/measure_paths.py`. At n=207 the confidence interval is roughly
+±6 points, so differences of one or two points are noise.
 
 ---
 
@@ -133,7 +135,7 @@ npm run seed:user       # create the demo account from .env.seed.local
 | `npm run seed:alumni` | Load the survey into `alumni_profiles` |
 | `npm run export:training` | Append approved contributions to the training CSV |
 | `python ml/train.py` | Refit the model and write its artefacts |
-| `python ml/measure_paths.py` | Re-measure both published accuracy figures |
+| `python ml/measure_paths.py` | Re-measure both accuracy figures |
 
 ---
 
@@ -168,8 +170,6 @@ npm test && python -m pytest
 
 ## Documentation
 
-- [`docs/EXPLAIN-SIMPLY.md`](docs/EXPLAIN-SIMPLY.md) — one page, no jargon,
-  for explaining the system to a client or a parent
 - [`docs/PREDICTIVE-ANALYSIS.md`](docs/PREDICTIVE-ANALYSIS.md) — how the
   prediction works, in plain language, written to be explained to a client
 - [`docs/PROJECT-CHECKPOINTS.md`](docs/PROJECT-CHECKPOINTS.md) — everything

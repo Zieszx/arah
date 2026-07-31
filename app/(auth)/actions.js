@@ -43,8 +43,8 @@ const ADMIN_NEXT = '/admin';
 //
 // Returns null rather than the default when there is no usable value, so the
 // caller can tell "the user asked to go somewhere specific" apart from "we
-// are choosing for them" — an admin who followed /login?next=/contribute must
-// land on /contribute, not be yanked into the console.
+// are choosing for them" — an admin who followed /login?next=/explore must
+// land on /explore, not be yanked into the console.
 function safeNext(raw) {
   if (typeof raw !== 'string') return null;
   if (!raw.startsWith('/')) return null;

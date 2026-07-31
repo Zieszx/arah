@@ -24,7 +24,6 @@ const FOOTER_LINKS = [
   // is ever added here ahead of its route again, it will 404 on every page of
   // the site, which is how this one went unnoticed for so long.
   { href: '/explore', label: en.chrome.footerNav.explore },
-  { href: '/contribute', label: en.chrome.footerNav.contribute },
   { href: '/account', label: en.chrome.footerNav.account },
   { href: '/privacy', label: en.chrome.footerNav.privacy },
 ];

@@ -18,7 +18,7 @@ import en from '@/lib/i18n/en';
 function helperLine(group) {
   // The "fine not to know yet" reassurance only applies when the
   // question genuinely IS optional here — the quiz's preu group always
-  // is (feature_spec.json), but /contribute (Plan 4, Task 4) reuses this
+  // is (feature_spec.json), but a caller may reuse this
   // component for the same ten questions and deliberately renders preu
   // with `optional: false`: a contributor already knows which pre-U
   // route they took, so "not sure yet" would be false reassurance there.

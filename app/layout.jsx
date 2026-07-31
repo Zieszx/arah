@@ -1,5 +1,4 @@
 import { displayFont, bodyFont } from "@/lib/fonts";
-import MotionBackdrop from "@/components/motion/MotionBackdrop.jsx";
 import SmoothScroll from "@/components/motion/SmoothScroll.jsx";
 import SiteHeader from "@/components/layout/SiteHeader.jsx";
 import SiteFooter from "@/components/layout/SiteFooter.jsx";
@@ -19,12 +18,11 @@ export default function RootLayout({ children }) {
       className={cn("h-full", "antialiased", displayFont.variable, bodyFont.variable, "font-sans")}
     >
       <body className="min-h-full flex flex-col">
-        {/* Motion backdrop: ParticleField at z-0, CursorSpotlight at z-1.
-            Siblings behind the content, never inside it, so they never
-            participate in document flow or layout. Loaded lazily and skipped
-            on /admin entirely — see MotionBackdrop. */}
-        <MotionBackdrop />
-        {/* Content gets its own stacking context above both layers. */}
+        {/* The two cursor-following canvas layers that used to sit behind the
+            content — a particle field with a sand-grain trail, and a spotlight
+            glow — were removed at the client's request. The z-[2] below is
+            kept deliberately: it costs nothing, and reinstating a backdrop
+            later means adding a sibling here rather than restacking the app. */}
         <SmoothScroll>
           {/* Global chrome: header and footer wrap every page except /admin,
               which supplies its own via AdminShell. ChromeGate makes that

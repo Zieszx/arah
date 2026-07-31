@@ -48,7 +48,7 @@ describe('StatCard', () => {
   it('a legitimate zero shows the explanatory zeroHint, never a bare "No data"', () => {
     const { container, root } = renderInDl(
       React.createElement(StatCard, {
-        label: 'Pending contributions',
+        label: 'Predictions issued',
         value: 0,
         caption: 'Ordinary caption, should not show alongside zeroHint.',
         zeroHint: 'Nothing waiting on review. Submissions will appear here once sent.',

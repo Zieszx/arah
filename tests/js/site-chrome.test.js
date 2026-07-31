@@ -158,13 +158,13 @@ describe('HeaderChrome active navigation state', () => {
   });
 
   it('marks the matching entry inside the mobile drawer too', () => {
-    pathnameRef.current = '/contribute';
+    pathnameRef.current = '/explore';
     const { container, root } = renderHeader();
     openDrawer(container);
     const drawerCurrent = Array.from(
       document.getElementById('site-menu').querySelectorAll('a[aria-current="page"]')
     ).map((a) => a.getAttribute('href'));
-    expect(drawerCurrent).toEqual(['/contribute']);
+    expect(drawerCurrent).toEqual(['/explore']);
     root.unmount();
   });
 });

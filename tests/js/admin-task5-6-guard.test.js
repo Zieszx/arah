@@ -1,24 +1,18 @@
-// End-to-end proof of requireAdmin() on the two Task 5/6 routes
-// (/admin/contributions, /admin/algorithm-tester) AND of the mutation
-// route's own independent server-side check
-// (app/api/admin/contributions/route.js) — same technique as
-// tests/js/admin-task3-4-guard.test.js: a unit test of the redirect logic
-// cannot prove what actually reaches the network, so this signs in for
-// real, fetches each route over HTTP, and inspects the served bytes/status.
+// End-to-end proof of requireAdmin() on /admin/algorithm-tester — same
+// technique as tests/js/admin-task3-4-guard.test.js: a unit test of the
+// redirect logic cannot prove what actually reaches the network, so this
+// signs in for real, fetches the route over HTTP, and inspects the served
+// bytes/status.
 //
-// Three things, plus the negative control that proves the scan can
+// Two things, the second being the negative control that proves the scan can
 // actually detect what it's looking for:
-//   1. Each page — signed in NON-ADMIN -> redirected away, landing page
-//      body contains NONE of that route's markup.
-//   2. Each page — signed in ADMIN (negative control) -> 200, body DOES
-//      contain the route's markup.
-//   3. POST /api/admin/contributions — signed in NON-ADMIN -> 403, never
-//      touches the database (proven by the pending count being unchanged
-//      — see the companion end-to-end moderation test,
-//      tests/js/admin-contributions-e2e.test.js, for the full approve
-//      round trip). Signed OUT -> 401. The negative control here is the
-//      admin case in the companion test actually succeeding with the same
-//      request shape.
+//   1. Signed in NON-ADMIN -> redirected away, and the landing page body
+//      contains NONE of that route's markup.
+//   2. Signed in ADMIN -> 200, and the body DOES contain it.
+//
+// This file also covered /admin/contributions and POST
+// /api/admin/contributions until the contribute feature was removed at the
+// client's request; both were deleted with it.
 //
 // Needs a running app (next dev or next start) plus the local env files;
 // skips, like its siblings, when either is missing.
@@ -99,10 +93,6 @@ async function fetchRoute(routePath, cookieHeader) {
 
 const ROUTES = [
   {
-    path: '/admin/contributions',
-    fingerprints: ['The moderation queue', 'admin · contributions'],
-  },
-  {
     path: '/admin/algorithm-tester',
     fingerprints: ['Run the model directly', 'admin · algorithm tester'],
   },
@@ -176,36 +166,6 @@ describe.skipIf(!run)('Task 5/6 pages are gated by requireAdmin()', () => {
       }
     );
   }
-});
-
-describe.skipIf(!run)('POST /api/admin/contributions re-checks is_admin server-side', () => {
-  it('signed OUT: 401, never 200', { timeout: 30000 }, async () => {
-    const res = await fetch(`${BASE_URL}/api/admin/contributions`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ id: randomUUID(), action: 'approve' }),
-      signal: AbortSignal.timeout(30000),
-    });
-    expect(res.status).toBe(401);
-  });
-
-  it(
-    'signed in, NON-ADMIN: 403, never 200 — the negative control (a real admin succeeding with the same shape) lives in tests/js/admin-contributions-e2e.test.js',
-    { timeout: 90000 },
-    async () => {
-      await createStudent();
-      const cookie = await signInCookieHeader(studentEmail, studentPassword);
-      const res = await fetch(`${BASE_URL}/api/admin/contributions`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', cookie },
-        body: JSON.stringify({ id: randomUUID(), action: 'approve' }),
-        signal: AbortSignal.timeout(30000),
-      });
-      expect(res.status).toBe(403);
-      const body = await res.json();
-      expect(body.error).toBe('forbidden');
-    }
-  );
 });
 
 describe('admin-task5-6-guard preconditions', () => {

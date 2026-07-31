@@ -79,7 +79,7 @@ describe('admin nav-items — active route matching', () => {
   it('other items match themselves and their sub-routes', () => {
     expect(isNavItemActive('/admin/responses', '/admin/responses')).toBe(true);
     expect(isNavItemActive('/admin/responses/42', '/admin/responses')).toBe(true);
-    expect(isNavItemActive('/admin/contributions', '/admin/responses')).toBe(false);
+    expect(isNavItemActive('/admin/survey-data', '/admin/responses')).toBe(false);
   });
 
   it('activeNavItem resolves the current item for the breadcrumb', () => {
