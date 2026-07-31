@@ -890,7 +890,7 @@ const worst = shortSat[shortSat.length - 1];
   const counts = [
     ['359', 'JavaScript tests passing', VIOLET],
     ['36', 'Python tests passing', VIOLET_LT],
-    ['103', 'commits', CYAN],
+    ['104', 'commits', CYAN],
     ['11', 'database migrations', CYAN_LT],
   ];
   const cw = 2.82, gap = 0.32;

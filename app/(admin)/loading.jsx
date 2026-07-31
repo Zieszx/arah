@@ -1,6 +1,6 @@
 // One fallback for every admin route. loading.jsx applies to its own segment
-// AND everything nested below it, so this single file covers all seven console
-// sections rather than seven near-identical copies.
+// AND everything nested below it, so this single file covers every console
+// section rather than one near-identical copy per section.
 //
 // The admin tables are the routes where the missing feedback was worst: every
 // pagination link, sort header and search is a fresh server round trip, and
