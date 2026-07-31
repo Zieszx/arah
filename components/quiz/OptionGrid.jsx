@@ -116,11 +116,12 @@ function NumberScale({ group, value, onNumber }) {
         })}
       </div>
       <div className="mt-3 flex items-baseline justify-between gap-4 text-[13px] text-muted-foreground">
-        {/* scaleLowLabel/scaleHighLabel let a second numeric group (e.g.
-            /contribute's satisfaction question, Plan 4 Task 4) supply its
-            own endpoint copy instead of the public-speaking-specific
-            fallback below, which was this component's only numeric group
-            until now. */}
+        {/* scaleLowLabel/scaleHighLabel let any second numeric group supply
+            its own endpoint copy instead of the public-speaking-specific
+            fallback below. The satisfaction question on /contribute was the
+            case this was built for; that page is gone, but the hook stays —
+            the fallback is wrong for any numeric group that is not about
+            public speaking. */}
         <span>
           {group.min} — {group.scaleLowLabel ?? en.quiz.speakingLow}
         </span>

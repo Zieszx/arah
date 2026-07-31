@@ -103,10 +103,15 @@ is worth more than a better-looking accuracy number.
 More real pairings. There is exactly one mechanism for that and it already
 exists:
 
-1. An alumnus submits their outcome through `/contribute`.
-2. An admin approves it, and it becomes a verified `alumni_profiles` row.
-3. `npm run export:training` appends it to the corpus.
-4. A human retrains and reads the new score — see [RETRAINING.md](./RETRAINING.md).
+1. A new alumnus outcome is recorded as a verified `alumni_profiles` row.
+2. `npm run export:training` appends it to the corpus.
+3. A human retrains and reads the new score — see [RETRAINING.md](./RETRAINING.md).
+
+Step 1 used to be a form: an alumnus submitted through `/contribute` and an
+admin approved it from a moderation queue. Both were removed at the client's
+request, so a row now arrives by an admin inserting it directly. What has not
+changed is the requirement behind it — the row must describe a real person who
+actually made the choice, because that is the claim the whole product rests on.
 
 Everything else is a distribution to compare against, not data to learn from.
 
