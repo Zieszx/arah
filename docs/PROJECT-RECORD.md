@@ -303,7 +303,7 @@ the only meaningful form of "no errors" for a system with a model in it.
 | Item | Value |
 |---|---|
 | Repo | `github.com/Zieszx/arah`, branch `main`, **no commits yet** |
-| Repo root | `E:\Barang Barang\.PersonalWork\Freelance\Nuha\arah\arah` |
+| Repo root | The checkout directory — every script resolves paths from its own location, so nothing depends on where it sits |
 | Vercel project | `arah` (`prj_WppoDisZqifKcRNSkIM8OnKVdIBu`) |
 | Supabase | Provisioned; credentials in `.env.development.local` |
 | Seed account | `nuhaaa` / `nuhaaa@arah.app`, password in `.env.seed.local` (gitignored, verified) |

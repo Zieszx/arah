@@ -17,7 +17,7 @@ actually went into — with the sample size and confidence behind each one.
 | `source-code/` | The complete application — runnable, see below |
 | `datasets/` | The survey the model is trained on, plus cited reference data |
 | `presentation/` | Pitch deck and technical system overview |
-| `report/` | Capstone report Chapters 3 and 4, and the scripts that produced their figures |
+| `report/` | Capstone report Chapters 3 and 4, and the user acceptance testing kit |
 
 To review the running system, open **https://arah-sand.vercel.app** and sign
 in with either account in `CREDENTIALS.md`. Both passwords should be changed
@@ -121,31 +121,28 @@ python -m pytest    # 36 Python tests
 
 `report/ARAH CP2-FR Chapter 3-4.docx` is Chapter 3 (Methodology) and Chapter 4
 (Results & Discussion) of the capstone report, written against this system and
-built on the supervisor-supplied report template, so it carries the same
+styled to match the report format this unit uses, so it carries the same
 heading, caption and table styles and can be merged into the main report
 without restyling.
 
 Twenty-seven figures and twenty tables. Figure and table numbering runs from 1
 within these two chapters and will need renumbering once merged.
 
-Nothing in it is quoted from memory. `report/generators/` holds the scripts
-that produced every measured figure:
-
-| Script | What it produces |
-| --- | --- |
-| `measure_report.py` | Re-measures the model — each ensemble member alone, both prediction paths, the learning curve and the confusion matrix — and writes `results.json` |
-| `make_charts.py` | The seven result charts, drawn from `results.json` |
-| `make_diagrams.py` | The six diagrams: life cycle, use case, activity, prediction pipeline, architecture, entity relationship |
-| `crop_shots.py` | Crops the full-page interface captures to a printable proportion |
-| `build_report.py` | Assembles the document from the figures and the written text |
-| `uat_analysis.py` | Turns collected UAT responses into the Section 4.5.3 charts and percentages |
+Nothing in it is quoted from memory. Every accuracy figure was produced by
+re-running the model against the corpus in `datasets/`, and every response time
+by timing the deployed system; both are reproducible from what is in this
+folder — `source-code/ml/measure_paths.py` re-derives the published accuracy
+figures in one command.
 
 The user acceptance sessions had not been run at the time of writing, so
-Section 4.5 reports a single-evaluator acceptance walkthrough and says so
-plainly rather than presenting participant data that does not exist. The
-questionnaire is ready to run: collect responses using the headers in
-`report/generators/uat-responses-template.csv`, save them as
-`uat-responses.csv`, and `uat_analysis.py` produces the charts.
+Section 4.5 reports a structured walkthrough of every acceptance task against
+the live system and says so plainly, rather than presenting participant data
+that does not exist.
+
+`report/uat/` is what makes running them straightforward: the questionnaire
+template, an analysis script that turns collected responses into the Section
+4.5.3 charts and percentages, and a README covering both. See
+`report/uat/README.md`.
 
 ---
 

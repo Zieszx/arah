@@ -45,9 +45,9 @@ const TERMS = [
   'Payment is due upon acceptance of delivery.',
   `This quotation is valid through ${QUOTE.validThrough}.`,
   'Covers Chapters 3 and 4 only. Chapters 1, 2 and 5 are outside this quotation.',
-  'Delivered as a Word document built on the supervisor-supplied report template, so it carries the same heading, caption and table styles and can be merged into the main report without restyling.',
+  'Delivered as a Word document styled to match the report format the unit uses, so it carries the same heading, caption and table styles and can be merged into the main report without restyling.',
   'Figure and table numbering runs from 1 within the delivered chapters, and will need renumbering once merged into the full report.',
-  'Every measured figure is reproducible: the measurement and figure-generation scripts are delivered alongside the document.',
+  'No figure is quoted from memory. The accuracy results are reproducible from the delivered corpus using the measurement script already in the source code; the response times were measured against the deployed system.',
   'User acceptance testing with human participants is not included. The questionnaire is delivered ready to run, together with an analysis script that produces the charts and percentages once responses are collected.',
 ];
 

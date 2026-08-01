@@ -162,9 +162,17 @@ function note(s, text) {
 
 // A screenshot plus the URL it was taken from. The caption matters: a reader
 // should be able to open the same page and see the same thing.
-function screenshot(s, { file, x, y, w, ratio, caption }) {
+function screenshot(s, { file, x, y, w, ratio, caption, altText }) {
   const h = w / ratio;
-  s.addImage({ path: shot(file), x, y, w, h });
+  // altText is not optional in practice: pptxgenjs falls back to the image
+  // PATH when none is given (`options.altText || slideItemObj.image`), which
+  // writes an absolute path from the build machine into the slide XML. That
+  // ships inside the .pptx and is readable by anyone the deck is forwarded
+  // to. The caption already describes the image, so use it.
+  s.addImage({
+    path: shot(file), x, y, w, h,
+    altText: altText || caption || `Screenshot: ${file}`,
+  });
   if (caption) {
     s.addText(caption, {
       x, y: y + h + 0.07, w, h: 0.24, margin: 0,

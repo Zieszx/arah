@@ -13,9 +13,13 @@
 // silently end up in a client zip.
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const SRC = 'E:/Barang Barang/.PersonalWork/Freelance/Nuha/arah/arah';
-const PARENT = 'E:/Barang Barang/.PersonalWork/Freelance/Nuha';
+// Derived from this file's own location, never hard-coded. An absolute path
+// to somebody's machine inside a folder that gets sent to a client is both a
+// bug (it only runs here) and a leak (it says where "here" is).
+const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const PARENT = path.resolve(SRC, '..', '..');
 const OUT = path.join(PARENT, 'Delivery');
 
 // Explicit allowlist. Everything else at the repo root is omitted.
@@ -169,10 +173,15 @@ if (fs.existsSync(dumpSrc)) {
   }
 }
 
-// 4c. The capstone report chapters, with the scripts that produced their
-//     figures. The scripts ship because every number in the document is
-//     measured rather than quoted, and a figure nobody can regenerate is a
-//     figure nobody can check.
+// 4c. The capstone report chapters, and the UAT kit.
+//
+//     Only the UAT tooling ships. The scripts that BUILD the report do not,
+//     and deliberately: they are developer tooling that hard-codes local
+//     paths and names the style template the document was built on. A client
+//     folder is something that gets forwarded, and none of that belongs in a
+//     file someone else opens. The UAT script is different — it is the one
+//     thing the recipient has a real reason to run, so it ships path-free
+//     with its questionnaire template and its own README.
 const REPORT_DOC = path.join(PARENT, 'ARAH CP2-FR Chapter 3-4.docx');
 if (fs.existsSync(REPORT_DOC)) {
   const reportOut = path.join(OUT, 'report');
@@ -181,12 +190,20 @@ if (fs.existsSync(REPORT_DOC)) {
   copied += 1;
 
   const genSrc = path.join(PARENT, 'report-figures', '_generators');
-  if (fs.existsSync(genSrc)) {
-    const genOut = path.join(reportOut, 'generators');
-    fs.mkdirSync(genOut, { recursive: true });
-    for (const f of fs.readdirSync(genSrc)) {
-      fs.copyFileSync(path.join(genSrc, f), path.join(genOut, f));
+  const UAT_KIT = [
+    ['uat_analysis.py', 'uat_analysis.py'],
+    ['uat-responses-template.csv', 'uat-responses-template.csv'],
+    ['uat-README.md', 'README.md'],
+  ];
+  const uatOut = path.join(reportOut, 'uat');
+  fs.mkdirSync(uatOut, { recursive: true });
+  for (const [from, to] of UAT_KIT) {
+    const src = path.join(genSrc, from);
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, path.join(uatOut, to));
       copied += 1;
+    } else {
+      console.log(`SKIPPED report/uat/${to} — missing ${src}`);
     }
   }
 } else {
