@@ -17,7 +17,7 @@ actually went into — with the sample size and confidence behind each one.
 | `source-code/` | The complete application — runnable, see below |
 | `datasets/` | The survey the model is trained on, plus cited reference data |
 | `presentation/` | Pitch deck and technical system overview |
-| `report/` | Capstone report Chapters 3 and 4, and the user acceptance testing kit |
+| `report/` | Capstone report Chapters 3 and 4, every figure as a separate image, the data tables as a workbook, and the user acceptance testing kit |
 
 To review the running system, open **https://arah-sand.vercel.app** and sign
 in with either account in `CREDENTIALS.md`. Both passwords should be changed
@@ -143,6 +143,24 @@ that does not exist.
 template, an analysis script that turns collected responses into the Section
 4.5.3 charts and percentages, and a README covering both. See
 `report/uat/README.md`.
+
+`report/figures/` holds all twenty-seven figures as separate PNG files, named
+by figure number and caption — `Figure 01 - Software Development Life Cycle
+adopted for ARAH.png` and so on. They were extracted from the document itself
+rather than re-exported from the tools that drew them, so each file is exactly
+the image that appears on the page, at the resolution it was placed. That
+matters when a figure has to be reused in the main report, a slide or a poster:
+what you drop in will match what the chapter shows. `report/figures/FIGURES.md`
+lists every one with its caption and the section it appears in.
+
+`report/data/ARAH-Report-Data.xlsx` is the data behind the tables — one sheet
+per table, in report order. Every derived cell is a live formula rather than a
+pasted number, so percentages, totals and differences recalculate if a figure
+is corrected, and the arithmetic can be checked by clicking a cell instead of
+being taken on trust. The scripts that assemble the document are not included —
+they are developer tooling tied to this machine — but the accuracy figures in
+the workbook are re-derivable from `datasets/` with
+`source-code/ml/measure_paths.py`, as described above.
 
 ---
 

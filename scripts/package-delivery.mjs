@@ -206,6 +206,34 @@ if (fs.existsSync(REPORT_DOC)) {
       console.log(`SKIPPED report/uat/${to} — missing ${src}`);
     }
   }
+
+  // 4d. Every figure in the document, exported from the document itself so
+  //     each file is exactly what the reader sees on the page. Named by
+  //     figure number and caption, with FIGURES.md as the index.
+  const figSrc = path.join(PARENT, 'report-figures', '_delivery-figures');
+  if (fs.existsSync(figSrc)) {
+    const figOut = path.join(reportOut, 'figures');
+    fs.mkdirSync(figOut, { recursive: true });
+    for (const f of fs.readdirSync(figSrc)) {
+      fs.copyFileSync(path.join(figSrc, f), path.join(figOut, f));
+      copied += 1;
+    }
+  } else {
+    console.log(`SKIPPED report/figures/ — no folder at ${figSrc}`);
+  }
+
+  // 4e. The workbook of the report's data tables, one sheet per table, with
+  //     the derived cells left as live formulas so a reader can check the
+  //     arithmetic rather than take it on trust.
+  const XLSX_SRC = path.join(PARENT, 'report-figures', 'ARAH-Report-Data.xlsx');
+  if (fs.existsSync(XLSX_SRC)) {
+    const xlsxOut = path.join(reportOut, 'data');
+    fs.mkdirSync(xlsxOut, { recursive: true });
+    fs.copyFileSync(XLSX_SRC, path.join(xlsxOut, path.basename(XLSX_SRC)));
+    copied += 1;
+  } else {
+    console.log(`SKIPPED report/data/ — no workbook at ${XLSX_SRC}`);
+  }
 } else {
   console.log(`SKIPPED report/ — no document at ${REPORT_DOC}`);
 }

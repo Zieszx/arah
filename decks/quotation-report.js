@@ -24,13 +24,14 @@ const QUOTE = {
 const LOGO = 'izistech-logo.png';
 const OUT = 'ARAH-Report-Quotation.docx';
 
-// Short names in the table, detail in the Scope section. Totals RM 140.
+// Short names in the table, detail in the Scope section. Totals RM 145.
 const ITEMS = [
   ['Chapter 3 — Methodology', 1, 40],
   ['Chapter 4 — Results & Discussion', 1, 45],
   ['Model re-measurement & result charts', 1, 25],
   ['System diagrams & interface captures', 1, 20],
   ['Acceptance walkthrough & defect report', 1, 10],
+  ['Figure exports & data workbook', 1, 5],
 ];
 
 const SCOPE = [
@@ -39,6 +40,7 @@ const SCOPE = [
   ['Model re-measurement & result charts', 'Each of the four ensemble members re-measured alone under the project’s own repeated cross-validation protocol, reproducing the published 71.5% and 63.7% figures, plus the learning curve, confusion matrix, per-field recall and fold-variance charts drawn from those measurements rather than quoted.'],
   ['System diagrams & interface captures', 'Six diagrams drawn for the report — life cycle, use case, activity, prediction pipeline, architecture and entity relationship — seven result charts, and fourteen interface captures taken from the deployed system. Twenty-seven figures in total.'],
   ['Acceptance walkthrough & defect report', 'Twelve acceptance tasks executed against the deployment with response times recorded, three defects documented, and the two that were fixed re-measured after release.'],
+  ['Figure exports & data workbook', 'All twenty-seven figures exported from the document as individual image files, together with an index listing each file against the caption it carries in the report. The report’s data tables are also delivered as an Excel workbook, with every derived cell — totals, means and percentages — left as a live formula rather than a typed number.'],
 ];
 
 const TERMS = [
