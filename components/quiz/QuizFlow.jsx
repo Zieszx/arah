@@ -13,13 +13,14 @@
 // exists the POST 404s; the catch below turns any failure — network, 4xx,
 // 5xx, bad JSON — into a calm inline message, and the answers stay in
 // state and in localStorage, so nothing is ever lost to a failed submit.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import FlowButton from '@/components/arah/FlowButton.jsx';
 import ProgressRing from './ProgressRing.jsx';
 import QuestionCard from './QuestionCard.jsx';
 import { useQuizState } from '@/lib/quiz/useQuizState';
+import { warmModelServiceIfDeployed } from '@/lib/ml/warmModel';
 import { useMotionCapability } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/lib/utils';
 import en from '@/lib/i18n/en';
@@ -40,6 +41,19 @@ export default function QuizFlow() {
   // mount — stealing focus on page load is hostile to everyone. Flipped
   // in the navigation event handlers themselves, not in an effect.
   const [hasNavigated, setHasNavigated] = useState(false);
+
+  // Boot the ML service now, so its cold start happens while the student
+  // is answering rather than after they press submit. Fire-and-forget by
+  // design — see lib/ml/warmModel.js for the measurements behind this.
+  // Once on mount, and once more on the last question in case the
+  // instance was reclaimed during a slow run through the questions.
+  const onLastQuestion = quiz.step === quiz.total - 1;
+  useEffect(() => {
+    warmModelServiceIfDeployed();
+  }, []);
+  useEffect(() => {
+    if (onLastQuestion) warmModelServiceIfDeployed();
+  }, [onLastQuestion]);
 
   async function handleSubmit() {
     const result = quiz.validate();
