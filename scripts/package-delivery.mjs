@@ -169,6 +169,30 @@ if (fs.existsSync(dumpSrc)) {
   }
 }
 
+// 4c. The capstone report chapters, with the scripts that produced their
+//     figures. The scripts ship because every number in the document is
+//     measured rather than quoted, and a figure nobody can regenerate is a
+//     figure nobody can check.
+const REPORT_DOC = path.join(PARENT, 'ARAH CP2-FR Chapter 3-4.docx');
+if (fs.existsSync(REPORT_DOC)) {
+  const reportOut = path.join(OUT, 'report');
+  fs.mkdirSync(reportOut, { recursive: true });
+  fs.copyFileSync(REPORT_DOC, path.join(reportOut, path.basename(REPORT_DOC)));
+  copied += 1;
+
+  const genSrc = path.join(PARENT, 'report-figures', '_generators');
+  if (fs.existsSync(genSrc)) {
+    const genOut = path.join(reportOut, 'generators');
+    fs.mkdirSync(genOut, { recursive: true });
+    for (const f of fs.readdirSync(genSrc)) {
+      fs.copyFileSync(path.join(genSrc, f), path.join(genOut, f));
+      copied += 1;
+    }
+  }
+} else {
+  console.log(`SKIPPED report/ — no document at ${REPORT_DOC}`);
+}
+
 // 5. The folder's own guide. Sourced from the repo rather than written here,
 //    so it is version-controlled and cannot be lost when this script wipes
 //    and rebuilds the output directory.
