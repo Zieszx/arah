@@ -67,7 +67,7 @@ const shot = (name) => path.join(__dirname, 'assets', name);
 
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_WIDE';
-pres.author = 'ARAH';
+pres.author = 'Nuhaa Khaleeda Binti Mohd Khalid';
 pres.title = 'ARAH - System and Technical Overview';
 
 const shadow = () => ({
