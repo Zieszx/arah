@@ -133,6 +133,16 @@ function buildQuotation({ VENDOR, CLIENT, QUOTE, LOGO, ITEMS, SCOPE, TERMS }) {
   const TOTAL = SUBTOTAL;
 
   const doc = new Document({
+    // A quotation is issued BY the vendor, so the vendor is its author — not
+    // the client it is addressed to. Set explicitly because docx-js otherwise
+    // writes "Un-named", which reads as an oversight on a commercial document.
+    creator: VENDOR.name,
+    lastModifiedBy: VENDOR.name,
+    title: `${VENDOR.name} — price quotation ${QUOTE.number}`,
+    subject: QUOTE.subject,
+    description: `Price quotation ${QUOTE.number} issued to ${CLIENT.name}, `
+      + `valid through ${QUOTE.validThrough}.`,
+    revision: 1,
     styles: { default: { document: { run: { font: 'Arial', size: 18, color: INK } } } },
     numbering: {
       config: [{
