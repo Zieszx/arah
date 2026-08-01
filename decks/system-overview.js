@@ -332,7 +332,7 @@ const worst = shortSat[shortSat.length - 1];
     ['Machine learning', 'scikit-learn · NumPy · pandas · Joblib', 'pandas is training-only and deliberately absent from the deployed service.'],
     ['Data', 'Supabase Postgres · Row Level Security', 'Access rules live in the database, not only in application code.'],
     ['Charts', 'Recharts', 'The same component set on public pages and in the admin console.'],
-    ['Quality', 'Vitest · pytest · ESLint · Playwright', '372 JavaScript tests and 36 Python tests; 13 of them need production credentials.'],
+    ['Quality', 'Vitest · pytest · ESLint · Playwright', '382 JavaScript tests and 36 Python tests; 12 of them need production credentials.'],
   ];
   let y = 1.92;
   rows.forEach(([label, tech, why], i) => {
@@ -888,9 +888,9 @@ const worst = shortSat[shortSat.length - 1];
 {
   const s = slide('Admin', 'Quality and verification', 'What has actually been proven.');
   const counts = [
-    ['359', 'JavaScript tests passing', VIOLET],
+    ['370', 'JavaScript tests passing', VIOLET],
     ['36', 'Python tests passing', VIOLET_LT],
-    ['104', 'commits', CYAN],
+    ['106', 'commits', CYAN],
     ['11', 'database migrations', CYAN_LT],
   ];
   const cw = 2.82, gap = 0.32;
@@ -912,7 +912,7 @@ const worst = shortSat[shortSat.length - 1];
     const y = 3.67 + row * 1.3;
     panel(s, { x, y, w: HALF, h: 1.12, accent: VIOLET, head, body, headSize: 15.5, bodySize: 11 });
   });
-  note(s, 'Re-derive rather than trust: npm test · python -m pytest · ls supabase/migrations/*.sql. 372 JavaScript tests are defined; 359 run without production credentials.');
+  note(s, 'Re-derive rather than trust: npm test · python -m pytest · ls supabase/migrations/*.sql. 382 JavaScript tests are defined; 370 run without production credentials.');
 }
 
 /* ── 18. Findings ── */
