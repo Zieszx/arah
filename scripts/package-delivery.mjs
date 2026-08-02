@@ -175,13 +175,16 @@ if (fs.existsSync(dumpSrc)) {
 
 // 4c. The capstone report chapters, and the UAT kit.
 //
-//     Only the UAT tooling ships. The scripts that BUILD the report do not,
-//     and deliberately: they are developer tooling that hard-codes local
-//     paths and names the style template the document was built on. A client
-//     folder is something that gets forwarded, and none of that belongs in a
-//     file someone else opens. The UAT script is different — it is the one
-//     thing the recipient has a real reason to run, so it ships path-free
-//     with its questionnaire template and its own README.
+//     The scripts that BUILD the report do not ship, and deliberately: they
+//     are developer tooling that hard-codes local paths and names the style
+//     template the document was built on. A client folder is something that
+//     gets forwarded, and none of that belongs in a file someone else opens.
+//
+//     Nor does the UAT analysis script ship here. Executable code belongs in
+//     source-code/ and nowhere else in this folder, so a recipient can tell
+//     at a glance which part of the delivery is a program and which part is
+//     documents; it lives at source-code/scripts/uat_analysis.py, and
+//     report/uat/README.md points there. Enforced below, not just intended.
 const REPORT_DOC = path.join(PARENT, 'ARAH CP2-FR Chapter 3-4.docx');
 if (fs.existsSync(REPORT_DOC)) {
   const reportOut = path.join(OUT, 'report');
@@ -191,7 +194,6 @@ if (fs.existsSync(REPORT_DOC)) {
 
   const genSrc = path.join(PARENT, 'report-figures', '_generators');
   const UAT_KIT = [
-    ['uat_analysis.py', 'uat_analysis.py'],
     ['uat-responses-template.csv', 'uat-responses-template.csv'],
     ['uat-README.md', 'README.md'],
   ];
@@ -273,6 +275,33 @@ if (Object.values(creds).every(Boolean)) {
     'SKIPPED CREDENTIALS.md — run with --env-file=.env.seed.local to generate it'
   );
 }
+
+// 7. Executable code lives in source-code/ and nowhere else.
+//
+//    A recipient should be able to tell which part of this folder is a
+//    program and which part is documents, and the boundary is the folder
+//    name. This is checked rather than remembered: the delivery is assembled
+//    from several places, and a later change to any of them could put a
+//    script back beside the report without anyone noticing.
+const CODE_EXT = new Set(['.py', '.mjs', '.js', '.sh', '.bat', '.ps1']);
+const stray = [];
+(function scan(dir, rel = '') {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const r = path.join(rel, e.name);
+    if (e.isDirectory()) {
+      if (r !== 'source-code') scan(path.join(dir, e.name), r);
+    } else if (CODE_EXT.has(path.extname(e.name).toLowerCase())) {
+      stray.push(r);
+    }
+  }
+})(OUT);
+
+if (stray.length) {
+  console.error('\nFAILED — executable files outside source-code/:');
+  for (const f of stray) console.error(`  ${f}`);
+  process.exit(1);
+}
+console.log('checked: no executable files outside source-code/');
 
 console.log(`copied ${copied} files into ${OUT}`);
 console.log('\nomitted at the top level:');

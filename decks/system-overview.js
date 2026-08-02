@@ -7,12 +7,17 @@
 // future work — with the engineering slides kept where they explain how a
 // figure was produced.
 //
-// Two inputs are generated, not typed:
-//   decks/descriptive-stats.json   python decks/describe_corpus.py
-//   decks/assets/*.crop.png        python decks/crop_shots.py
+// Three inputs are generated, not typed:
+//   decks/descriptive-stats.json      python decks/describe_corpus.py
+//   decks/assets/*.crop.png           python decks/crop_shots.py
+//   decks/assets/code-*.png + .json   the report's code-extract renderer
 const path = require('path');
 const pptxgen = require('pptxgenjs');
 const stats = require('./descriptive-stats.json');
+// Rendered straight out of the working tree, so a slide cannot show code the
+// repository no longer contains. Carries the pixel dimensions because
+// pptxgenjs sizes an image from what it is told, not from the file.
+const codeShots = require('./assets/code-figures.json');
 
 const INK = '1B1830';
 const VIOLET = '6D28D9';
@@ -180,6 +185,46 @@ function screenshot(s, { file, x, y, w, ratio, caption, altText }) {
     });
   }
   return y + h + (caption ? 0.31 : 0);
+}
+
+// A code extract, fitted into a box rather than stretched to a width: these
+// vary from wide-and-short to nearly square, and a fixed width would push the
+// tall ones off the slide. Whatever space the fit leaves over is centred, so
+// the extract reads as one object with its file name and its explanation.
+// The explanation sits above the extract rather than below it, so a reader is
+// told what to look for before they look — thirty lines of code with no lead-in
+// is a slide people skip.
+function codeShot(s, { file, x, y, w, h, head, explain }) {
+  const meta = codeShots[file];
+  if (!meta) throw new Error(`no code extract named ${file} — rerun the renderer`);
+
+  let top = y;
+  if (head) {
+    s.addText(head, {
+      x, y: top, w, h: 0.3, margin: 0,
+      fontFace: DISPLAY, fontSize: 15, color: TEXT, valign: 'top',
+    });
+    top += 0.32;
+  }
+  if (explain) {
+    s.addText(
+      [
+        { text: `${meta.source}  `, options: { fontFace: MONO, fontSize: 9.5, color: VIOLET } },
+        { text: explain, options: { fontFace: BODY, fontSize: 11, color: MUTED } },
+      ],
+      { x, y: top, w, h: 0.86, margin: 0, lineSpacing: 14.5, valign: 'top' },
+    );
+    top += 0.94;
+  }
+
+  const scale = Math.min(w / meta.w, (h - (top - y)) / meta.h);
+  const iw = meta.w * scale;
+  const ih = meta.h * scale;
+  s.addImage({
+    path: shot(file), x: x + (w - iw) / 2, y: top, w: iw, h: ih,
+    altText: `Source code: ${meta.function} in ${meta.source}`,
+  });
+  return top + ih;
 }
 
 const shortSat = stats.satisfactionByField;
@@ -751,13 +796,71 @@ const worst = shortSat[shortSat.length - 1];
   });
   s.addShape(pres.shapes.RECTANGLE, { x: M, y: 5.12, w: CW, h: 1.15, fill: { color: VIOLET_PALE }, line: { color: HAIR, width: 0.75 } });
   s.addText('Soft voting', { x: M + 0.32, y: 5.27, w: CW - 0.64, h: 0.3, margin: 0, fontFace: DISPLAY, fontSize: 17, color: TEXT });
-  s.addText('Each model returns a probability per field, and the four are averaged by weight. A model that is confidently wrong gets outvoted — which is the point. Scored with repeated stratified cross-validation: five folds, five repeats, never a single split.', {
+  s.addText('Each model returns a probability per field, and the four are averaged with equal weight. A model that is confidently wrong gets outvoted — which is the point. Scored with repeated stratified cross-validation: five folds, five repeats, never a single split.', {
     x: M + 0.32, y: 5.62, w: CW - 0.64, h: 0.6, margin: 0,
     fontFace: BODY, fontSize: 12, color: MUTED, lineSpacing: 16,
   });
 }
 
-/* ── 13. Predictive analysis 3 — run live ── */
+/* ── 13. Predictive analysis — the encoder and the ensemble, in source ── */
+{
+  const s = slide('Predictive analysis', 'Predictive analysis · in code', 'Steps 1 and 3, as they are actually written.');
+
+  const colW = (CW - 0.4) / 2;
+
+  codeShot(s, {
+    file: 'code-encode-answers.png', x: M, y: 1.9, w: colW, h: 4.6,
+    head: 'Step 1 — encode',
+    explain: 'One block of the vector per question. A categorical answer sets one position to 1; the 1–5 comfort rating is scaled into the same range. An unseen option contributes zeros rather than raising, so the rest of the answers still predict.',
+  });
+
+  codeShot(s, {
+    file: 'code-build-estimator.png', x: M + colW + 0.4, y: 1.9, w: colW, h: 4.6,
+    head: 'Step 3 — vote',
+    explain: 'The four models are declared with their tuned parameters and combined under soft voting with equal weights, so the ranking is an average of four probability distributions rather than a majority vote on four separate answers.',
+  });
+
+  note(s, 'Both extracts are rendered from the repository at build time, so a slide cannot show code the project no longer contains.');
+}
+
+/* ── 14. Predictive analysis — marginalisation, in source ── */
+{
+  const s = slide('Predictive analysis', 'Predictive analysis · in code', 'Step 4, where the two prediction paths split.');
+
+  codeShot(s, {
+    file: 'code-predict-branch.png', x: M, y: 1.9, w: 5.6, h: 4.6,
+    head: 'Step 4 — marginalise',
+  });
+
+  const rx = M + 6.0;
+  const rw = CW - 6.0;
+
+  panel(s, {
+    x: rx, y: 1.9, w: rw, h: 1.42, accent: VIOLET,
+    head: 'One function, two paths',
+    headSize: 15,
+    body: 'Line 57 is the whole branch. A student who has named a pre-U route is encoded once and passed straight through the ensemble — the 71.5% path.',
+    bodySize: 10.5,
+  });
+  panel(s, {
+    x: rx, y: 3.44, w: rw, h: 1.42, accent: CYAN,
+    head: 'Marginalised, not guessed',
+    headSize: 15,
+    body: 'The else-branch predicts once for every route in the spec and averages the distributions, weighted by how common each route is in the corpus. Nothing is imputed — the uncertainty is carried through the arithmetic.',
+    bodySize: 10.5,
+  });
+  panel(s, {
+    x: rx, y: 4.98, w: rw, h: 1.42, accent: AMBER,
+    head: 'The flag the interface reads',
+    headSize: 15,
+    body: 'The response carries marginalised: true, which is what the results page turns into a visible notice. A student is told which of the two paths produced their shortlist.',
+    bodySize: 10.5,
+  });
+
+  note(s, 'services/ml/index.py — the model service, called over HTTP. The application never imports the model.');
+}
+
+/* ── 15. Predictive analysis 3 — run live ── */
 {
   const s = slide('Predictive analysis', 'Predictive analysis · part 3', 'The same model, run by hand.');
 
@@ -794,7 +897,7 @@ const worst = shortSat[shortSat.length - 1];
   note(s, 'Model version is stamped on every run. A prediction made against an older artefact can be told apart from one made after a retrain.');
 }
 
-/* ── 14. What it is not ── */
+/* ── 16. What it is not ── */
 {
   const s = slide('Predictive analysis', 'Predictive analysis · scope', 'What it is, in plain terms.');
 
@@ -825,7 +928,7 @@ const worst = shortSat[shortSat.length - 1];
   );
 }
 
-/* ── 15. Privacy ── */
+/* ── 17. Privacy ── */
 {
   const s = slide('Privacy', 'Privacy engineering', 'The data is 207 teenagers. It is treated that way.');
   const items = [
@@ -858,7 +961,7 @@ const worst = shortSat[shortSat.length - 1];
   note(s, 'Suppression, banding and the refresh gate each have a test that fails if a published number becomes more precise than it should be.');
 }
 
-/* ── 16. Admin console ── */
+/* ── 18. Admin console ── */
 {
   const s = slide('Admin', 'Admin console', 'Six sections, behind a role flag.');
   const secs = [
@@ -892,7 +995,7 @@ const worst = shortSat[shortSat.length - 1];
   });
 }
 
-/* ── 17. Quality ── */
+/* ── 19. Quality ── */
 {
   const s = slide('Admin', 'Quality and verification', 'What has actually been proven.');
   const counts = [
@@ -923,7 +1026,7 @@ const worst = shortSat[shortSat.length - 1];
   note(s, 'Re-derive rather than trust: npm test · python -m pytest · ls supabase/migrations/*.sql. 382 JavaScript tests are defined; 370 run without production credentials.');
 }
 
-/* ── 18. Findings ── */
+/* ── 20. Findings ── */
 {
   const s = slide('Findings', 'Findings', 'What the data and the model actually showed.');
 
@@ -971,7 +1074,7 @@ const worst = shortSat[shortSat.length - 1];
   note(s, 'The descriptive findings above are what justify the design decisions on the previous slides — they were not written to fit them.');
 }
 
-/* ── 19. Future work ── */
+/* ── 21. Future work ── */
 {
   const s = slide('Future work', 'Future work', 'What 207 students cannot yet tell us.');
 
@@ -995,7 +1098,7 @@ const worst = shortSat[shortSat.length - 1];
   note(s, 'Nothing on this list is blocked by the architecture. Every one of them is waiting on more students answering the same ten questions.');
 }
 
-/* ── 20. Closing ── */
+/* ── 22. Closing ── */
 {
   const s = pres.addSlide();
   s.background = { color: INK };

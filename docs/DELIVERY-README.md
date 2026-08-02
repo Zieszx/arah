@@ -125,8 +125,17 @@ styled to match the report format this unit uses, so it carries the same
 heading, caption and table styles and can be merged into the main report
 without restyling.
 
-Twenty-seven figures and twenty tables. Figure and table numbering runs from 1
+Thirty-three figures and twenty tables. Figure and table numbering runs from 1
 within these two chapters and will need renumbering once merged.
+
+Six of the figures are extracts of the system's own source code — the encoder,
+the four-model ensemble, the ranking function that marginalises over
+pre-university routes, the cross-validation routine behind every accuracy
+figure quoted, the code that turns a ranking into what a student sees under
+the privacy rules, and the measurement of the marginalised path. Each is
+rendered from the working tree rather than transcribed, with the real file
+name and line numbers on it, so an extract cannot drift away from the code it
+claims to show.
 
 Nothing in it is quoted from memory. Every accuracy figure was produced by
 re-running the model against the corpus in `datasets/`, and every response time
@@ -140,18 +149,21 @@ the live system and says so plainly, rather than presenting participant data
 that does not exist.
 
 `report/uat/` is what makes running them straightforward: the questionnaire
-template, an analysis script that turns collected responses into the Section
-4.5.3 charts and percentages, and a README covering both. See
-`report/uat/README.md`.
+template and a README covering both the sessions and the analysis. The script
+that turns collected responses into the Section 4.5.3 charts and percentages
+is at `source-code/scripts/uat_analysis.py` — every program in this delivery
+lives under `source-code/`, so there is one place to look for code and every
+other folder is documents. See `report/uat/README.md`.
 
-`report/figures/` holds all twenty-seven figures as separate PNG files, named
+`report/figures/` holds all thirty-three figures as separate PNG files, named
 by figure number and caption — `Figure 01 - Software Development Life Cycle
 adopted for ARAH.png` and so on. They were extracted from the document itself
 rather than re-exported from the tools that drew them, so each file is exactly
 the image that appears on the page, at the resolution it was placed. That
 matters when a figure has to be reused in the main report, a slide or a poster:
 what you drop in will match what the chapter shows. `report/figures/FIGURES.md`
-lists every one with its caption and the section it appears in.
+lists every one with its caption and the section it appears in, plus the one
+code extract that appears on the technical deck but not in the document.
 
 `report/data/ARAH-Report-Data.xlsx` is the data behind the tables — one sheet
 per table, in report order. Every derived cell is a live formula rather than a
