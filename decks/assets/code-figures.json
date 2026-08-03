@@ -11,30 +11,6 @@
     "source": "ml/train.py",
     "function": "build_estimator"
   },
-  "code-predict.png": {
-    "w": 1866,
-    "h": 1779,
-    "source": "services/ml/index.py",
-    "function": "predict"
-  },
-  "code-cv-top3.png": {
-    "w": 1752,
-    "h": 1203,
-    "source": "ml/train.py",
-    "function": "cv_top3"
-  },
-  "code-annotate-ranked.png": {
-    "w": 1980,
-    "h": 1923,
-    "source": "lib/quiz/submission.js",
-    "function": "annotateRanked"
-  },
-  "code-top3-marginalised.png": {
-    "w": 1619,
-    "h": 1347,
-    "source": "ml/measure_paths.py",
-    "function": "top3_marginalised"
-  },
   "code-predict-branch.png": {
     "w": 1638,
     "h": 1059,

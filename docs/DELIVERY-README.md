@@ -125,17 +125,24 @@ styled to match the report format this unit uses, so it carries the same
 heading, caption and table styles and can be merged into the main report
 without restyling.
 
-Thirty-three figures and twenty tables. Figure and table numbering runs from 1
+Thirty-nine figures and twenty tables. Figure and table numbering runs from 1
 within these two chapters and will need renumbering once merged.
 
-Six of the figures are extracts of the system's own source code — the encoder,
-the four-model ensemble, the ranking function that marginalises over
-pre-university routes, the cross-validation routine behind every accuracy
-figure quoted, the code that turns a ranking into what a student sees under
-the privacy rules, and the measurement of the marginalised path. Each is
-rendered from the working tree rather than transcribed, with the real file
-name and line numbers on it, so an extract cannot drift away from the code it
-claims to show.
+Twelve of the figures are extracts of the system's own source code. Six cover
+the predictive path — the two encoders and the parity test that holds them to
+identical output, the four-model ensemble, the ranking function that
+marginalises over pre-university routes, and the cross-validation routine
+behind every accuracy figure quoted. The rest cover the guards and the
+privacy rules: the k-anonymity suppression, banding and refresh gate as the
+database applies them, the feature-specification check that refuses to serve
+a mismatched model, the column-drift assertions that fail a reordered survey
+export, the code that turns a ranking into what a student sees, and the
+warm-up that moved the cold start off the student's path.
+
+Each is rendered from the working tree rather than transcribed, with the real
+file name and line numbers on it, so an extract cannot drift away from the
+code it claims to show — a renamed function fails the build instead of
+shipping a stale screenshot.
 
 Nothing in it is quoted from memory. Every accuracy figure was produced by
 re-running the model against the corpus in `datasets/`, and every response time
@@ -155,7 +162,7 @@ is at `source-code/scripts/uat_analysis.py` — every program in this delivery
 lives under `source-code/`, so there is one place to look for code and every
 other folder is documents. See `report/uat/README.md`.
 
-`report/figures/` holds all thirty-three figures as separate PNG files, named
+`report/figures/` holds all thirty-nine figures as separate PNG files, named
 by figure number and caption — `Figure 01 - Software Development Life Cycle
 adopted for ARAH.png` and so on. They were extracted from the document itself
 rather than re-exported from the tools that drew them, so each file is exactly
